@@ -1,15 +1,53 @@
 #include "jeu.h"
 
+static unsigned int WINDOW_WIDTH = 800;
+static unsigned int WINDOW_HEIGHT = 600;
+
+static const unsigned int BIT_PER_PIXEL = 32;
+static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
+
+void reshape() {
+	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(-1., 1., -1., 1.);
+}
+
+void setVideoMode() {
+	if(NULL == SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, BIT_PER_PIXEL, SDL_OPENGL | SDL_RESIZABLE)) {
+		fprintf(stderr, "Impossible d'ouvrir la fenetre. Fin du programme.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	reshape();
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	SDL_GL_SwapBuffers();
+}
+
 void launchGameWithMap(const char* mapfile)
 {
 	if(mapfile == NULL)
 		return;
 
 	printf("Map à charger: %s\n", mapfile);
+	Map* m = NULL;//loadMap(mapfile);
+	int a = play(m);
+	if(a != -1)
+		showEndMenu(a);
 }
 
 int startMenu()
 {
+	if(-1 == SDL_Init(SDL_INIT_VIDEO)) {
+		fprintf(stderr, "Impossible d'initialiser la SDL. Fin du programme.\n");
+		return EXIT_FAILURE;
+	}
+
+	setVideoMode();
+
+	SDL_WM_SetCaption("ITD", NULL);
+	
 	int choice;
 	do {
 		choice = showMainMenu();
@@ -23,6 +61,8 @@ int startMenu()
 			showHelpMenu();
 		}
 	} while(choice != MENU_EXIT);
+
+	SDL_Quit();
 	return 0;
 }
 
@@ -99,9 +139,109 @@ int play(Map* map)
 {
 	List* towers = list_init();
 	List* monsters = list_init();
-	printf("play\n");
+	int cash = 100;
+	int wave = 0, state = 0;
+	int running = 1;
+
+	while(running)
+	{
+		Uint32 startTime = SDL_GetTicks();
+
+		// dessin
+		glClear(GL_COLOR_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		/* dessin des composantes de jeu */
+		drawMap(map);
+		list_foreach(monsters, drawMonster);
+		list_foreach(towers, drawTower);
+		
+		/* dessin de l'UI */
+
+
+		SDL_GL_SwapBuffers();
+		SDL_Event event;
+		while(SDL_PollEvent(&event))
+		{
+			if(event.type == SDL_QUIT) {
+				running = 0;
+				break;
+			} 
+			switch(event.type) {
+				case SDL_KEYDOWN:
+			  		switch(event.key.keysym.sym){
+						case 's' :
+							if(wave == 0)
+								wave = 1;
+							break;
+						case 'q' : 
+						case SDLK_ESCAPE : 
+							running = 0;
+							state = -1;
+							break;
+						default : 
+							break;
+					}
+					break;
+				  
+				default:
+					break;
+			}
+
+			
+		}
+
+		if(wave > 0)
+		{
+			if(list_size(monsters) == 0)
+			{
+				if(wave < 20)
+					wave++;
+				else
+				{
+					state = 1;
+					running = 0;
+				}
+				//createWave(wave, monsters);
+			}
+			Data* t = list_getData(towers,0);
+			while(t != NULL)
+			{	
+				Tower* tow = t->value;
+				if(tow->target == NULL)
+					tow->target = lookForBestTarget(tow, monsters);
+
+				updateTower(tow, SDL_GetTicks() - startTime);
+				
+				t = t->next;
+			}
+
+			t = list_getData(monsters,0);
+			while(t != NULL)
+			{	
+				Monster* mons = t->value;
+				updateMonster(mons, SDL_GetTicks() - startTime);
+				if(hasFinishedMonster(mons))
+				{
+					state = 0;
+					running = 0;
+				}
+				t = t->next;
+			}
+		}
+	}
 	
 	list_delete(towers);
 	list_delete(monsters);
-	return 1;
+	//deleteMap(map);
+	return state;
+}
+
+void showEndMenu(int victory)
+{
+	if(victory)
+		printf("Victoire\n");
+	else
+		printf("Défaite!\n");
 }

@@ -10,9 +10,15 @@
 #ifndef TOWER_H
 #define TOWER_H
 
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#ifdef __APPLE__
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+#else
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#endif
 
+#include "list.h"
 #include "tools.h"
 #include "monster.h"
 
@@ -40,7 +46,7 @@ typedef struct _tower{
 	int size;
 	TYPE_TOWER type;
 	GLuint msecSinceLastShot;
-	Monster target;
+	Monster* target;
 } Tower;
 
 /*!
@@ -62,12 +68,12 @@ extern Tower* createTower(Position coord, TYPE_TOWER type);
 extern void drawTower(Tower* t);
 
 /*!
- * \fn extern void updateTower(Tower* t)
+ * \fn extern void updateTower(Tower* t, GLuint elapsedTime))
  * \brief Met à jour une tour
  *
  * \param t Pointeur vers la tour à mettre à jour
  */
-extern void updateTower(Tower* t);
+extern void updateTower(Tower* t, GLuint elapsedTime);
 
 /*!
  * \fn extern void deleteTower(Tower* t)
@@ -77,5 +83,12 @@ extern void updateTower(Tower* t);
  */
 extern void deleteTower(Tower* t);
 
+/*!
+ * \fn extern void lookForBestTarget(Tower* t,  List* monsters)
+ * \brief 
+ *
+ * \param t Pointeur vers la tour à supprimer
+ */
+extern void lookForBestTarget(Tower* t, List* monsters);
 
 #endif

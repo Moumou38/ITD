@@ -14,9 +14,12 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
+#include <SDL/SDL.h>
 
 #include "list.h"
 #include "map.h"
+#include "monster.h"
+#include "tower.h"
 
 /*!
  * \enum MENU_CHOICE

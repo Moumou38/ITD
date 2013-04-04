@@ -10,8 +10,13 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#ifdef __APPLE__
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+#else
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#endif
 
 #include "tools.h"
 
@@ -38,19 +43,19 @@ typedef struct _monster{
 	GLuint tex;
 	TYPE_MONSTER type;
 	Position coord;
-	Node direction;
+	Node* direction;
 	GLuint msecSinceLastMvt;
 } Monster;
 
 /*!
- * \fn extern Monster* createMonster(TYPE_MONSTER type, Node start)
+ * \fn extern Monster* createMonster(TYPE_MONSTER type, Node* start)
  * \brief Création d'un monstre
  *
  * \param type Type du monstre à créer
  * \param start Noeud de départ du monstre
  * \return Pointeur vers le monstre si la création a réussi, NULL sinon.
  */
-extern Monster* createMonster(TYPE_MONSTER type, Node start);
+extern Monster* createMonster(TYPE_MONSTER type, Node* start);
 
 /*!
  * \fn extern void drawMonster(Monster* m)
