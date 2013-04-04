@@ -1,6 +1,9 @@
 #Ignored
 *.[hco]~
 *~
-*.o
+*.[oa]
 *.so
-*.a
+lib/*
+obj/*
+.DS_Store
+.o

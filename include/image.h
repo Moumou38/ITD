@@ -13,6 +13,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+
+ #ifdef __APPLE__
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+#else
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#endif
 
 #include "tools.h"
 
@@ -26,51 +36,40 @@ typedef struct {
 	unsigned int h; /*!< Hauteur de l'image */
 	unsigned int w; /*!< Largeur de l'image */
 	Color3ub* pixels; /*!< Données de l'image */
-	char* name; /*!< Chemin de l'image */
 } Image;
 
 /*!
- * \fn extern Image* openImage(const char* src)
- * \brief Ouvre une Image
+ * \fn extern GLuint loadTexture(SDL_Surface* tex)
+ * \brief Charge une texture
  *
- * \param src Chemin de l'Image que l'on souhaite ouvrir
+ * \param tex SDL_Surface à partir de laquelle on souhaite charger la texture
+ * \return Entier pointant vers un espace mémoire sur la carte graphique
  */
-extern Image* openImage(const char* src);
+extern GLuint loadTexture(SDL_Surface* tex);
 
 /*!
- * \fn extern void saveImage(Image* img, const char* file)
- * \brief Sauvegarde une Image
+ * \fn extern SDL_Surface* loadImage(char* image)
+ * \brief Charge une image
  *
- * \param img Pointeur vers l'Image
- * \param file Chemin du fichier où l'on veut sauvegarder
+ * \param image Chemin de l'image que l'on veut charger
+ * \return SDL_Surface contenant l'image que l'on a chargé
  */
-extern void saveImage(Image* img, const char* file);
+extern SDL_Surface* loadImage(char* image);
 
 /*!
- * \fn extern void deleteImage(Image* img)
+ * \fn extern void deleteImage(SDL_Surface* tex)
  * \brief Supprime une Image
  *
- * \param img Pointeur vers l'Image à supprimer
+ * \param tex Pointeur vers la SDL_Surface à supprimer
  */
-extern void deleteImage(Image* img);
+extern void deleteImage(SDL_Surface* tex);
 
 /*!
- * \fn extern Image* createBlankImage(int w, int h)
- * \brief Créé une Image blanche
+ * \fn extern void deleteTexture(GLuint image)
+ * \brief Supprime une texture
  *
- * \param w Largeur de l'Image
- * \param h Hauteur de l'Image
- * \return Pointeur vers l'image blanche si la création a réussi, NULL sinon.
+ * \param tex Pointeur vers la zone mémoire de la carte graphique à supprimer
  */
-extern Image* createBlankImage(int w, int h);
-
-/*!
- * \fn extern Image* imageCopy(Image* from)
- * \brief Copie une Image
- *
- * \param from Pointeur vers l'Image à copier
- * \return Pointeur vers l'image copié si la copie a réussi, NULL sinon.
- */
-extern Image* imageCopy(Image* from);
+extern void deleteTexture(GLuint image);
 
 #endif

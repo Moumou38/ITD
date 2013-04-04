@@ -30,7 +30,7 @@
 typedef struct _map{
 	GLuint tex;
 	Node* nodes;
-	Image* ppm;
+	SDL_Surface* ppm;
 } Map;
 
 /*!

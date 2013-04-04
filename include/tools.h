@@ -10,6 +10,16 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+ #ifdef __APPLE__
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+#else
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#endif
+
 /**
  * \struct Color3ub
  * \brief Représente une couleur RGB sur 24bits..
@@ -44,5 +54,13 @@ typedef struct _node{
 	Position coord;
 	struct _node* next;
 } Node;
+
+/**
+ * \fn extern void freeNode(Node** node)
+ * \brief Libère la mémoire utilisée pour la liste de Node
+ *
+ * \param node Pointeur vers la tête de la liste de node
+ */
+extern void freeNode(Node** node);
 
 #endif
