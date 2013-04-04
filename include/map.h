@@ -29,7 +29,7 @@
  */
 typedef struct _map{
 	GLuint tex;
-	Color3ub noeud;
+	Node* nodes;
 	Image* ppm;
 } Map;
 
