@@ -5,6 +5,8 @@ Map* loadMap(char const* map){
 	FILE* f = NULL;
 	char img[64];
 	int num, r, g, b;
+	Color3ub chemin, noeud, construct, in, out;
+
 
 	if (map == NULL)
 		return NULL;
@@ -32,45 +34,52 @@ Map* loadMap(char const* map){
 	}
 
 	int full =0;
-	int i =0;
+	int cnt =0;
 
 	while(full == 0){
-		fscanf(f, "%s", img);
+		cnt = fscanf(f, "%s", img);
 		printf("%s\n", img);
+
 		if (strcmp(img, "carte") == 0){
 			fscanf(f, "%s", img);
 			printf("%s\n", img);
 			m->ppm = openImage(img);
-		}
-		if (strcmp(img, "energie") == 0){
+		}else if (strcmp(img, "energie") == 0){
 			fscanf(f, "%d", &num);
 			printf("%d\n", num);
-			
-		}
-		if (strcmp(img, "chemin") == 0){
+
+		}else if (strcmp(img, "chemin") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			printf("%d %d %d\n", r, g, b);
-			
-		}
-		if (strcmp(img, "noeud") == 0){
+			chemin.r = r;
+			chemin.g = g;
+			chemin.b = b;
+		}else if (strcmp(img, "noeud") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			printf("%d %d %d\n", r, g, b);
-			
-		}
-		if (strcmp(img, "construct") == 0){
+			noeud.r = r;
+			noeud.g = g;
+			noeud.b = b;
+		}else if (strcmp(img, "construct") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			printf("%d %d %d\n", r, g, b);
-			
-		}
-		if (strcmp(img, "in") == 0){
+			construct.r = r;
+			construct.g = g;
+			construct.b = b;
+		}else if (strcmp(img, "in") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			printf("%d %d %d\n", r, g, b);
-			
-		}
-		if (strcmp(img, "out") == 0){
+			in.r = r;
+			in.g = g;
+			in.b = b;
+		}else if (strcmp(img, "out") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			printf("%d %d %d\n", r, g, b);
-			
+			out.r = r;
+			out.g = g;
+			out.b = b;
+		}else{
+			printf("%s\n", img);
 		}
 	}
 
