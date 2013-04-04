@@ -2,8 +2,7 @@
 *.[hco]~
 *~
 *.[oa]
-*.so
-lib/*
-obj/*
 .DS_Store
 .o
+*.so
+*.o
