@@ -36,6 +36,7 @@ MENU_CHOICE showMainMenu()
 		printf("0 - Quitter\n");
 		printf("choix: ");
 		scanf("%d", &val);
+		printf("%d\n", val);
 	} while(val > 2 || val < 0);
 	switch(val)
 	{
