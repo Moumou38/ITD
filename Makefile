@@ -9,9 +9,13 @@ APP_BIN = itd
 
 SRC_PATH = src
 OBJ_PATH = obj
-INC_PATH = -I include
+INC_PATH = -I include \
+	-I lib/libstructs/include
 BIN_PATH = bin
-LIB_PATH = lib
+
+EXTERNLIBS = -L./lib/lib/ -lstructs
+
+LDFLAGS += $(EXTERNLIBS)
 
 SRC_FILES = $(shell find $(SRC_PATH) -type f -name '*.c')
 OBJ_FILES = $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o, $(SRC_FILES))

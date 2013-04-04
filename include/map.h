@@ -10,8 +10,13 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+#ifdef __APPLE__
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+#else
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+#endif
 
 #include "tools.h"
 #include "image.h"

@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+#include "tools.h"
 
 /**
  * \struct Image
@@ -25,7 +25,7 @@
 typedef struct {
 	unsigned int h; /*!< Hauteur de l'image */
 	unsigned int w; /*!< Largeur de l'image */
-	Pixel* pixels; /*!< Données de l'image */
+	Color3ub* pixels; /*!< Données de l'image */
 	char* name; /*!< Chemin de l'image */
 } Image;
 

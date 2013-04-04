@@ -12,6 +12,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+
+#include "list.h"
+#include "map.h"
 
 /*!
  * \enum MENU_CHOICE
@@ -48,12 +53,12 @@ extern int startMenu();
 extern MENU_CHOICE showMainMenu();
 
 /*!
- * \fn extern void showMapMenu()
+ * \fn extern Map* showMapMenu()
  * \brief Affiche le menu de sélection de map
  * 
- * \return Un entier correspondant à la carte chargée.
+ * \return La carte chargée.
  */
-extern int showMapMenu();
+extern Map* showMapMenu();
 
 /*!
  * \fn extern void showHelpMenu()
@@ -63,12 +68,13 @@ extern void showHelpMenu();
 
 
 /*!
- * \fn extern int play()
+ * \fn extern int play(Map* map)
  * \brief Boucle de jeu
  *
+ * \param map Carte du jeu à afficher
  * \return 1 si victoire, 0 si défaite, -1 si quitte.
  */
-extern int play();
+extern int play(Map* map);
 
 /*!
  * \fn extern void showEndMenu(int victory)
