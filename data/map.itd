@@ -1,8 +1,8 @@
 @ITD 1
-carte fichier.ppm
+carte map01.ppm
 energie 100
 chemin 255 255 255
-noeud 0 0 0
+noeud 0 0 255
 construct 255 200 80
 in 0 200 0
 out 200 0 0

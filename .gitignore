@@ -7,3 +7,5 @@
 *.so
 *.o
 bin/*
+lib/lib
+lib/lib/*

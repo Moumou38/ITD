@@ -1,7 +1,9 @@
 #include "image.h"
 
 GLuint loadTexture(SDL_Surface* tex){
+
 	GLuint textures;
+	printf("Entrée\n");
 	glGenTextures(1, &textures);
 	
 	glBindTexture(GL_TEXTURE_2D, textures);
@@ -9,16 +11,17 @@ GLuint loadTexture(SDL_Surface* tex){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	
 	GLenum format;
+	printf("juste avant celui là\n");
 	printf("Format : %d\n", tex->format->BytesPerPixel);
 	switch(tex->format->BytesPerPixel) {
 		case 1:
 			format = GL_RED;
 			break;
 		case 3:
-			format = GL_BGR;
+			format = GL_RGB;
 			break;
 		case 4:
-			format = GL_BGRA;
+			format = GL_RGBA;
 			break;
 		default:
 			fprintf(stderr, "Format des pixels de l’image non pris en charge\n");
@@ -37,7 +40,7 @@ SDL_Surface* loadImage(char* image){
 	SDL_Surface* tex = IMG_Load(image);
 	if (tex == NULL){
 		fprintf(stderr, "Impossible d'afficher l'image. Fin du programme.\n");
-		return EXIT_FAILURE;
+		exit(-1);
 	} else {
 		printf("L'image a été chargée correctement\n");
 		return tex;

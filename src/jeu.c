@@ -10,7 +10,7 @@ void reshape() {
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(-1., 1., -1., 1.);
+	gluOrtho2D(0, 800, 600, 0);
 }
 
 void setVideoMode() {
@@ -24,13 +24,22 @@ void setVideoMode() {
 	SDL_GL_SwapBuffers();
 }
 
+void initSDL(){
+	if(-1 == SDL_Init(SDL_INIT_VIDEO)) {
+		fprintf(stderr, "Impossible d'initialiser la SDL. Fin du programme.\n");
+		exit(-1);
+	}
+
+	setVideoMode();
+}
+
 void launchGameWithMap(const char* mapfile)
 {
 	if(mapfile == NULL)
 		return;
-
+	initSDL();
 	printf("Map à charger: %s\n", mapfile);
-	Map* m = NULL;//loadMap(mapfile);
+	Map* m = loadMap(mapfile);
 	int a = play(m);
 	if(a != -1)
 		showEndMenu(a);
@@ -38,12 +47,7 @@ void launchGameWithMap(const char* mapfile)
 
 int startMenu()
 {
-	if(-1 == SDL_Init(SDL_INIT_VIDEO)) {
-		fprintf(stderr, "Impossible d'initialiser la SDL. Fin du programme.\n");
-		return EXIT_FAILURE;
-	}
-
-	setVideoMode();
+	initSDL();
 
 	SDL_WM_SetCaption("ITD", NULL);
 	

@@ -18,6 +18,8 @@
 	#include <GL/glu.h>
 #endif
 
+#include <limits.h>
+
 #include "tools.h"
 #include "image.h"
 
@@ -41,6 +43,14 @@ typedef struct _map{
   * \return Pointeur vers la carte si le chargement a réussi, NULL sinon.
  */
 extern Map* loadMap(char const* map);
+
+/*!
+ * \fn extern void drawNode(Node* n)
+ * \brief Dessine un noeud sur la carte
+ *
+ * \param n Noeud que l'on souhaite dessiner
+ */
+extern void drawNode(Node* n);
 
 /*!
  * \fn extern void drawMap(Map* m)

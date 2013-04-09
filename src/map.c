@@ -2,9 +2,10 @@
 
 Map* loadMap(char const* map){
 	Map* m = malloc(sizeof(Map));
+	Node* tete = malloc(sizeof(Node));
 	FILE* f = NULL;
 	char img[64];
-	int num, r, g, b, energie;
+	int num, r, g, b, energie, i;
 	Color3ub chemin, noeud, construct, in, out;
 
 
@@ -43,7 +44,13 @@ Map* loadMap(char const* map){
 		if (strcmp(img, "carte") == 0){
 			fscanf(f, "%s", img);
 			printf("%s\n", img);
-			m->ppm = loadImage(img);
+			char* tmp = malloc(sizeof(char)*(7+strlen(img)+1));
+			sprintf(tmp,"images/%s", img);
+			m->ppm = loadImage(tmp);
+			free(tmp);
+			printf("n'importe nawak\n");
+			m->tex = loadTexture(m->ppm);
+			printf("juste après\n");
 		}else if (strcmp(img, "energie") == 0){
 			fscanf(f, "%d", &num);
 			printf("%d\n", num);
@@ -57,9 +64,9 @@ Map* loadMap(char const* map){
 		}else if (strcmp(img, "noeud") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			printf("%d %d %d\n", r, g, b);
-			noeud.r = r;
-			noeud.g = g;
-			noeud.b = b;
+			tete->color.r = r;
+			tete->color.g = g;
+			tete->color.b = b;
 		}else if (strcmp(img, "construct") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			printf("%d %d %d\n", r, g, b);
@@ -78,40 +85,89 @@ Map* loadMap(char const* map){
 			out.r = r;
 			out.g = g;
 			out.b = b;
-		}else{
-			printf("%s\n", img);
+		}else {
+			long int longnum = strtol(img,NULL, 10);
+			if(longnum != 0 && longnum != LONG_MAX && longnum != LONG_MIN){
+				full=1;
+				num = (int)longnum;
+			}else{
+				printf("La carte n'a pas un format valide.\n");
+				exit(-1);
+			}
 		}
 
 	}
+	printf("nombre de node %d\n", num);
+	Node* tmp = tete;
+	fscanf(f, "%f %f", &(tete->coord.x), &(tete->coord.y));
+	for(i=1; i<num; i++){
+		Node* n = malloc(sizeof(Node));
+		n->next = NULL;
+		n->color = tete->color;
+		fscanf(f, "%f %f", &(n->coord.x), &(n->coord.y));
+		printf("%f %f\n", n->coord.x, n->coord.y);
+		tmp->next = n;
+		tmp = n;
+	}
+	m->nodes = tete;
+	printf("map loaded\n");
+//	exit(0);
 	return m;
 
 }
 
+void drawNode(Node* n){
+		glBegin(GL_LINE_STRIP);
+			while(n != NULL){
+				glColor3ub(n->color.r, n->color.g, n->color.b);
+				glVertex2f(n->coord.x, n->coord.y);
+				//printf("%f %f\n", n->coord.x/100.f, n->coord.y/100.f);
+				n = n->next;
+				
+			}
+		glEnd();
+//	printf("end\n");
+}
+
+void dessinRepere(){
+	glBegin(GL_LINES);
+		glColor3ub(0, 255 ,0);
+		glVertex2f(0,0);
+		glVertex2f(0,1);
+		glColor3ub(255, 0 ,0);
+		glVertex2f(0,0);
+		glVertex2f(1,0);
+	glEnd();
+}
+
 void drawMap(Map* m){
-	GLuint tex = loadTexture(m->ppm);
+	//printf("begin\n");
+	glColor3ub(255,255,255);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m->tex);
 
 	glBegin(GL_QUADS);
-		glTexCoord2f(0,m->ppm->h); 
-		glVertex2f(0, 600);
+		glTexCoord2f(0.f, 0.f);
+		glVertex2f(0.f, 0.f);
 
-		glTexCoord2f(0, 0); 
-		glVertex2f(0, 0);
+		glTexCoord2f(0.f,1);
+		glVertex2f(0.f, 600.f);
 
-		glTexCoord2f(m->ppm->w, 0); 
-		glVertex2f(800, 0);
+		glTexCoord2f(1,1); 
+		glVertex2f(800.f, 600.f);
 
-		glTexCoord2f(m->ppm->w, m->ppm->h); 
-		glVertex2f(800, 600);
+		glTexCoord2f(1, 0.f); 
+		glVertex2f(800.f, 0.f);
 	glEnd();
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
+
+	drawNode(m->nodes);
 }
 
 void deleteMap(Map* m){
 	deleteImage(m->ppm);
-	deleteTexture(&m->tex);
+	deleteTexture(m->tex);
 	freeNode(&(m->nodes));
 }
