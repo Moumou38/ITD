@@ -14,11 +14,10 @@ void reshape() {
 }
 
 void setVideoMode() {
-	if(NULL == SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, BIT_PER_PIXEL, SDL_OPENGL | SDL_RESIZABLE)) {
+	if(NULL == SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, BIT_PER_PIXEL, SDL_OPENGL)) {
 		fprintf(stderr, "Impossible d'ouvrir la fenetre. Fin du programme.\n");
 		exit(EXIT_FAILURE);
 	}
-
 	reshape();
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -54,7 +53,8 @@ int startMenu()
 		if(choice == MENU_MAP)
 		{
 			Map* map = showMapMenu();
-			play(map);
+			if(map != NULL)
+				play(map);
 		} 
 		else if(choice == MENU_HELP)
 		{
@@ -210,7 +210,7 @@ int play(Map* map)
 			{	
 				Tower* tow = t->value;
 				if(tow->target == NULL)
-					tow->target = lookForBestTarget(tow, monsters);
+					tow->target = NULL;//lookForBestTarget(tow, monsters);
 
 				updateTower(tow, SDL_GetTicks() - startTime);
 				
