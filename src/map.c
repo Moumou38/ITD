@@ -13,6 +13,7 @@ Map* loadMap(char const* map){
 		return NULL;
 	
 	f = fopen(map, "rb");
+
 	if(f == NULL){
 		fprintf(stderr, "Impossible d'ouvrir le fichier %s. Fin du programme.\n", map);
 		return NULL;

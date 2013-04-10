@@ -40,6 +40,14 @@ typedef enum {
 extern void launchGameWithMap(const char* map);
 
 /*!
+ * \fn extern List* getMapList()
+ * \brief Créer la liste des cartes
+ *
+ * \return La liste de cartes
+ */
+extern List* getMapList();
+
+/*!
  * \fn extern int startMenu()
  * \brief Lance la boucle de menus
  *
