@@ -19,13 +19,13 @@ void drawTower(Tower* t)
 		glVertex2f(t->coord.x, t->coord.y);
 
 		glTexCoord2f(0.f,1.f);
-		glVertex2f(t->coord.x, t->coord.y+(t->size).f);
+		glVertex2f(t->coord.x, t->coord.y+(float)(t->size));
 
 		glTexCoord2f(1.f,1.f); 
-		glVertex2f(t->coord.x+(t->size).f, t->coord.y+(t->size).f);
+		glVertex2f(t->coord.x+(float)(t->size), t->coord.y+(float)(t->size));
 
 		glTexCoord2f(1.f, 0.f); 
-		glVertex2f(t->coord.x+(t->size).f, t->coord.y);
+		glVertex2f(t->coord.x+(float)(t->size), t->coord.y);
 	glEnd();
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
