@@ -1,4 +1,5 @@
 #include "jeu.h"
+#include "gui/button.h"
 
 static unsigned int WINDOW_WIDTH = 800;
 static unsigned int WINDOW_HEIGHT = 600;
@@ -29,7 +30,8 @@ void initSDL(){
 		fprintf(stderr, "Impossible d'initialiser la SDL. Fin du programme.\n");
 		exit(-1);
 	}
-
+	TTF_Init();
+	//GUI_Init();
 	setVideoMode();
 }
 
@@ -72,15 +74,92 @@ int startMenu()
 
 MENU_CHOICE showMainMenu()
 {
-	int val;
-	do {
-		printf("--- Menu principal ITD ---\n");
+	SDL_Surface* test= IMG_Load("images/test.png");
+	Button* b = createButton(0, NULL, test, 10,10,50,50);
+	SDL_FreeSurface(test);
+	SDL_Surface* test2= IMG_Load("images/test2.png");
+	Button* b2 = createButton(1, NULL, test2, 70,10,50,50);
+	SDL_FreeSurface(test2);
+	SDL_Surface* test3= IMG_Load("images/test3.png");
+	Button* b3 = createButton(2, NULL, test3, 130,10,50,50);
+	SDL_FreeSurface(test3);
+	Button* b4 = createButton(3, "Aide", NULL,10,110,110,70);
+	Button* b5 = createButton(4, "Quitter", NULL,10,410,110,70);
+	disableButtonFlag(b3, BF_ENABLED);
+	enableButtonFlag(b4, BF_MOVABLE);
+	int val = 0;
+	int running = 1;
+	while(running) {
+		Uint32 start = SDL_GetTicks();
+
+		// dessin
+		glClear(GL_COLOR_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		drawButton(b);
+		drawButton(b2);
+		drawButton(b3);
+		drawButton(b4);
+		drawButton(b5);
+		SDL_GL_SwapBuffers();
+
+		SDL_Event event;
+		while(SDL_PollEvent(&event))
+		{
+			if(event.type == SDL_QUIT) {
+				running = 0;
+				break;
+			} 
+			injectEventToButton(b, &event);
+			injectEventToButton(b2, &event);
+			injectEventToButton(b3, &event);
+			injectEventToButton(b4, &event);
+			injectEventToButton(b5, &event);
+			switch(event.type) {
+				case SDL_KEYDOWN:
+			  		switch(event.key.keysym.sym){
+						case 'q' : 
+						case SDLK_ESCAPE : 
+							running = 0;
+							break;
+						default : 
+							break;
+					}
+					break;
+				  
+				default:
+					break;
+			}
+		}
+		/*if(isButtonClicked(b))
+		{
+			val = 1;
+			break;
+		}
+		if(isButtonClicked(b2))
+		{
+			val = 2;
+			break;
+		}*/
+		if(isButtonClicked(b5))
+		{
+			val = 0;
+			break;
+		}
+
+		Uint32 elapsed = SDL_GetTicks() - start;
+		if(elapsed < FRAMERATE_MILLISECONDS)
+		{
+			SDL_Delay(FRAMERATE_MILLISECONDS - elapsed);
+		}
+		/*printf("--- Menu principal ITD ---\n");
 		printf("1 - Maps\n");
 		printf("2 - Aide\n");
 		printf("0 - Quitter\n");
 		printf("choix: ");
-		scanf("%d", &val);
-	} while(val > 2 || val < 0);
+		scanf("%d", &val);*/
+	}
 	switch(val)
 	{
 		case 0:
@@ -146,7 +225,7 @@ int play(Map* map)
 	int cash = 100;
 	int wave = 0, state = 0;
 	int running = 1;
-
+	
 	while(running)
 	{
 		Uint32 startTime = SDL_GetTicks();
@@ -162,7 +241,7 @@ int play(Map* map)
 		list_foreach(towers, drawTower);
 		
 		/* dessin de l'UI */
-
+		
 
 		SDL_GL_SwapBuffers();
 		SDL_Event event;
