@@ -47,10 +47,36 @@ void launchGameWithMap(const char* mapfile)
 		showEndMenu(a);
 }
 
+List* getMapList(){
+	DIR* dir = opendir("./data");
+	struct dirent* file;
+	List* list_map = list_init();
+
+	if(dir == NULL)
+	{
+		printf("Impossible d'ouvrir le dossier data!\n");
+		exit(-1);
+	}
+	//int i = 1;
+	while((file = readdir(dir)) != NULL)
+	{
+		if(strstr(file->d_name, ".itd") != NULL)
+		{
+			char* map = malloc(sizeof(char)*(strlen(file->d_name)+1));
+			list_append(list_map, map);
+			strcpy(map, file->d_name);
+			//printf("%d - %s\n", i++, file->d_name);
+		}
+	}
+	closedir(dir);
+
+	return list_map;
+}
+
 int startMenu()
 {
 	initSDL();
-
+	List* map_list = getMapList();
 	SDL_WM_SetCaption("ITD", NULL);
 	
 	int choice;
@@ -58,7 +84,7 @@ int startMenu()
 		choice = showMainMenu();
 		if(choice == MENU_MAP)
 		{
-			Map* map = showMapMenu();
+			Map* map = showMapMenu(map_list);
 			if(map != NULL)
 				play(map);
 		} 
@@ -172,33 +198,34 @@ MENU_CHOICE showMainMenu()
 	return MENU_EXIT;
 }
 
-Map* showMapMenu()
+Map* showMapMenu(List* map_list)
 {
+	int i, size;
+	char* map;
 	printf("--- Menu Maps ---\n");
-	DIR* dir = opendir("./data");
-	struct dirent* file;
-
-	if(dir == NULL)
-	{
-		printf("Impossible d'ouvrir le dossier data!\n");
-		exit(-1);
-	}
-	int i = 1;
-	while((file = readdir(dir)) != NULL)
-	{
-		if(strstr(file->d_name, ".itd") != NULL)
-		{
-			printf("%d - %s\n", i++, file->d_name);
-		}
+	size = list_size(map_list);
+	for(i=0; i<size; i++){
+		map =list_get(map_list, i);
+		printf("%d - %s\n", i+1, map);
 	}
 	printf("0 - Quitter\n");
-	closedir(dir);
 	int choice;
 	do {
 		printf("choix: ");
 		scanf("%d", &choice);
 	} while(choice < 0 || choice >= i);
-	return NULL;
+	if(choice == 0)
+		return NULL;
+	else{
+		map = list_get(map_list, choice-1);
+		char* tmp = malloc(sizeof(char)*(7+strlen(map)+1));
+		sprintf(tmp,"data/%s", map);
+		//printf("%s\n", map);
+		Map* m= loadMap(tmp);
+		free(tmp);
+		return m;
+	}
+
 }
 
 void showHelpMenu()
