@@ -1,5 +1,15 @@
 #include "tower.h"
 
+const int Rocket_Dmg = 10;
+const int Laser_Dmg = 5;
+const int Machinegun_Dmg= 3;
+const int Hybride_Dmg = 8;
+
+const int Rocket_Time= 20;
+const int Laser_Time = 10;
+const int Machinegun_Time = 5;
+const int Hybride_Time = 15;
+
 Tower* createTower(Position coord, TYPE_TOWER type){
 	Tower* t = malloc(sizeof(Tower));
 	t->coord = coord;
@@ -34,10 +44,67 @@ void drawTower(Tower* t)
 
 void updateTower(Tower* t, GLuint elapsed)
 {
+	t->msecSinceLastShot += elapsed;
+	switch(t->type){
+		case ROCKET :{
+			if(t->msecSinceLastShot>Rocket_Time){
+				if(t->target != NULL){
+					//shoot(t, t->target);
+					t->msecSinceLastShot=0;
+				}
+			}
+		}
+		break;
+
+		case LASER : {
+			if(t->msecSinceLastShot>Laser_Time){
+				if(t->target != NULL){
+					//shoot(t, t->target);
+					t->msecSinceLastShot=0;
+				}
+			}
+		}
+		break;
+
+		case MACHINEGUN :{
+			if(t->msecSinceLastShot>Machinegun_Time){
+				if(t->target != NULL){
+					//shoot(t, t->target);
+					t->msecSinceLastShot=0;
+				}
+			}
+		}
+		break;
+
+		case HYBRIDE : {
+			if(t->msecSinceLastShot>Hybride_Time){
+				if(t->target != NULL){
+					//shoot(t, t->target);
+					t->msecSinceLastShot=0;
+				}
+			}
+		}
+		break;
+
+		default : 
+			break;
+	}
 
 }
 
 void lookForBestTarget(Tower* t, List* monsters)
 {
+
+}
+
+void shoot(Tower* t, Monster* target){
+	if(t->type == ROCKET)
+		target->life -= Rocket_Dmg;
+	else if(t->type == LASER)
+		target->life -= Laser_Dmg;
+	else if(t->type == MACHINEGUN)
+		target->life -= Machinegun_Dmg;
+	else if(t->type == HYBRIDE)
+		target->life -= Hybride_Dmg;
 
 }

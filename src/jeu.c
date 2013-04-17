@@ -166,13 +166,37 @@ void showHelpMenu()
 	return;
 }
 
+void dessinCarre(){
+	glColor3ub(255,0,0);
+	glBegin(GL_QUADS);
+		glVertex2f(0.5,0.5);
+		glVertex2f(0.5,-0.5);
+		glVertex2f(-0.5,-0.5);
+		glVertex2f(-0.5,0.5);
+	glEnd();
+}
+
 int play(Map* map)
 {
+	int a =0;
 	List* towers = list_init();
 	List* monsters = list_init();
 	int cash = 100;
 	int wave = 0, state = 0;
 	int running = 1;
+	Position pos;
+	pos.x = 200;
+	pos.y = 500;
+	printf("%f %f\n",pos.x, pos.y );
+	Tower* t = createTower(pos, ROCKET);
+	list_append(towers, t);
+	Monster* m = createMonster(NORMAL, map->nodes);
+	list_append(monsters, m);
+	Monster* m2 = createMonster(FAST, map->nodes);
+	list_append(monsters, m2);
+	Monster* m3 = createMonster(SLOW, map->nodes);
+	list_append(monsters, m3);
+
 
 	while(running)
 	{
@@ -185,6 +209,7 @@ int play(Map* map)
 
 		/* dessin des composantes de jeu */
 		drawMap(map);
+		//drawTower(t);
 		list_foreach(monsters, drawMonster);
 		list_foreach(towers, drawTower);
 		
@@ -206,7 +231,14 @@ int play(Map* map)
 							if(wave == 0)
 								wave = 1;
 							break;
-						case 'q' : 
+						case 't' : 
+						{
+							a =1;
+							
+						}
+							break;
+
+
 						case SDLK_ESCAPE : 
 							running = 0;
 							state = -1;
@@ -215,6 +247,27 @@ int play(Map* map)
 							break;
 					}
 					break;
+
+				case SDL_MOUSEBUTTONDOWN:
+					switch(event.button.button){
+						case SDL_BUTTON_LEFT:
+						{
+							if(a == 1){
+								Position position;
+								position.x = event.button.x;
+								position.y = event.button.y;
+								Tower* tour = createTower(position, ROCKET);
+								list_append(towers, tour);
+								printf("%f %f\n", position.x, position.y);
+								a=0;
+							}
+						}
+							break;
+
+						default:
+							break;
+
+					}
 				  
 				default:
 					break;

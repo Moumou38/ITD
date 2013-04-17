@@ -12,7 +12,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
- #ifdef __APPLE__
+#include <math.h>
+
+#ifdef __APPLE__
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glu.h>
 #else
@@ -20,6 +22,7 @@
 	#include <GL/glu.h>
 #endif
 
+#define EPSILON 2
 /**
  * \struct Color3ub
  * \brief Représente une couleur RGB sur 24bits..

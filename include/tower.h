@@ -29,10 +29,19 @@
 typedef enum{
 	ROCKET,
 	LASER,
-	MISTRALLETTES,
-	HYBRIDES
+	MACHINEGUN,
+	HYBRIDE
 } TYPE_TOWER;
 
+extern const int Rocket_Dmg;
+extern const int Laser_Dmg;
+extern const int Machinegun_Dmg;
+extern const int Hybride_Dmg;
+
+extern const int Rocket_Time;
+extern const int Laser_Time;
+extern const int Machinegun_Time;
+extern const int Hybride_Time;
 
 /**
  * \struct Tower
@@ -85,10 +94,20 @@ extern void deleteTower(Tower* t);
 
 /*!
  * \fn extern void lookForBestTarget(Tower* t,  List* monsters)
- * \brief 
+ * \brief Cherche la cible la plus proche
  *
- * \param t Pointeur vers la tour à supprimer
+ * \param t Pointeur vers la tour qui cherche une cible
+ * \param monsters Liste de monstres présents dans le jeu
  */
 extern void lookForBestTarget(Tower* t, List* monsters);
+
+/*!
+ * \fn extern void shoot(Tower* t, Monster* target)
+ * \brief 
+ *
+ * \param t Pointeur vers la tour qui tire
+ * \param target Pointeur vers le monstre ciblé
+ */
+extern void shoot(Tower* t, Monster* target);
 
 #endif

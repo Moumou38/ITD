@@ -1,5 +1,10 @@
 #include "monster.h"
 
+const int Normal = 3;
+const int Fast = 1;
+const int Slow  =4;
+const int Flyer = 2;
+
 Monster* createMonster(TYPE_MONSTER type, Node* start){
 	Monster* m = malloc(sizeof(Monster));
 	m->type = type;
@@ -35,8 +40,80 @@ void drawMonster(Monster* m)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void updateMonster(Monster* t, GLuint elapsed)
+void updateMonster(Monster* m, GLuint elapsed)
 {
+	m->msecSinceLastMvt += elapsed;
+	if(m->direction==NULL)
+		return;
+	//printf("%f %f %f %f\n", m->coord.x, m->coord.y, fabs(m->coord.x- m->direction->coord.x), fabs(m->coord.y-m->direction->coord.y));
+	
+	if(fabs(m->coord.x- m->direction->coord.x) < EPSILON && fabs(m->coord.y-m->direction->coord.y) < EPSILON)
+		m->direction = m->direction->next;
+
+	if(m->direction==NULL)
+		return;
+
+	switch(m->type){
+		case NORMAL : {
+			if(m->msecSinceLastMvt> Normal){
+				float dx = m->direction->coord.x - m->coord.x;
+				float dy = m->direction->coord.y - m->coord.y;
+				float dist = sqrt(dx*dx + dy*dy);
+				dx = dx/dist;
+				dy = dy/dist;
+				m->coord.x += dx;
+				m->coord.y += dy;
+				
+				m->msecSinceLastMvt = 0;
+			}
+		}
+		break;
+
+		case FAST : {
+			if(m->msecSinceLastMvt> Fast){
+				float dx = m->direction->coord.x - m->coord.x;
+				float dy = m->direction->coord.y - m->coord.y;
+				float dist = sqrt(dx*dx + dy*dy);
+				dx = dx/dist;
+				dy = dy/dist;
+				m->coord.x += dx*2;
+				m->coord.y += dy*2;
+				
+				m->msecSinceLastMvt = 0;
+			}
+		}
+		break;
+
+		case SLOW : {
+			if(m->msecSinceLastMvt> Slow){
+				float dx = m->direction->coord.x - m->coord.x;
+				float dy = m->direction->coord.y - m->coord.y;
+				float dist = sqrt(dx*dx + dy*dy);
+				dx = dx/dist;
+				dy = dy/dist;
+				m->coord.x += dx;
+				m->coord.y += dy;
+				
+				m->msecSinceLastMvt = 0;
+			}
+		}
+		break;
+
+		case FLYER : {
+			if(m->msecSinceLastMvt> Flyer){
+				float dx = m->direction->coord.x - m->coord.x;
+				float dy = m->direction->coord.y - m->coord.y;
+				float dist = sqrt(dx*dx + dy*dy);
+				dx = dx/dist;
+				dy = dy/dist;
+				m->coord.x += dx;
+				m->coord.y += dy;
+				
+				m->msecSinceLastMvt = 0;
+			}
+		}
+		break;
+	}
 	
 }
 
