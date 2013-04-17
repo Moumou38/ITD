@@ -72,4 +72,6 @@ extern void deleteImage(SDL_Surface* tex);
  */
 extern void deleteTexture(GLuint image);
 
+extern SDL_Surface* filterImage(SDL_Surface* s, SDL_Color filter);
+
 #endif
