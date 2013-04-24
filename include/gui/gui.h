@@ -4,32 +4,35 @@
 #include <SDL/SDL.h>
 #include "list.h"
 #include "queue.h"
-
-typedef enum {
-	GUI_ET_BUTTON
-} GUI_EventType;
-
-typedef enum {
-	GUI_HOVER,
-	GUI_PRESSED,
-	GUI_RELEASED
-} GUI_EventButtonAction;
+#include "gui/button.h"
+#include "gui/text.h"
 
 typedef struct {
-	GUI_EventType type;
-	unsigned int id;
-	GUI_EventButtonAction action;
-} GUI_ButtonEvent;
+	GUI_WidgetType type;
+	union {
+		Button *button;
+		Text *text;
+	} w;
+} GUI_Widget;
 
-typedef union {
-	GUI_EventType type;
-	GUI_ButtonEvent button;
-} GUI_Event;
+extern GUI_Event* createGuiEvent();
 
 extern void GUI_Init();
 
 extern void GUI_Quit();
 
-extern int GUI_PollEvent(SDL_Event* event, GUI_Event* gui); 
+extern void GUI_Draw();
+
+extern void GUI_Clear();
+
+extern void GUI_ProceedEvents(SDL_Event* event);
+
+extern int GUI_PollEvent(GUI_Event* gui); 
+
+extern void GUI_RegisterButton(Button* b);
+
+extern Button* GUI_CreateButton(unsigned int id, char* text, SDL_Surface* image, int px, int py, int w, int h);
+
+extern Text* GUI_CreateText(unsigned int id, char* text, SDL_Color color, int px, int py, int w, int h);
 
 #endif

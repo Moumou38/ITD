@@ -16,6 +16,7 @@
 #include <string.h>
 #include <SDL/SDL.h>
 
+#include "gui/gui.h"
 #include "list.h"
 #include "map.h"
 #include "monster.h"

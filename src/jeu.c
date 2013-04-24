@@ -31,7 +31,7 @@ void initSDL(){
 		exit(-1);
 	}
 	TTF_Init();
-	//GUI_Init();
+	GUI_Init();
 	setVideoMode();
 }
 
@@ -94,25 +94,20 @@ int startMenu()
 		}
 	} while(choice != MENU_EXIT);
 
+	GUI_Quit();
+	TTF_Quit();
 	SDL_Quit();
 	return 0;
 }
 
 MENU_CHOICE showMainMenu()
 {
-	SDL_Surface* test= IMG_Load("images/test.png");
-	Button* b = createButton(0, NULL, test, 10,10,50,50);
-	SDL_FreeSurface(test);
-	SDL_Surface* test2= IMG_Load("images/test2.png");
-	Button* b2 = createButton(1, NULL, test2, 70,10,50,50);
-	SDL_FreeSurface(test2);
-	SDL_Surface* test3= IMG_Load("images/test3.png");
-	Button* b3 = createButton(2, NULL, test3, 130,10,50,50);
-	SDL_FreeSurface(test3);
-	Button* b4 = createButton(3, "Aide", NULL,10,110,110,70);
-	Button* b5 = createButton(4, "Quitter", NULL,10,410,110,70);
-	disableButtonFlag(b3, BF_ENABLED);
-	enableButtonFlag(b4, BF_MOVABLE);
+	GUI_Clear();
+	int BTN_MAPS = 2, BTN_HELP = 3, BTN_EXIT = 4;
+	GUI_CreateButton(BTN_MAPS, "Maps", NULL,300,110,150,70);
+	GUI_CreateButton(BTN_HELP, "Aide", NULL,300,210,150,70);
+	GUI_CreateButton(BTN_EXIT, "Quitter", NULL,300,410,150,70);
+
 	int val = 0;
 	int running = 1;
 	while(running) {
@@ -123,11 +118,7 @@ MENU_CHOICE showMainMenu()
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		drawButton(b);
-		drawButton(b2);
-		drawButton(b3);
-		drawButton(b4);
-		drawButton(b5);
+		GUI_Draw();
 		SDL_GL_SwapBuffers();
 
 		SDL_Event event;
@@ -137,11 +128,27 @@ MENU_CHOICE showMainMenu()
 				running = 0;
 				break;
 			} 
-			injectEventToButton(b, &event);
-			injectEventToButton(b2, &event);
-			injectEventToButton(b3, &event);
-			injectEventToButton(b4, &event);
-			injectEventToButton(b5, &event);
+			GUI_ProceedEvents(&event);
+			GUI_Event gui;				
+			while(GUI_PollEvent(&gui)) {
+				switch(gui.type) {
+					case GUI_ET_BUTTON:
+							if(gui.button.action == GUI_BTEV_RELEASED) {
+								if(gui.button.id == BTN_EXIT)  {
+									return MENU_EXIT;
+								} else if(gui.button.id == BTN_HELP) {
+									return MENU_HELP;
+								} else if(gui.button.id == BTN_MAPS) {
+									return MENU_MAP;
+								}
+							}
+						break;
+					default:
+						break;
+				}
+			}
+			
+			
 			switch(event.type) {
 				case SDL_KEYDOWN:
 			  		switch(event.key.keysym.sym){
@@ -158,43 +165,14 @@ MENU_CHOICE showMainMenu()
 					break;
 			}
 		}
-		/*if(isButtonClicked(b))
-		{
-			val = 1;
-			break;
-		}
-		if(isButtonClicked(b2))
-		{
-			val = 2;
-			break;
-		}*/
-		if(isButtonClicked(b5))
-		{
-			val = 0;
-			break;
-		}
 
 		Uint32 elapsed = SDL_GetTicks() - start;
 		if(elapsed < FRAMERATE_MILLISECONDS)
 		{
 			SDL_Delay(FRAMERATE_MILLISECONDS - elapsed);
 		}
-		/*printf("--- Menu principal ITD ---\n");
-		printf("1 - Maps\n");
-		printf("2 - Aide\n");
-		printf("0 - Quitter\n");
-		printf("choix: ");
-		scanf("%d", &val);*/
 	}
-	switch(val)
-	{
-		case 0:
-			return MENU_EXIT;
-		case 1:
-			return MENU_MAP;
-		case 2:
-			return MENU_HELP;
-	}
+
 	return MENU_EXIT;
 }
 
@@ -247,12 +225,17 @@ void showHelpMenu()
 
 int play(Map* map)
 {
+	GUI_Clear();
 	List* towers = list_init();
 	List* monsters = list_init();
+	SDL_Color textColor = {255,0,0};
 	int cash = 100;
 	int wave = 0, state = 0;
 	int running = 1;
-	
+	char buff[64];
+	sprintf(buff, "Argent: %d", cash);
+	printf("%s\n", buff);
+	Text* cashtxt = GUI_CreateText(0, buff, textColor, 0,0, 150, 50);
 	while(running)
 	{
 		Uint32 startTime = SDL_GetTicks();
@@ -268,7 +251,7 @@ int play(Map* map)
 		list_foreach(towers, drawTower);
 		
 		/* dessin de l'UI */
-		
+		GUI_Draw();
 
 		SDL_GL_SwapBuffers();
 		SDL_Event event;

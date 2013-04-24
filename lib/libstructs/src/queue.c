@@ -19,13 +19,6 @@ int queue_push(Queue* file, void* value)
 		return -1;
 	}
 
-	/*tmp = file->data;
-	while(tmp != NULL) {
-		last = tmp;	
-		tmp = tmp->next;
-	}
-
-	if(tmp == NULL) {*/
 	tmp = malloc(sizeof(Data));
 	if(tmp == NULL)
 		return -1;
@@ -59,6 +52,8 @@ int queue_pop(Queue* file)
 	tmp = file->data;
 	
 	file->data = tmp->next;
+	if(file->last == tmp)
+		file->last = NULL;
 
 	free(tmp);
 	file->size--;

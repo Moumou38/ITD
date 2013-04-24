@@ -149,16 +149,16 @@ void drawMap(Map* m){
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.f, 0.f);
-		glVertex2f(0.f, 0.f);
+		glVertex2f(0.f, 50.f);
 
 		glTexCoord2f(0.f,1);
 		glVertex2f(0.f, 600.f);
 
 		glTexCoord2f(1,1); 
-		glVertex2f(800.f, 600.f);
+		glVertex2f(600.f, 600.f);
 
 		glTexCoord2f(1, 0.f); 
-		glVertex2f(800.f, 0.f);
+		glVertex2f(600.f, 50.f);
 	glEnd();
 	
 	glBindTexture(GL_TEXTURE_2D, 0);

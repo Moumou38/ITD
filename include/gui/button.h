@@ -7,6 +7,9 @@
  *	\brief Structures de données et fonctions des boutons
  */
 
+#ifndef BUTTON_H
+#define BUTTON_H
+
 #if defined __APPLE__
 	#include <OpenGL/gl.h>
 #else
@@ -17,6 +20,7 @@
 #include <SDL/SDL_ttf.h>
 #include "tools.h"
 #include "image.h"
+#include "gui/enums.h"
 
 typedef enum {
 	BS_DEFAULT = 0,
@@ -47,13 +51,16 @@ extern Button* createEmptyButton(GLuint color);
 
 extern void drawButton(Button* b);
 
-extern int injectEventToButton(Button* b, SDL_Event* event);
+extern int injectEventToButton(Button* b, SDL_Event* event, GUI_ButtonEvent* guiEv);
 
-extern void hoverButton(Button* b, Position p);
+extern int hoverButton(Button* b, Position p);
+
+extern int clickedButton(Button* b, Position p, int pressed);
+
 
 extern int isButtonClicked(Button* b);
 
-extern void clickedButton(Button* b, Position p, int pressed);
+
 
 extern void removeButton(Button* b);
 
@@ -62,3 +69,5 @@ extern int mouseInButton(Button* b, Position p);
 extern void enableButtonFlag(Button* b, ButtonFlags flags);
 
 extern void disableButtonFlag(Button* b, ButtonFlags flags);
+
+#endif

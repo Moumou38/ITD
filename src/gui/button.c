@@ -7,7 +7,7 @@ Button* createButton(unsigned int id, char* text, SDL_Surface* image, int px, in
 	SDL_Color rouge = {255, 150, 150};
 	SDL_Color rougef = {255, 0, 0};
 	SDL_Color gris = {100, 100, 100};
-	TTF_Font *police = TTF_OpenFont("REZ.ttf", 65);
+	TTF_Font *police = TTF_OpenFont("Ketchum.ttf", 65);
 	if(police == NULL)
 	{
 		fprintf(stderr,"Erreur au chargement de la police REZ.ttf");
@@ -59,12 +59,14 @@ Button* createButton(unsigned int id, char* text, SDL_Surface* image, int px, in
 		b->tex[3] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 	}
+	b->id = id;
 	b->pos.x = px;
 	b->pos.y = py;
 	b->size.x = w;
 	b->size.y = h;
 	b->state = BS_DEFAULT;
 	b->flags = BF_ENABLED;
+	TTF_CloseFont(police);
 	return b;
 }
 
@@ -91,8 +93,9 @@ void drawButton(Button* b)
 	//printf("dessin!\n");
 }
 
-int injectEventToButton(Button* b, SDL_Event* event)
+int injectEventToButton(Button* b, SDL_Event* event, GUI_ButtonEvent* guiev)
 {
+	GUI_ButtonEvent btnEv = { GUI_ET_BUTTON, b->id, GUI_BTEV_NONE};
 	if(b->flags & BF_ENABLED) 
 	{
 		switch(event->type)
@@ -107,13 +110,16 @@ int injectEventToButton(Button* b, SDL_Event* event)
 						{
 							b->pos.x += x;
 							b->pos.y += y;
-						}
-						else {
-							hoverButton(b, p);
+							btnEv.action = GUI_BTEV_MOVED;
+							*guiev = btnEv;
+							break;
 						}
 					}
-					else {
-						hoverButton(b, p);
+
+					if(hoverButton(b, p))
+					{
+						btnEv.action = GUI_BTEV_MOVED;
+						*guiev = btnEv;
 					}
 				}					
 				break;
@@ -123,7 +129,11 @@ int injectEventToButton(Button* b, SDL_Event* event)
 						Position p;
 						p.x = event->button.x;
 						p.y = event->button.y;
-						clickedButton(b, p, 1);
+						if(clickedButton(b, p, 1))
+						{
+							btnEv.action = GUI_BTEV_PRESSED;
+							*guiev = btnEv;
+						}
 					}
 				}
 				break;
@@ -133,9 +143,16 @@ int injectEventToButton(Button* b, SDL_Event* event)
 						Position p;
 						p.x = event->motion.x;
 						p.y = event->motion.y;
-						clickedButton(b, p, 0);
+						p.y = event->button.y;
+						if(clickedButton(b, p, 0))
+						{
+							btnEv.action = GUI_BTEV_RELEASED;
+							*guiev = btnEv;
+						}
 					}
 				}
+				break;
+			default:
 				break;
 		}
 	}
@@ -144,19 +161,29 @@ int injectEventToButton(Button* b, SDL_Event* event)
 
 void removeButton(Button* b)
 {
-
+	int i;
+	for(i = 0; i<4; ++i)
+		deleteTexture(b->tex[i]);
+	free(b->text);
+	free(b);
 }
 
-void hoverButton(Button* b, Position c) 
+int hoverButton(Button* b, Position c) 
 {
 	if(!isButtonClicked(b)) {
 		if(mouseInButton(b,c)) {
-			b->state = BS_HOVER;	
+			b->state = BS_HOVER;
+			return 1;
 		}
 		else {
-			b->state = BS_DEFAULT;
+			if(b->state != BS_DEFAULT)
+			{
+				b->state = BS_DEFAULT;
+				return 1;
+			}
 		}
 	}
+	return 0;
 }
 
 int isButtonClicked(Button* b)
@@ -164,15 +191,24 @@ int isButtonClicked(Button* b)
 	return b->state == BS_PRESSED;
 }
 
-void clickedButton(Button* b, Position c, int pressed)
+int clickedButton(Button* b, Position c, int pressed)
 {
 	if(pressed) {
-		if(mouseInButton(b, c))
+		if(b->state != BS_PRESSED && mouseInButton(b, c))
+		{
 			b->state = BS_PRESSED;
+			return 1;
+		}
 	} else {
-		b->state = BS_DEFAULT;
-		hoverButton(b,c);
+		if(b->state == BS_PRESSED && mouseInButton(b, c)) {
+			b->state = BS_HOVER;
+			return 1;
+		}
+		else {
+			b->state = BS_DEFAULT;
+		}	
 	}
+	return 0;
 }
 
 int mouseInButton(Button* b, Position c)
