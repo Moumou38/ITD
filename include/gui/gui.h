@@ -9,6 +9,7 @@
 
 typedef struct {
 	GUI_WidgetType type;
+	int level;
 	union {
 		Button *button;
 		Text *text;
@@ -21,7 +22,9 @@ extern void GUI_Init();
 
 extern void GUI_Quit();
 
-extern void GUI_Draw();
+extern void GUI_DrawAll();
+
+extern void GUI_Draw(int level);
 
 extern void GUI_Clear();
 
@@ -29,10 +32,8 @@ extern void GUI_ProceedEvents(SDL_Event* event);
 
 extern int GUI_PollEvent(GUI_Event* gui); 
 
-extern void GUI_RegisterButton(Button* b);
+extern Button* GUI_CreateButton(unsigned int id, int level, char* text, SDL_Surface* image, int px, int py, int w, int h);
 
-extern Button* GUI_CreateButton(unsigned int id, char* text, SDL_Surface* image, int px, int py, int w, int h);
-
-extern Text* GUI_CreateText(unsigned int id, char* text, SDL_Color color, int px, int py, int w, int h);
+extern Text* GUI_CreateText(unsigned int id, int level, char* text, SDL_Color color, int px, int py, int w, int h);
 
 #endif

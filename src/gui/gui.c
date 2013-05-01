@@ -24,21 +24,28 @@ void GUI_Quit()
 	queue_delete(events);
 }
 
-void GUI_Draw()
+void GUI_DrawAll()
+{
+	GUI_Draw(0);
+}
+
+void GUI_Draw(int level)
 {
 	Data* d = list_getData(widgets, 0);
 	while(d != NULL)
 	{
 		GUI_Widget* w = (GUI_Widget*)d->value;
-		switch(w->type) {
-			case GUI_BUTTON:
-					drawButton(w->w.button);
-				break;
-			case GUI_TEXT:
-					drawText(w->w.text);
-				break;
-			default:
-				break;
+		if(level == 0 || (w->level & level)) {		
+			switch(w->type) {
+				case GUI_BUTTON:
+						drawButton(w->w.button);
+					break;
+				case GUI_TEXT:
+						drawText(w->w.text);
+					break;
+				default:
+					break;
+			}
 		}
 		d = d->next;
 	}
@@ -114,19 +121,21 @@ void GUI_RegisterButton(Button* b)
 	list_append(widgets, w);
 }
 
-Button* GUI_CreateButton(unsigned int id, char* text, SDL_Surface* image, int px, int py, int w, int h)
+Button* GUI_CreateButton(unsigned int id, int level, char* text, SDL_Surface* image, int px, int py, int w, int h)
 {
 	GUI_Widget* wid = malloc(sizeof(GUI_Widget));
 	wid->type = GUI_BUTTON;
+	wid->level = level;
 	wid->w.button = createButton(id, text, image, px, py, w, h);
 	list_append(widgets, wid);
 	return wid->w.button;
 }
 
-Text* GUI_CreateText(unsigned int id, char* text, SDL_Color color, int px, int py, int w, int h)
+Text* GUI_CreateText(unsigned int id, int level, char* text, SDL_Color color, int px, int py, int w, int h)
 {
 	GUI_Widget* wid = malloc(sizeof(GUI_Widget));
 	wid->type = GUI_TEXT;
+	wid->level = level;
 	wid->w.text = createText(id, text, color, px, py, w, h);
 	list_append(widgets, wid);
 	return wid->w.text;

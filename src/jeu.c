@@ -7,6 +7,8 @@ static unsigned int WINDOW_HEIGHT = 600;
 static const unsigned int BIT_PER_PIXEL = 32;
 static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
 
+int BTN_MAPS = 2, BTN_HELP = 3, BTN_EXIT = 4;
+
 void reshape() {
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glMatrixMode(GL_PROJECTION);
@@ -25,14 +27,22 @@ void setVideoMode() {
 	SDL_GL_SwapBuffers();
 }
 
+void initGUI()
+{
+	GUI_Init();
+	GUI_CreateButton(BTN_MAPS, MENU_GENERAL, "Maps", NULL,300,110,150,70);
+	GUI_CreateButton(BTN_HELP, MENU_GENERAL, "Aide", NULL,300,210,150,70);
+	GUI_CreateButton(BTN_EXIT, MENU_GENERAL, "Quitter", NULL,300,410,150,70);
+}
+
 void initSDL(){
 	if(-1 == SDL_Init(SDL_INIT_VIDEO)) {
 		fprintf(stderr, "Impossible d'initialiser la SDL. Fin du programme.\n");
 		exit(-1);
 	}
 	TTF_Init();
-	GUI_Init();
 	setVideoMode();
+	initGUI();
 }
 
 void launchGameWithMap(const char* mapfile)
@@ -102,12 +112,6 @@ int startMenu()
 
 MENU_CHOICE showMainMenu()
 {
-	GUI_Clear();
-	int BTN_MAPS = 2, BTN_HELP = 3, BTN_EXIT = 4;
-	GUI_CreateButton(BTN_MAPS, "Maps", NULL,300,110,150,70);
-	GUI_CreateButton(BTN_HELP, "Aide", NULL,300,210,150,70);
-	GUI_CreateButton(BTN_EXIT, "Quitter", NULL,300,410,150,70);
-
 	int val = 0;
 	int running = 1;
 	while(running) {
@@ -117,8 +121,8 @@ MENU_CHOICE showMainMenu()
 		glClear(GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-
-		GUI_Draw();
+	
+		GUI_Draw(MENU_GENERAL);
 		SDL_GL_SwapBuffers();
 
 		SDL_Event event;
@@ -225,7 +229,6 @@ void showHelpMenu()
 
 int play(Map* map)
 {
-	GUI_Clear();
 	List* towers = list_init();
 	List* monsters = list_init();
 	SDL_Color textColor = {255,0,0};
@@ -235,7 +238,7 @@ int play(Map* map)
 	char buff[64];
 	sprintf(buff, "Argent: %d", cash);
 	printf("%s\n", buff);
-	Text* cashtxt = GUI_CreateText(0, buff, textColor, 0,0, 150, 50);
+	Text* cashtxt = GUI_CreateText(0, MENU_GAME, buff, textColor, 0,0, 150, 50);
 	while(running)
 	{
 		Uint32 startTime = SDL_GetTicks();
@@ -251,7 +254,7 @@ int play(Map* map)
 		list_foreach(towers, drawTower);
 		
 		/* dessin de l'UI */
-		GUI_Draw();
+		GUI_Draw(MENU_GAME);
 
 		SDL_GL_SwapBuffers();
 		SDL_Event event;

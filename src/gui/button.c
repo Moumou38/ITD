@@ -24,7 +24,7 @@ Button* createButton(unsigned int id, char* text, SDL_Surface* image, int px, in
 		SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, blanc));
 		if(tmptext == NULL)
 		{
-			fprintf(stderr,"Erreur au chargement du bouton %s", text);
+			fprintf(stderr,"Erreur au chargement du bouton %s\n", text);
 			exit(-1);
 		}
 		b->tex[0] = loadTexture(tmptext);

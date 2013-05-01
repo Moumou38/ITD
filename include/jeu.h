@@ -29,7 +29,9 @@
 typedef enum {
 	MENU_EXIT = 0, /*!< Quitter le jeu */
 	MENU_MAP = 1, /*!< Affichage des maps */
-	MENU_HELP = 2 /*!< Affichage de l'aide */
+	MENU_HELP = 2, /*!< Affichage de l'aide */
+	MENU_GAME = 4, /*!< Menu en jeu */
+	MENU_GENERAL = 8
 } MENU_CHOICE;
 
 /*!
