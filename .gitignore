@@ -6,6 +6,7 @@
 .o
 *.so
 *.o
+bin/itd
 bin/*
 lib/lib
 lib/lib/*
