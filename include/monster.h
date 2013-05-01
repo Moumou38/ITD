@@ -31,6 +31,11 @@ typedef enum{
 	FLYER
 } TYPE_MONSTER;
 
+extern const int Normal;
+extern const int Fast;
+extern const int Slow;
+extern const int Flyer;
+
 
 /**
  * \struct Monster
