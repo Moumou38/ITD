@@ -90,6 +90,8 @@ extern void showHelpMenu();
  */
 extern int play(Map* map);
 
+extern void createWave(int level, List* monsters, Map* map);
+
 /*!
  * \fn extern void showEndMenu(int victory)
  * \brief Affiche le menu de victoire/défaite

@@ -231,7 +231,7 @@ int play(Map* map)
 {
 	List* towers = list_init();
 	List* monsters = list_init();
-	SDL_Color textColor = {255,0,0};
+	SDL_Color textColor = {255,255,255};
 	int cash = 100;
 	int wave = 0, state = 0;
 	int running = 1;
@@ -255,7 +255,6 @@ int play(Map* map)
 		
 		/* dessin de l'UI */
 		GUI_Draw(MENU_GAME);
-
 		SDL_GL_SwapBuffers();
 		SDL_Event event;
 		while(SDL_PollEvent(&event))
@@ -299,7 +298,7 @@ int play(Map* map)
 					state = 1;
 					running = 0;
 				}
-				//createWave(wave, monsters);
+				createWave(wave, monsters, map);
 			}
 			Data* t = list_getData(towers,0);
 			while(t != NULL)
@@ -333,6 +332,16 @@ int play(Map* map)
 	//deleteMap(map);
 	return state;
 }
+
+void createWave(int level, List* monsters, Map* map){
+	int i = 0;
+	for(i = 0; i<10; i++){
+		Monster* m = createMonster(NORMAL, map->nodes, -(i*1000*2));
+		list_append(monsters, m);
+	}
+	
+}
+
 
 void showEndMenu(int victory)
 {
