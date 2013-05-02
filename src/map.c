@@ -26,13 +26,13 @@ Map* loadMap(char const* map){
 
 	//Nom de l'image représentant la carte
 	fscanf(f, "%s", img);
-	printf("%s\n", img);
+	//printf("%s\n", img);
 	if (strcmp(img, "@ITD") != 0){
 		fprintf(stderr, "Le fichier n'est pas une carte valide. Fin du programme.\n");
 		return NULL;
 	}
 	fscanf(f, "%d", &num);
-	printf("Vous utilisez la version du fichier %d\n", num);
+	//printf("Vous utilisez la version du fichier %d\n", num);
 	if (num != 1){
 		fprintf(stderr, "La version du fichier n'est pas valide. Fin du programme.\n");
 		return NULL;
@@ -43,47 +43,47 @@ Map* loadMap(char const* map){
 
 	while(full == 0){
 		cnt = fscanf(f, "%s", img);
-		printf("%s\n", img);
+		//printf("%s\n", img);
 
 		if (strcmp(img, "carte") == 0){
 			fscanf(f, "%s", img);
-			printf("%s\n", img);
+			//printf("%s\n", img);
 			char* tmp = malloc(sizeof(char)*(7+strlen(img)+1));
 			sprintf(tmp,"images/%s", img);
 			m->ppm = loadImage(tmp);
 			free(tmp);
-			printf("juste après\n");
+			//printf("juste après\n");
 		}else if (strcmp(img, "energie") == 0){
 			fscanf(f, "%d", &num);
-			printf("%d\n", num);
+			//printf("%d\n", num);
 			energie = num;
 		}else if (strcmp(img, "chemin") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			printf("%d %d %d\n", r, g, b);
+			//printf("%d %d %d\n", r, g, b);
 			chemin.r = r;
 			chemin.g = g;
 			chemin.b = b;
 		}else if (strcmp(img, "noeud") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			printf("%d %d %d\n", r, g, b);
+			//printf("%d %d %d\n", r, g, b);
 			tete->color.r = r;
 			tete->color.g = g;
 			tete->color.b = b;
 		}else if (strcmp(img, "construct") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			printf("%d %d %d\n", r, g, b);
+			//printf("%d %d %d\n", r, g, b);
 			construct.r = r;
 			construct.g = g;
 			construct.b = b;
 		}else if (strcmp(img, "in") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			printf("%d %d %d\n", r, g, b);
+			//printf("%d %d %d\n", r, g, b);
 			in.r = r;
 			in.g = g;
 			in.b = b;
 		}else if (strcmp(img, "out") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			printf("%d %d %d\n", r, g, b);
+			//printf("%d %d %d\n", r, g, b);
 			out.r = r;
 			out.g = g;
 			out.b = b;
@@ -99,15 +99,20 @@ Map* loadMap(char const* map){
 		}
 
 	}
-	printf("nombre de node %d\n", num);
+	//printf("nombre de node %d\n", num);
 	Node* tmp = tete;
 	fscanf(f, "%f %f", &(tete->coord.x), &(tete->coord.y));
+	tete->coord.x = (tete->coord.x/m->ppm->w)*MAP_WIDTH;
+	tete->coord.y = (tete->coord.y/m->ppm->h)*MAP_HEIGHT +50.f;
+
 	for(i=1; i<num; i++){
 		Node* n = malloc(sizeof(Node));
 		n->next = NULL;
 		n->color = tete->color;
 		fscanf(f, "%f %f", &(n->coord.x), &(n->coord.y));
-		printf("%f %f\n", n->coord.x, n->coord.y);
+		n->coord.x = (n->coord.x/m->ppm->w)*MAP_WIDTH;
+		n->coord.y = (n->coord.y/m->ppm->h)*MAP_HEIGHT +50.f;
+		//printf("%f %f\n", n->coord.x, n->coord.y);
 		tmp->next = n;
 		tmp = n;
 	}
@@ -126,7 +131,7 @@ void drawNode(Node* n){
 		glBegin(GL_LINE_STRIP);
 			while(n != NULL){
 				glColor3ub(n->color.r, n->color.g, n->color.b);
-				glVertex2f(n->coord.x/800.f*MAP_WIDTH, n->coord.y/600.f*MAP_HEIGHT + 50.f);
+				glVertex2f(n->coord.x, n->coord.y);
 				//printf("%f %f\n", n->coord.x/100.f, n->coord.y/100.f);
 				n = n->next;
 				
