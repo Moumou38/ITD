@@ -1,5 +1,8 @@
 #include "map.h"
 
+const static float MAP_WIDTH = 600.f;
+const static float MAP_HEIGHT = 550.f;
+
 Map* loadMap(char const* map){
 	Map* m = malloc(sizeof(Map));
 	Node* tete = malloc(sizeof(Node));
@@ -49,8 +52,6 @@ Map* loadMap(char const* map){
 			sprintf(tmp,"images/%s", img);
 			m->ppm = loadImage(tmp);
 			free(tmp);
-			printf("n'importe nawak\n");
-			m->tex = loadTexture(m->ppm);
 			printf("juste après\n");
 		}else if (strcmp(img, "energie") == 0){
 			fscanf(f, "%d", &num);
@@ -111,6 +112,10 @@ Map* loadMap(char const* map){
 		tmp = n;
 	}
 	m->nodes = tete;
+	SDL_Surface* image = paintImage(m->ppm, construct);	
+	m->tex = loadTexture(image);
+	SDL_FreeSurface(image);
+
 	printf("map loaded\n");
 //	exit(0);
 	return m;
@@ -121,7 +126,7 @@ void drawNode(Node* n){
 		glBegin(GL_LINE_STRIP);
 			while(n != NULL){
 				glColor3ub(n->color.r, n->color.g, n->color.b);
-				glVertex2f(n->coord.x, n->coord.y);
+				glVertex2f(n->coord.x/800.f*MAP_WIDTH, n->coord.y/600.f*MAP_HEIGHT + 50.f);
 				//printf("%f %f\n", n->coord.x/100.f, n->coord.y/100.f);
 				n = n->next;
 				
@@ -152,13 +157,13 @@ void drawMap(Map* m){
 		glVertex2f(0.f, 50.f);
 
 		glTexCoord2f(0.f,1);
-		glVertex2f(0.f, 600.f);
+		glVertex2f(0.f, MAP_HEIGHT+50.f);
 
 		glTexCoord2f(1,1); 
-		glVertex2f(600.f, 600.f);
+		glVertex2f(MAP_WIDTH, MAP_HEIGHT+50.f);
 
 		glTexCoord2f(1, 0.f); 
-		glVertex2f(600.f, 50.f);
+		glVertex2f(MAP_WIDTH, 50.f);
 	glEnd();
 	
 	glBindTexture(GL_TEXTURE_2D, 0);

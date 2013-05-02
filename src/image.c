@@ -121,3 +121,24 @@ SDL_Surface* filterImage(SDL_Surface* s, SDL_Color filter)
 
 	return tmp;
 }
+
+SDL_Surface* paintImage(SDL_Surface* s, Color3ub color)
+{
+	SDL_Surface* tmp = SDL_ConvertSurface(s, s->format, s->flags);
+	Uint8 r,g,b,a;
+	int i, j;
+	Uint8* p = (Uint8*)tmp->pixels;
+	int bpp = s->format->BytesPerPixel;
+    
+    
+	for(i = 0; i<s->h; i++)
+		for(j = 0; j<s->w; j++)
+		{
+			Uint8 c = p[i* tmp->pitch+j*bpp];
+			SDL_GetRGBA(c, tmp->format,&r,&g,&b,&a);
+			if(r == 120 && g == 120 && b == 120)
+				PutPixel(tmp, j,i, SDL_MapRGB(tmp->format, color.r, color.g, color.b));
+		}
+
+	return tmp;
+}

@@ -49,7 +49,7 @@ void updateTower(Tower* t, GLuint elapsed)
 		case ROCKET :{
 			if(t->msecSinceLastShot>Rocket_Time){
 				if(t->target != NULL){
-					//shoot(t, t->target);
+					shoot(t, t->target);
 					t->msecSinceLastShot=0;
 				}
 			}
@@ -59,7 +59,7 @@ void updateTower(Tower* t, GLuint elapsed)
 		case LASER : {
 			if(t->msecSinceLastShot>Laser_Time){
 				if(t->target != NULL){
-					//shoot(t, t->target);
+					shoot(t, t->target);
 					t->msecSinceLastShot=0;
 				}
 			}
@@ -69,7 +69,7 @@ void updateTower(Tower* t, GLuint elapsed)
 		case MACHINEGUN :{
 			if(t->msecSinceLastShot>Machinegun_Time){
 				if(t->target != NULL){
-					//shoot(t, t->target);
+					shoot(t, t->target);
 					t->msecSinceLastShot=0;
 				}
 			}
@@ -79,7 +79,7 @@ void updateTower(Tower* t, GLuint elapsed)
 		case HYBRIDE : {
 			if(t->msecSinceLastShot>Hybride_Time){
 				if(t->target != NULL){
-					//shoot(t, t->target);
+					shoot(t, t->target);
 					t->msecSinceLastShot=0;
 				}
 			}
@@ -94,7 +94,24 @@ void updateTower(Tower* t, GLuint elapsed)
 
 void lookForBestTarget(Tower* t, List* monsters)
 {
+	if(t->target != NULL)
+		return;
 
+	Monster* best = NULL;
+	float bestDist = 0;
+	int i;
+	for(i = 0; i<list_size(monsters); i++)
+	{
+		Monster* m = list_get(monsters, 0);
+		float tmp = sqrt((m->coord.x - t->coord.x)*(m->coord.x - t->coord.x)+(m->coord.y - t->coord.y)*(m->coord.y - t->coord.y));
+		if(best == NULL || bestDist > tmp)
+		{
+			best = m;
+			bestDist = tmp;
+		}
+	}
+
+	t->target = best;
 }
 
 void shoot(Tower* t, Monster* target){
