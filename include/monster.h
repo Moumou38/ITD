@@ -45,6 +45,7 @@ extern const int Flyer;
  */
 typedef struct _monster{
 	int life;
+	int life_max;
 	GLuint tex;
 	TYPE_MONSTER type;
 	Position coord;

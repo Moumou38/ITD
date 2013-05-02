@@ -11,33 +11,61 @@ Monster* createMonster(TYPE_MONSTER type, Node* start, GLuint timer){
 	m->direction = start;
 	m->coord.x = 0;
 	m->coord.y = 0;
-	m->life = 50;
+	m->life = 51;
+	m->life_max = 100;
 	m->msecSinceLastMvt = timer;
 	return m;
 }
 
 void drawMonster(Monster* m)
 {
+	int size = 10.f;
 	glColor3ub(0,0,255);//pour le moment
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m->tex);
 
 	glBegin(GL_QUADS);
+		//Monstre
 		glTexCoord2f(0.f, 0.f);
 		glVertex2f(m->coord.x, m->coord.y);
 
 		glTexCoord2f(0.f,1.f);
-		glVertex2f(m->coord.x, m->coord.y+10.f);
+		glVertex2f(m->coord.x, m->coord.y+size);
 
 		glTexCoord2f(1.f,1.f); 
-		glVertex2f(m->coord.x+10.f, m->coord.y+10.f);
+		glVertex2f(m->coord.x+size, m->coord.y+size);
 
 		glTexCoord2f(1.f, 0.f); 
-		glVertex2f(m->coord.x+10.f, m->coord.y);
+		glVertex2f(m->coord.x+size, m->coord.y);
+
+		//Vie
+		
 	glEnd();
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
+
+	glBegin(GL_QUADS);
+		glColor3ub(0,255,0);
+		if(m->life <= 75*m->life_max/100 && m->life > 50*m->life_max/100)
+			glColor3ub(255,255,0);
+		else if(m->life <= 50*m->life_max/100 && m->life > 25*m->life_max/100)
+			glColor3ub(255,165,0);
+		else if(m->life <= 25*m->life_max/100)
+			glColor3ub(255,0,0);
+		
+		glTexCoord2f(0.f, 0.f);
+		glVertex2f(m->coord.x, m->coord.y-6.f);
+
+		glTexCoord2f(0.f,1.f);
+		glVertex2f(m->coord.x, m->coord.y-3.f);
+
+		glTexCoord2f(1.f,1.f); 
+		glVertex2f(m->coord.x+(size*m->life/m->life_max), m->coord.y-3.f);
+
+		glTexCoord2f(1.f, 0.f); 
+		glVertex2f(m->coord.x+(size*m->life/m->life_max), m->coord.y-6.f);
+	glEnd();
 }
 
 void updateMonster(Monster* m, GLuint elapsed)

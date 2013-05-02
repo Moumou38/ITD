@@ -343,7 +343,6 @@ void createWave(int level, List* monsters, Map* map){
 }
 
 
-
 void showEndMenu(int victory)
 {
 	if(victory)
