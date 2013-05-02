@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall
-LDFLAGS = `sdl-config --cflags --libs` -lm -framework OpenGL -framework SDL -lSDL_image
+LDFLAGS = `sdl-config --cflags --libs` -lm -framework OpenGL -lSDL_image -lSDL_ttf
 #decoment those lines to compile under mac
 #TODO = add mac ldflags.
 

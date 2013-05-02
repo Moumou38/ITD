@@ -48,13 +48,11 @@ int queue_pop(Queue* file)
 	Data* tmp, *next;
 	if(file == NULL || file->data == NULL)
 		return -1;
-
 	tmp = file->data;
 	
 	file->data = tmp->next;
 	if(file->last == tmp)
 		file->last = NULL;
-
 	free(tmp);
 	file->size--;
 	return 1;

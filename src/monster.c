@@ -5,14 +5,14 @@ const int Fast = 1;
 const int Slow  =4;
 const int Flyer = 2;
 
-Monster* createMonster(TYPE_MONSTER type, Node* start){
+Monster* createMonster(TYPE_MONSTER type, Node* start, GLuint timer){
 	Monster* m = malloc(sizeof(Monster));
 	m->type = type;
 	m->direction = start;
 	m->coord.x = 0;
 	m->coord.y = 0;
 	m->life = 50;
-
+	m->msecSinceLastMvt = timer;
 	return m;
 }
 
