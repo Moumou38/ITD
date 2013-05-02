@@ -14,12 +14,19 @@ void GUI_Init()
 {
 	events = queue_init();
 	widgets = list_init();
+	police = TTF_OpenFont("Ketchum.ttf", 65);
+	if(police == NULL)
+	{
+		fprintf(stderr,"Erreur au chargement de la police REZ.ttf");
+		exit(-1);
+	}
 	printf("GUI initialized\n");
 }
 
 void GUI_Quit()
 {
 	GUI_Clear();
+	TTF_CloseFont(police);
 	list_delete(widgets);
 	queue_delete(events);
 }

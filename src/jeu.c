@@ -229,6 +229,7 @@ void showHelpMenu()
 
 int play(Map* map)
 {
+	int placer_tour=0;
 	List* towers = list_init();
 	List* monsters = list_init();
 	SDL_Color textColor = {255,255,255};
@@ -275,10 +276,32 @@ int play(Map* map)
 							running = 0;
 							state = -1;
 							break;
+
+						case 't' :
+							placer_tour=1;
+							break; 
 						default : 
 							break;
 					}
 					break;
+
+				case SDL_MOUSEBUTTONDOWN:
+					switch(event.button.button){
+						case SDL_BUTTON_LEFT:
+							if(placer_tour == 1){
+								Position coord;
+								coord.x = event.button.x;
+								coord.y = event.button.y;
+								Tower* t = createTower(coord, ROCKET);
+								list_append(towers, t);
+								placer_tour = 0;
+							}
+
+							break;
+
+						default:
+							break;
+					}
 				  
 				default:
 					break;
@@ -305,26 +328,40 @@ int play(Map* map)
 			{	
 				Tower* tow = t->value;
 				if(tow->target == NULL)
-					tow->target = NULL;//lookForBestTarget(tow, monsters);
+					lookForBestTarget(tow, monsters);
 
 				updateTower(tow, SDL_GetTicks() - startTime);
 				
 				t = t->next;
 			}
 
-			t = list_getData(monsters,0);
-			while(t != NULL)
+			int i;
+			for(i=0;i<list_size(monsters);i++)
 			{	
-				Monster* mons = t->value;
-				updateMonster(mons, SDL_GetTicks() - startTime);
-				if(hasFinishedMonster(mons))
-				{
-					state = 0;
-					running = 0;
-				}
-				t = t->next;
+				Monster* mons = list_get(monsters, i);
+				if(isDead(mons)){
+					list_remove(monsters, i--);
+					cash += 10;
+					sprintf(buff, "Argent: %d", cash);
+					setText(cashtxt, buff);
+					deleteMonster(mons);
+				}else{
+					updateMonster(mons, SDL_GetTicks() - startTime);
+					if(hasFinishedMonster(mons))
+					{
+						state = 0;
+						running = 0;
+					}
+				}	
+				
 			}
 		}
+		Uint32 elapsed = SDL_GetTicks() - startTime;
+		if(elapsed < FRAMERATE_MILLISECONDS)
+		{
+			SDL_Delay(FRAMERATE_MILLISECONDS - elapsed);
+		}
+
 	}
 	
 	list_delete(towers);
@@ -336,7 +373,8 @@ int play(Map* map)
 void createWave(int level, List* monsters, Map* map){
 	int i = 0;
 	for(i = 0; i<10; i++){
-		Monster* m = createMonster(NORMAL, map->nodes, -(i*1000*2));
+		Monster* m = createMonster(NORMAL, map->nodes, -(i*300*2));
+		//printf("%p\n", m);
 		list_append(monsters, m);
 	}
 	

@@ -5,14 +5,14 @@ const int Fast = 1;
 const int Slow  =4;
 const int Flyer = 2;
 
-Monster* createMonster(TYPE_MONSTER type, Node* start, GLuint timer){
+Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer){
 	Monster* m = malloc(sizeof(Monster));
 	m->type = type;
 	m->direction = start;
 	m->coord.x = 0;
 	m->coord.y = 0;
-	m->life = 51;
-	m->life_max = 100;
+	m->life = 1000;
+	m->life_max = 1000;
 	m->msecSinceLastMvt = timer;
 	return m;
 }
@@ -71,6 +71,7 @@ void drawMonster(Monster* m)
 void updateMonster(Monster* m, GLuint elapsed)
 {
 	m->msecSinceLastMvt += elapsed;
+	//printf("%d\n", m->msecSinceLastMvt);
 	if(m->direction==NULL)
 		return;
 	//printf("%f %f %f %f\n", m->coord.x, m->coord.y, fabs(m->coord.x- m->direction->coord.x), fabs(m->coord.y-m->direction->coord.y));
@@ -91,13 +92,13 @@ void updateMonster(Monster* m, GLuint elapsed)
 				dy = dy/dist;
 				m->coord.x += dx;
 				m->coord.y += dy;
-				
+				//printf("%f %f\n", dx, dy);
 				m->msecSinceLastMvt = 0;
 			}
 		}
 		break;
 
-		case FAST : {
+		/*case FAST : {
 			if(m->msecSinceLastMvt> Fast){
 				float dx = m->direction->coord.x - m->coord.x;
 				float dy = m->direction->coord.y - m->coord.y;
@@ -140,12 +141,20 @@ void updateMonster(Monster* m, GLuint elapsed)
 				m->msecSinceLastMvt = 0;
 			}
 		}
-		break;
+		break;*/
 	}
 	
+}
+
+int isDead(Monster* m){
+	return (m->life <= 0);
 }
 
 int hasFinishedMonster(Monster* m)
 {
 	return (m->direction == NULL);
+}
+
+void deleteMonster(Monster* m){
+	free(m);
 }

@@ -32,6 +32,12 @@ typedef struct {
 	SDL_Color color;
 } Text;
 
+extern TTF_Font *police;
+
+extern void Text_Init();
+
+extern void Text_Quit();
+
 extern Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, int w, int h);
 
 extern void setText(Text* t, const char* text);

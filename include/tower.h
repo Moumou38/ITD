@@ -53,6 +53,7 @@ typedef struct _tower{
 	GLuint tex;
 	Position coord;
 	int size;
+	float range;
 	TYPE_TOWER type;
 	GLuint msecSinceLastShot;
 	Monster* target;
@@ -109,5 +110,7 @@ extern void lookForBestTarget(Tower* t, List* monsters);
  * \param target Pointeur vers le monstre ciblé
  */
 extern void shoot(Tower* t, Monster* target);
+
+extern int outOfRange(Position p1, Position p2, float range);
 
 #endif

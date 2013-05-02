@@ -1,17 +1,25 @@
 #include "gui/text.h"
 
+TTF_Font *police;
+
+void Text_Init()
+{
+	
+}
+
+void Text_Quit()
+{
+
+}
+
 Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, int w, int h)
 {    
 	if(text == NULL) {
 		return NULL;
 	}	
 
-	TTF_Font *police = TTF_OpenFont("Ketchum.ttf", 65);
-	if(police == NULL)
-	{
-		fprintf(stderr,"Erreur au chargement de la police REZ.ttf");
-		exit(-1);
-	}
+	
+	
 
 	Text* t = malloc(sizeof(Text));
 	t->text = NULL;
@@ -34,7 +42,7 @@ Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, i
 	t->size.x = w;
 	t->size.y = h;
 	t->color = color;
-	TTF_CloseFont(police);
+	
 	return t;
 }
 
@@ -50,13 +58,7 @@ void setText(Text* t, const char* text)
 	t->text = malloc(sizeof(char)*(len+1));
 	strcpy(t->text, text);
 
-	TTF_Font *police = TTF_OpenFont("REZ.ttf", 65);
-	if(police == NULL)
-	{
-		fprintf(stderr,"Erreur au chargement de la police REZ.ttf");
-		exit(-1);
-	}
-	SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, t->color));
+	SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Solid(police, text, t->color));
 	if(tmptext == NULL)
 	{
 		fprintf(stderr,"Erreur au chargement du texte %s", text);
@@ -64,6 +66,7 @@ void setText(Text* t, const char* text)
 	}
 	t->tex[0] = loadTexture(tmptext);
 	SDL_FreeSurface(tmptext);
+	//printf("edit\n");
 }
 
 void drawText(Text* t)

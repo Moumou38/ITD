@@ -15,6 +15,9 @@ Tower* createTower(Position coord, TYPE_TOWER type){
 	t->coord = coord;
 	t->type = type;
 	t->size = 20;
+	t->range = 100;
+	t->msecSinceLastShot = 0;
+	t->target = NULL;
 	return t;
 }
 
@@ -45,11 +48,26 @@ void drawTower(Tower* t)
 void updateTower(Tower* t, GLuint elapsed)
 {
 	t->msecSinceLastShot += elapsed;
-	switch(t->type){
+	if(t->msecSinceLastShot>Rocket_Time){
+		/*if(t->target != NULL){
+			//
+			t->target->life -= Rocket_Dmg;
+			t->msecSinceLastShot=0;
+		}*/
+		if(t->target != NULL){
+			shoot(t, t->target);
+			if(isDead(t->target) || outOfRange(t->coord, t->target->coord, t->range));
+				t->target = NULL;
+			//printf("shoot %p \n", t->target);
+			t->msecSinceLastShot = 0;
+		}
+	}
+	/*switch(t->type){
 		case ROCKET :{
 			if(t->msecSinceLastShot>Rocket_Time){
 				if(t->target != NULL){
-					shoot(t, t->target);
+					//shoot(t, t->target);
+					t->target->life -= Rocket_Dmg;
 					t->msecSinceLastShot=0;
 				}
 			}
@@ -88,7 +106,7 @@ void updateTower(Tower* t, GLuint elapsed)
 
 		default : 
 			break;
-	}
+	}*/
 
 }
 
@@ -104,17 +122,21 @@ void lookForBestTarget(Tower* t, List* monsters)
 	{
 		Monster* m = list_get(monsters, 0);
 		float tmp = sqrt((m->coord.x - t->coord.x)*(m->coord.x - t->coord.x)+(m->coord.y - t->coord.y)*(m->coord.y - t->coord.y));
-		if(best == NULL || bestDist > tmp)
+		if(tmp <= t->range && (best == NULL || bestDist > tmp))
 		{
 			best = m;
 			bestDist = tmp;
+			//printf("best %p\n", best);
 		}
 	}
-
+	
 	t->target = best;
 }
 
 void shoot(Tower* t, Monster* target){
+	if(t == NULL || target == NULL)
+		return;
+
 	if(t->type == ROCKET)
 		target->life -= Rocket_Dmg;
 	else if(t->type == LASER)
@@ -124,4 +146,9 @@ void shoot(Tower* t, Monster* target){
 	else if(t->type == HYBRIDE)
 		target->life -= Hybride_Dmg;
 
+}
+
+int outOfRange(Position p1, Position p2, float range){
+	float dist = sqrt((p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y));
+	return (dist > range);
 }

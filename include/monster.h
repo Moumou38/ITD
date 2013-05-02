@@ -50,7 +50,7 @@ typedef struct _monster{
 	TYPE_MONSTER type;
 	Position coord;
 	Node* direction;
-	GLuint msecSinceLastMvt;
+	GLint msecSinceLastMvt;
 } Monster;
 
 /*!
@@ -61,7 +61,7 @@ typedef struct _monster{
  * \param start Noeud de départ du monstre
  * \return Pointeur vers le monstre si la création a réussi, NULL sinon.
  */
-extern Monster* createMonster(TYPE_MONSTER type, Node* start, GLuint timer);
+extern Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer);
 
 /*!
  * \fn extern void drawMonster(Monster* m)
@@ -95,5 +95,7 @@ extern int hasFinishedMonster(Monster* m);
  * \param m Pointeur vers le monstre à supprimer
  */
 extern void deleteMonster(Monster* m);
+
+extern int isDead(Monster* m);
 
 #endif
