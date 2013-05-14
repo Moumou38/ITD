@@ -9,10 +9,10 @@ Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer){
 	Monster* m = malloc(sizeof(Monster));
 	m->type = type;
 	m->direction = start;
-	m->coord.x = 0;
-	m->coord.y = 0;
-	m->life = 1000;
-	m->life_max = 1000;
+	m->coord.x = start->coord.x;
+	m->coord.y = start->coord.y;
+	m->life = 100;
+	m->life_max = 100;
 	m->msecSinceLastMvt = timer;
 	return m;
 }
@@ -71,7 +71,7 @@ void drawMonster(Monster* m)
 void updateMonster(Monster* m, GLuint elapsed)
 {
 	m->msecSinceLastMvt += elapsed;
-	//printf("%d\n", m->msecSinceLastMvt);
+	//printf("%d %d\n", m->msecSinceLastMvt, elapsed);
 	if(m->direction==NULL)
 		return;
 	//printf("%f %f %f %f\n", m->coord.x, m->coord.y, fabs(m->coord.x- m->direction->coord.x), fabs(m->coord.y-m->direction->coord.y));

@@ -5,7 +5,7 @@ static unsigned int WINDOW_WIDTH = 800;
 static unsigned int WINDOW_HEIGHT = 600;
 
 static const unsigned int BIT_PER_PIXEL = 32;
-static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
+static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 33;
 
 int BTN_MAPS = 2, BTN_HELP = 3, BTN_EXIT = 4;
 
@@ -30,9 +30,12 @@ void setVideoMode() {
 void initGUI()
 {
 	GUI_Init();
+	SDL_Color textColor = {255,255,255};
 	GUI_CreateButton(BTN_MAPS, MENU_GENERAL, "Maps", NULL,300,110,150,70);
 	GUI_CreateButton(BTN_HELP, MENU_GENERAL, "Aide", NULL,300,210,150,70);
 	GUI_CreateButton(BTN_EXIT, MENU_GENERAL, "Quitter", NULL,300,410,150,70);
+	GUI_CreateText(0, MENU_GAME, "Argent: ", textColor, 0,0, FONT_32);
+	GUI_CreateText(0, MENU_GAME, "Wave: ", textColor, 300,0, FONT_32);
 }
 
 void initSDL(){
@@ -97,6 +100,7 @@ int startMenu()
 			Map* map = showMapMenu(map_list);
 			if(map != NULL)
 				play(map);
+			map = NULL;
 		} 
 		else if(choice == MENU_HELP)
 		{
@@ -234,16 +238,17 @@ int play(Map* map)
 	List* monsters = list_init();
 	SDL_Color textColor = {255,255,255};
 	int cash = 100;
+	int pause = 1;
 	int wave = 0, state = 0;
 	int running = 1;
 	char buff[64];
-	sprintf(buff, "Argent: %d", cash);
-	printf("%s\n", buff);
-	Text* cashtxt = GUI_CreateText(0, MENU_GAME, buff, textColor, 0,0, 150, 50);
+	sprintf(buff, "%d", cash);	
+	Text* cashtxt = GUI_CreateText(0, MENU_GAME, buff, textColor, 110,0, FONT_32);
+	sprintf(buff, "Appuyer sur 'P' pour lancer");
+	Text* wavetxt = GUI_CreateText(0, MENU_GAME, buff, textColor, 380,0, FONT_32);
 	while(running)
 	{
 		Uint32 startTime = SDL_GetTicks();
-
 		// dessin
 		glClear(GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_MODELVIEW);
@@ -256,8 +261,10 @@ int play(Map* map)
 		
 		/* dessin de l'UI */
 		GUI_Draw(MENU_GAME);
+
 		SDL_GL_SwapBuffers();
 		SDL_Event event;
+
 		while(SDL_PollEvent(&event))
 		{
 			if(event.type == SDL_QUIT) {
@@ -267,9 +274,15 @@ int play(Map* map)
 			switch(event.type) {
 				case SDL_KEYDOWN:
 			  		switch(event.key.keysym.sym){
-						case 's' :
-							if(wave == 0)
-								wave = 1;
+						case 'p' :
+							pause = 1-pause;
+							if(pause) {
+								sprintf(buff, "Appuyer sur 'P' pour reprendre");
+								setText(wavetxt, buff);
+							} else {
+								sprintf(buff, "%d", wave);
+								setText(wavetxt, buff);
+							}
 							break;
 						case 'q' : 
 						case SDLK_ESCAPE : 
@@ -289,9 +302,7 @@ int play(Map* map)
 					switch(event.button.button){
 						case SDL_BUTTON_LEFT:
 							if(placer_tour == 1){
-								Position coord;
-								coord.x = event.button.x;
-								coord.y = event.button.y;
+								Position coord = {event.button.x, event.button.y};
 								Tower* t = createTower(coord, ROCKET);
 								list_append(towers, t);
 								placer_tour = 0;
@@ -309,8 +320,7 @@ int play(Map* map)
 
 			
 		}
-
-		if(wave > 0)
+		if(pause != 1)
 		{
 			if(list_size(monsters) == 0)
 			{
@@ -322,31 +332,45 @@ int play(Map* map)
 					running = 0;
 				}
 				createWave(wave, monsters, map);
+				sprintf(buff, "%d", wave);
+				setText(wavetxt, buff);
 			}
 			Data* t = list_getData(towers,0);
 			while(t != NULL)
 			{	
+				Uint32 e = SDL_GetTicks() - startTime;
 				Tower* tow = t->value;
 				if(tow->target == NULL)
-					lookForBestTarget(tow, monsters);
+					lookForBestTarget(tow,monsters);
 
-				updateTower(tow, SDL_GetTicks() - startTime);
+				updateTower(tow,FRAMERATE_MILLISECONDS);
 				
 				t = t->next;
 			}
 
 			int i;
+			for(i=0;i<list_size(towers);i++)
+			{	
+				Tower* tow = list_get(towers, i);
+				if(tow->target != NULL && (isDead(tow->target) || outOfRange(tow->coord, tow->target->coord, tow->range)))
+					tow->target = NULL;
+			}
+
 			for(i=0;i<list_size(monsters);i++)
 			{	
 				Monster* mons = list_get(monsters, i);
+				if(mons == NULL)
+					continue;
+
 				if(isDead(mons)){
 					list_remove(monsters, i--);
 					cash += 10;
-					sprintf(buff, "Argent: %d", cash);
+					sprintf(buff, "%d", cash);
 					setText(cashtxt, buff);
 					deleteMonster(mons);
-				}else{
-					updateMonster(mons, SDL_GetTicks() - startTime);
+				} else {
+					Uint32 e = SDL_GetTicks() - startTime;
+					updateMonster(mons, FRAMERATE_MILLISECONDS);
 					if(hasFinishedMonster(mons))
 					{
 						state = 0;
@@ -361,7 +385,8 @@ int play(Map* map)
 		{
 			SDL_Delay(FRAMERATE_MILLISECONDS - elapsed);
 		}
-
+		//printf("elapsed: %dmsec %d %d\n", SDL_GetTicks() - startTime, elapsed, FRAMERATE_MILLISECONDS);
+		//exit(0);
 	}
 	
 	list_delete(towers);
@@ -377,7 +402,6 @@ void createWave(int level, List* monsters, Map* map){
 		//printf("%p\n", m);
 		list_append(monsters, m);
 	}
-	
 }
 
 

@@ -174,7 +174,7 @@ void drawMap(Map* m){
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 
-	drawNode(m->nodes);
+	//drawNode(m->nodes);
 }
 
 void deleteMap(Map* m){

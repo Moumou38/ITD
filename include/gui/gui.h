@@ -34,6 +34,6 @@ extern int GUI_PollEvent(GUI_Event* gui);
 
 extern Button* GUI_CreateButton(unsigned int id, int level, char* text, SDL_Surface* image, int px, int py, int w, int h);
 
-extern Text* GUI_CreateText(unsigned int id, int level, char* text, SDL_Color color, int px, int py, int w, int h);
+extern Text* GUI_CreateText(unsigned int id, int level, char* text, SDL_Color color, int px, int py, FONT_SIZE size);
 
 #endif

@@ -1,22 +1,54 @@
 #include "tower.h"
 
+const int Rocket_Range = 100;
+const int Laser_Range = 50;
+const int Machinegun_Range= 30;
+const int Hybrid_Range = 80;
+
 const int Rocket_Dmg = 10;
 const int Laser_Dmg = 5;
 const int Machinegun_Dmg= 3;
-const int Hybride_Dmg = 8;
+const int Hybrid_Dmg = 8;
 
-const int Rocket_Time= 20;
-const int Laser_Time = 10;
-const int Machinegun_Time = 5;
-const int Hybride_Time = 15;
+const int Rocket_Time= 200;
+const int Laser_Time = 100;
+const int Machinegun_Time = 100;
+const int Hybrid_Time = 150;
 
 Tower* createTower(Position coord, TYPE_TOWER type){
 	Tower* t = malloc(sizeof(Tower));
 	t->coord = coord;
 	t->type = type;
 	t->size = 20;
-	t->range = 100;
-	t->msecSinceLastShot = 0;
+	switch(type) {
+		case ROCKET:
+			t->range = Rocket_Range;
+			t->msecSinceLastShot = Rocket_Time;
+			t->damages = Rocket_Dmg;
+			t->reloadTime = Rocket_Time;
+			break;
+		case LASER:
+			t->range = Laser_Range;
+			t->msecSinceLastShot = Laser_Time;
+			t->damages = Laser_Dmg;
+			t->reloadTime = Laser_Time;
+			break;
+		case MACHINEGUN:
+			t->range = Machinegun_Range;
+			t->msecSinceLastShot = Machinegun_Time;
+			t->damages = Machinegun_Dmg;
+			t->reloadTime = Machinegun_Time;
+			break;
+		case HYBRID:
+			t->range = Hybrid_Range;
+			t->msecSinceLastShot = Hybrid_Time;
+			t->damages = Hybrid_Dmg;
+			t->reloadTime = Hybrid_Time;
+			break;
+		default:
+			break;
+	}
+	
 	t->target = NULL;
 	return t;
 }
@@ -43,23 +75,28 @@ void drawTower(Tower* t)
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
+	
+	if(t->msecSinceLastShot == 0 && t->target != NULL)
+	{
+		glColor3ub(255,0,0);
+		glBegin(GL_LINES);
+			glVertex2f(t->coord.x+t->size/2.f, t->coord.y+t->size/2.f);
+			glVertex2f(t->target->coord.x+5.f, t->target->coord.y+5.f);
+		glEnd();
+	}
 }
 
 void updateTower(Tower* t, GLuint elapsed)
 {
 	t->msecSinceLastShot += elapsed;
-	if(t->msecSinceLastShot>Rocket_Time){
-		/*if(t->target != NULL){
-			//
-			t->target->life -= Rocket_Dmg;
-			t->msecSinceLastShot=0;
-		}*/
+	if(t->msecSinceLastShot>t->reloadTime){
 		if(t->target != NULL){
 			shoot(t, t->target);
-			if(isDead(t->target) || outOfRange(t->coord, t->target->coord, t->range));
-				t->target = NULL;
-			//printf("shoot %p \n", t->target);
 			t->msecSinceLastShot = 0;
+			
+			if(isDead(t->target) || outOfRange(t->coord, t->target->coord, t->range)) {
+				t->target = NULL;
+			}
 		}
 	}
 	/*switch(t->type){
@@ -107,7 +144,6 @@ void updateTower(Tower* t, GLuint elapsed)
 		default : 
 			break;
 	}*/
-
 }
 
 void lookForBestTarget(Tower* t, List* monsters)
@@ -120,17 +156,19 @@ void lookForBestTarget(Tower* t, List* monsters)
 	int i;
 	for(i = 0; i<list_size(monsters); i++)
 	{
-		Monster* m = list_get(monsters, 0);
+		Monster* m = list_get(monsters, i);
 		float tmp = sqrt((m->coord.x - t->coord.x)*(m->coord.x - t->coord.x)+(m->coord.y - t->coord.y)*(m->coord.y - t->coord.y));
 		if(tmp <= t->range && (best == NULL || bestDist > tmp))
 		{
 			best = m;
 			bestDist = tmp;
-			//printf("best %p\n", best);
+			
 		}
 	}
 	
+	
 	t->target = best;
+	//printf("best %p\n", best);
 }
 
 void shoot(Tower* t, Monster* target){
@@ -143,8 +181,8 @@ void shoot(Tower* t, Monster* target){
 		target->life -= Laser_Dmg;
 	else if(t->type == MACHINEGUN)
 		target->life -= Machinegun_Dmg;
-	else if(t->type == HYBRIDE)
-		target->life -= Hybride_Dmg;
+	else if(t->type == HYBRID)
+		target->life -= Hybrid_Dmg;
 
 }
 

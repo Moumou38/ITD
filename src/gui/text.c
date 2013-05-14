@@ -1,18 +1,33 @@
 #include "gui/text.h"
 
-TTF_Font *police;
+TTF_Font *polices[MAX_FONTS];
 
 void Text_Init()
 {
-	
+	TTF_Font* police = TTF_OpenFont("Ketchum.ttf", 8);
+	if(police == NULL)
+	{
+		fprintf(stderr,"Erreur au chargement de la police REZ.ttf");
+		exit(-1);
+	}
+	polices[FONT_8] = police;
+
+	polices[FONT_12] = TTF_OpenFont("Ketchum.ttf", 12);
+	polices[FONT_24] = TTF_OpenFont("Ketchum.ttf", 24);
+	polices[FONT_32] = TTF_OpenFont("Ketchum.ttf", 32);
+	polices[FONT_48] = TTF_OpenFont("Ketchum.ttf", 48);
 }
 
 void Text_Quit()
 {
-
+	int i;
+	for(i = 0; i<MAX_FONTS; i++)
+	{
+		TTF_CloseFont(polices[i]);
+	}
 }
 
-Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, int w, int h)
+Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, FONT_SIZE size)
 {    
 	if(text == NULL) {
 		return NULL;
@@ -26,23 +41,24 @@ Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, i
 	int len = strlen(text);
 	t->text = malloc(sizeof(char)*(len+1));
 	strcpy(t->text, text);
-	SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Solid(police, text, color));
+	SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(polices[size], text, color));
 	if(tmptext == NULL)
 	{
 		fprintf(stderr,"Erreur au chargement du texte %s", text);
 		exit(-1);
 	}
 	t->tex[0] = loadTexture(tmptext);
-	SDL_FreeSurface(tmptext);
+	
 
 
 	t->id = id;
 	t->pos.x = px;
 	t->pos.y = py;
-	t->size.x = w;
-	t->size.y = h;
+	t->font = polices[size];
+	t->size.x = tmptext->w;
+	t->size.y = tmptext->h;
 	t->color = color;
-	
+	SDL_FreeSurface(tmptext);
 	return t;
 }
 
@@ -58,12 +74,15 @@ void setText(Text* t, const char* text)
 	t->text = malloc(sizeof(char)*(len+1));
 	strcpy(t->text, text);
 
-	SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Solid(police, text, t->color));
+	SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(t->font, text, t->color));
 	if(tmptext == NULL)
 	{
 		fprintf(stderr,"Erreur au chargement du texte %s", text);
 		exit(-1);
 	}
+	t->size.x = tmptext->w;
+	t->size.y = tmptext->h;
+
 	t->tex[0] = loadTexture(tmptext);
 	SDL_FreeSurface(tmptext);
 	//printf("edit\n");

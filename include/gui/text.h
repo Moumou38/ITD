@@ -22,6 +22,15 @@
 #include "image.h"
 #include "gui/enums.h"
 
+typedef enum {
+	FONT_8 = 0,
+	FONT_12 = 1,
+	FONT_24 = 2,
+	FONT_32 = 3,
+	FONT_48 = 4,
+	MAX_FONTS = 5
+} FONT_SIZE;
+
 
 typedef struct {
 	unsigned int id;
@@ -30,15 +39,16 @@ typedef struct {
 	GLuint tex[1];
 	Position pos, size;
 	SDL_Color color;
+	TTF_Font* font;
 } Text;
 
-extern TTF_Font *police;
+extern TTF_Font *polices[MAX_FONTS];
 
 extern void Text_Init();
 
 extern void Text_Quit();
 
-extern Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, int w, int h);
+extern Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, FONT_SIZE size);
 
 extern void setText(Text* t, const char* text);
 

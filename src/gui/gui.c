@@ -14,19 +14,14 @@ void GUI_Init()
 {
 	events = queue_init();
 	widgets = list_init();
-	police = TTF_OpenFont("Ketchum.ttf", 65);
-	if(police == NULL)
-	{
-		fprintf(stderr,"Erreur au chargement de la police REZ.ttf");
-		exit(-1);
-	}
+	Text_Init();	
 	printf("GUI initialized\n");
 }
 
 void GUI_Quit()
 {
 	GUI_Clear();
-	TTF_CloseFont(police);
+	Text_Quit();
 	list_delete(widgets);
 	queue_delete(events);
 }
@@ -138,12 +133,12 @@ Button* GUI_CreateButton(unsigned int id, int level, char* text, SDL_Surface* im
 	return wid->w.button;
 }
 
-Text* GUI_CreateText(unsigned int id, int level, char* text, SDL_Color color, int px, int py, int w, int h)
+Text* GUI_CreateText(unsigned int id, int level, char* text, SDL_Color color, int px, int py, FONT_SIZE size)
 {
 	GUI_Widget* wid = malloc(sizeof(GUI_Widget));
 	wid->type = GUI_TEXT;
 	wid->level = level;
-	wid->w.text = createText(id, text, color, px, py, w, h);
+	wid->w.text = createText(id, text, color, px, py, size);
 	list_append(widgets, wid);
 	return wid->w.text;
 }

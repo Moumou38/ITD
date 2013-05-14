@@ -30,18 +30,18 @@ typedef enum{
 	ROCKET,
 	LASER,
 	MACHINEGUN,
-	HYBRIDE
+	HYBRID
 } TYPE_TOWER;
 
 extern const int Rocket_Dmg;
 extern const int Laser_Dmg;
 extern const int Machinegun_Dmg;
-extern const int Hybride_Dmg;
+extern const int Hybrid_Dmg;
 
 extern const int Rocket_Time;
 extern const int Laser_Time;
 extern const int Machinegun_Time;
-extern const int Hybride_Time;
+extern const int Hybrid_Time;
 
 /**
  * \struct Tower
@@ -53,9 +53,11 @@ typedef struct _tower{
 	GLuint tex;
 	Position coord;
 	int size;
+	float damages;
 	float range;
 	TYPE_TOWER type;
 	GLuint msecSinceLastShot;
+	GLuint reloadTime;
 	Monster* target;
 } Tower;
 
