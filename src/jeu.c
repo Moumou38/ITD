@@ -518,6 +518,8 @@ int play(Map* map)
 				case SDL_MOUSEMOTION:
 					cursor.x = event.motion.x + map->camPos.x;
 					cursor.y = event.motion.y + map->camPos.y;
+					cursor.x -= ((int)cursor.x)%32 - 3;
+					cursor.y -= ((int)cursor.y)%32 - 19;
 					break;
 				  
 				default:

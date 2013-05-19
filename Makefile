@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -g
 LDFLAGS = -lSDL -lm -lGL -lGLU -lSDL_image -lSDL_ttf
 #decoment those lines to compile under mac
 #TODO = add mac ldflags.
