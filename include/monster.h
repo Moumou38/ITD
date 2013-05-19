@@ -18,7 +18,10 @@
 	#include <GL/glu.h>
 #endif
 
+#include <SDL/SDL.h>
+
 #include "tools.h"
+#include "resource.h"
 
 /*!
  * \enum TYPE_MONSTER
@@ -31,10 +34,10 @@ typedef enum{
 	FLYER
 } TYPE_MONSTER;
 
-extern const int Normal;
-extern const int Fast;
-extern const int Slow;
-extern const int Flyer;
+extern const float Normal;
+extern const float Fast;
+extern const float Slow;
+extern const float Flyer;
 
 
 /**
@@ -49,8 +52,16 @@ typedef struct _monster{
 	GLuint tex;
 	TYPE_MONSTER type;
 	Position coord;
+	Position size;
 	Node* direction;
-	GLint msecSinceLastMvt;
+	int msecSinceLastMvt;
+	int deltaOnPause;
+	int invulnerable;
+	float mvtTime;
+
+	float animOffset;
+	Uint32 animTimer;
+	int animUp;
 } Monster;
 
 /*!
@@ -64,21 +75,20 @@ typedef struct _monster{
 extern Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer);
 
 /*!
- * \fn extern void drawMonster(Monster* m)
+ * \fn extern void drawMonster(Monster* m, Position camPos)
  * \brief Dessine un monstre
  *
  * \param m Pointeur vers le monstre à créer
  */
-extern void drawMonster(Monster* m);
+extern void drawMonster(Monster* m, Position camPos);
 
 /*!
- * \fn extern void updateMonster(Monster* m, GLuint elapsedTime)
+ * \fn extern void updateMonster(Monster* m)
  * \brief Met à jour un monstre
  *
  * \param m Pointeur vers le monstre à mettre à jour
- * \param elapsedTime Temps écoulé
  */
-extern void updateMonster(Monster* m, GLuint elapsedTime);
+extern void updateMonster(Monster* m);
 
 /*!
  * \fn extern int hasFinishedMonster(Monster* m)
@@ -87,6 +97,10 @@ extern void updateMonster(Monster* m, GLuint elapsedTime);
  * \param m Pointeur vers le monstre
  */
 extern int hasFinishedMonster(Monster* m);
+
+extern void onPauseMonster(Monster* m);
+
+extern void onResumeMonster(Monster* m);
 
 /*!
  * \fn extern void deleteMonster(Monster* m)

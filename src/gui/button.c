@@ -1,16 +1,15 @@
 #include "gui/button.h"
 
-Button* createButton(unsigned int id, char* text, SDL_Surface* image, int px, int py, int w, int h)
+Button* createButton(unsigned int id, char* text, char* imagefile, SDL_Color color, int px, int py, int w, int h)
 {    
-		
-	SDL_Color blanc = {255, 255, 255};
-	SDL_Color rouge = {255, 150, 150};
-	SDL_Color rougef = {255, 0, 0};
-	SDL_Color gris = {100, 100, 100};
+	
+	SDL_Color hovered = {180, 180, 180};
+	SDL_Color pressed = {120, 120, 120};
+	SDL_Color gris = {50, 50, 50};
 	TTF_Font *police = TTF_OpenFont("Ketchum.ttf", 65);
 	if(police == NULL)
 	{
-		fprintf(stderr,"Erreur au chargement de la police REZ.ttf");
+		fprintf(stderr,"Erreur au chargement de la police Ketchum.ttf");
 		exit(-1);
 	}
 
@@ -21,7 +20,7 @@ Button* createButton(unsigned int id, char* text, SDL_Surface* image, int px, in
 		int len = strlen(text);
 		b->text = malloc(sizeof(char)*(len+1));
 		strcpy(b->text, text);
-		SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, blanc));
+		SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, color));
 		if(tmptext == NULL)
 		{
 			fprintf(stderr,"Erreur au chargement du bouton %s\n", text);
@@ -30,11 +29,11 @@ Button* createButton(unsigned int id, char* text, SDL_Surface* image, int px, in
 		b->tex[0] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 
-		tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, rouge));
+		tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, hovered));
 		b->tex[1] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 
-		tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, rougef));
+		tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, pressed));
 		b->tex[2] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 
@@ -43,21 +42,23 @@ Button* createButton(unsigned int id, char* text, SDL_Surface* image, int px, in
 		SDL_FreeSurface(tmptext);
 	}
 
-	if(image != NULL)
+	if(imagefile != NULL)
 	{
+		SDL_Surface* image = IMG_Load(imagefile);
 		b->tex[0] = loadTexture(image);
 
-		SDL_Surface* tmptext = filterImage(image, rouge);
+		SDL_Surface* tmptext = filterImage(image, hovered);
 		b->tex[1] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 
-		tmptext = filterImage(image, rougef);
+		tmptext = filterImage(image, pressed);
 		b->tex[2] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 
 		tmptext = filterImage(image, gris);
 		b->tex[3] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
+		SDL_FreeSurface(image);
 	}
 	b->id = id;
 	b->pos.x = px;
@@ -113,14 +114,19 @@ int injectEventToButton(Button* b, SDL_Event* event, GUI_ButtonEvent* guiev)
 							btnEv.action = GUI_BTEV_MOVED;
 							*guiev = btnEv;
 							break;
+						} else {
+							btnEv.action = GUI_BTEV_HOVER;
+							*guiev = btnEv;
+							break;
 						}
 					}
 
-					if(hoverButton(b, p))
-					{
-						btnEv.action = GUI_BTEV_MOVED;
-						*guiev = btnEv;
-					}
+					if(b->state == BS_HOVER)
+						if(!hoverButton(b, p))
+						{
+							btnEv.action = GUI_BTEV_LEFTHOVER;
+							*guiev = btnEv;
+						}
 				}					
 				break;
 			case SDL_MOUSEBUTTONDOWN:

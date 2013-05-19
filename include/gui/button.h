@@ -18,6 +18,8 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
+#include <SDL/SDL_image.h>
+
 #include "tools.h"
 #include "image.h"
 #include "gui/enums.h"
@@ -45,7 +47,7 @@ typedef struct {
 	ButtonFlags flags;
 } Button;
 
-extern Button* createButton(unsigned int id, char* text, SDL_Surface* image, int px, int py, int w, int h);
+extern Button* createButton(unsigned int id, char* text, char* image, SDL_Color color, int px, int py, int w, int h);
 
 extern Button* createEmptyButton(GLuint color);
 
@@ -57,10 +59,7 @@ extern int hoverButton(Button* b, Position p);
 
 extern int clickedButton(Button* b, Position p, int pressed);
 
-
 extern int isButtonClicked(Button* b);
-
-
 
 extern void removeButton(Button* b);
 

@@ -18,7 +18,10 @@ GLuint loadTexture(SDL_Surface* tex){
 			format = GL_RGB;
 			break;
 		case 4:
-			format = GL_BGRA;
+			if(tex->format->Rshift == 16)
+				format = GL_BGRA;
+			else
+				format = GL_RGBA;
 			break;
 		default:
 			fprintf(stderr, "Format des pixels de l’image non pris en charge\n");
@@ -32,7 +35,7 @@ GLuint loadTexture(SDL_Surface* tex){
 	return textures;
 }
 
-SDL_Surface* loadImage(char* image){
+SDL_Surface* loadImage(const char* image){
 	SDL_Surface* tex = IMG_Load(image);
 	if (tex == NULL){
 		fprintf(stderr, "Impossible d'afficher l'image. Fin du programme.\n");

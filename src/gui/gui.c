@@ -45,6 +45,9 @@ void GUI_Draw(int level)
 				case GUI_TEXT:
 						drawText(w->w.text);
 					break;
+				case GUI_IMAGE:
+						drawImage(w->w.image);
+					break;
 				default:
 					break;
 			}
@@ -63,6 +66,9 @@ void GUI_Clear()
 				break;
 			case GUI_TEXT:
 					removeText(w->w.text);
+				break;
+			case GUI_IMAGE:
+					removeImage(w->w.image);
 				break;
 			default:
 				break;
@@ -120,15 +126,17 @@ void GUI_RegisterButton(Button* b)
 	GUI_Widget* w = malloc(sizeof(GUI_Widget));
 	w->type = GUI_BUTTON;
 	w->w.button = b;
+	w->id = 0;
 	list_append(widgets, w);
 }
 
-Button* GUI_CreateButton(unsigned int id, int level, char* text, SDL_Surface* image, int px, int py, int w, int h)
+Button* GUI_CreateButton(unsigned int id, int level, char* text, char* image, SDL_Color color, int px, int py, int w, int h)
 {
 	GUI_Widget* wid = malloc(sizeof(GUI_Widget));
 	wid->type = GUI_BUTTON;
 	wid->level = level;
-	wid->w.button = createButton(id, text, image, px, py, w, h);
+	wid->id = id;
+	wid->w.button = createButton(id, text, image, color, px, py, w, h);
 	list_append(widgets, wid);
 	return wid->w.button;
 }
@@ -138,7 +146,55 @@ Text* GUI_CreateText(unsigned int id, int level, char* text, SDL_Color color, in
 	GUI_Widget* wid = malloc(sizeof(GUI_Widget));
 	wid->type = GUI_TEXT;
 	wid->level = level;
+	wid->id = id;
 	wid->w.text = createText(id, text, color, px, py, size);
 	list_append(widgets, wid);
 	return wid->w.text;
+}
+
+Image* GUI_CreateImage(unsigned int id, int level, const char* image, int px, int py, float sizex, float sizey)
+{
+	GUI_Widget* wid = malloc(sizeof(GUI_Widget));
+	wid->type = GUI_IMAGE;
+	wid->level = level;
+	wid->id = id;
+	wid->w.image = createImage(id, image, px, py, sizex, sizey);
+	list_append(widgets, wid);
+	return wid->w.image;
+}
+
+GUI_Widget* GUI_GetWidget(unsigned int id)
+{
+	int i;
+	for(i = 0; i<list_size(widgets); i++)
+	{
+		GUI_Widget* w = list_get(widgets, i);
+		if(w->id == id)
+			return w;
+	}
+	return NULL;
+}
+
+void GUI_RemoveWidget(unsigned int id)
+{
+	int i;
+	for(i = 0; i<list_size(widgets); i++)
+	{
+		GUI_Widget* w = list_get(widgets, i);
+		if(w->id == id)
+		{
+			switch(w->type) {
+			case GUI_BUTTON:
+					removeButton(w->w.button);
+				break;
+			case GUI_TEXT:
+					removeText(w->w.text);
+				break;
+			default:
+				break;
+			}
+			list_remove(widgets, i);
+			break;
+		}
+	}
 }

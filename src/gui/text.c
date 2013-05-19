@@ -182,7 +182,7 @@ void removeText(Text* t)
 	if(t == NULL)
 		return;
 
-	//deleteTexture(t->tex[0]);
+	deleteTexture(t->tex[0]);
 	if(t->text != NULL)
 		free(t->text);
 	

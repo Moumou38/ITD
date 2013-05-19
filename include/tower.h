@@ -18,9 +18,12 @@
 	#include <GL/glu.h>
 #endif
 
+#include <SDL/SDL.h>
+
 #include "list.h"
 #include "tools.h"
 #include "monster.h"
+#include "resource.h"
 
 /*!
  * \enum TYPE_TOWER
@@ -56,8 +59,11 @@ typedef struct _tower{
 	float damages;
 	float range;
 	TYPE_TOWER type;
-	GLuint msecSinceLastShot;
-	GLuint reloadTime;
+	int msecSinceLastShot;
+	int lastUpdate;
+	int reloadTime;
+	int selected;
+	float angle;
 	Monster* target;
 } Tower;
 
@@ -77,15 +83,16 @@ extern Tower* createTower(Position coord, TYPE_TOWER type);
  *
  * \param t Pointeur vers la tour à créer
  */
-extern void drawTower(Tower* t);
+extern void drawTower(Tower* t, Position camPos);
 
+extern void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Position camPos);
 /*!
- * \fn extern void updateTower(Tower* t, GLuint elapsedTime))
+ * \fn extern void updateTower(Tower* t))
  * \brief Met à jour une tour
  *
  * \param t Pointeur vers la tour à mettre à jour
  */
-extern void updateTower(Tower* t, GLuint elapsedTime);
+extern void updateTower(Tower* t);
 
 /*!
  * \fn extern void deleteTower(Tower* t)
@@ -114,5 +121,29 @@ extern void lookForBestTarget(Tower* t, List* monsters);
 extern void shoot(Tower* t, Monster* target);
 
 extern int outOfRange(Position p1, Position p2, float range);
+
+extern void onResumeTower(Tower* t);
+
+extern int getTowerCost(TYPE_TOWER type);
+
+extern void selectTower(Tower* t, Position coord);
+
+extern Position getTowerSize(TYPE_TOWER type);
+
+extern float getTowerRange(TYPE_TOWER type);
+
+extern GLuint getTowerTexture(TYPE_TOWER type);
+
+/*!
+ * \fn extern int collideWithTower(Tower* t, Position p, Position s)
+ * \brief Vérifie si une tour de coordonnée p et taille s est en collision avec t.
+ *
+ * \param t Tour à tester
+ * \param p position de la tour
+ * \param s taille de la tour
+ *
+ * \return 1 si la tour est en collision avec t, 0 sinon.
+ */
+extern int collideWithTower(Tower* t, Position p, Position s);
 
 #endif

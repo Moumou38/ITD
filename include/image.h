@@ -26,18 +26,6 @@
 
 #include "tools.h"
 
-/**
- * \struct Image
- * \brief Représente un tableau de pixels
- *
- * Comporte la taille de l'image (h,w) et un tableau de pixels de taille h*w
- */
-typedef struct {
-	unsigned int h; /*!< Hauteur de l'image */
-	unsigned int w; /*!< Largeur de l'image */
-	Color3ub* pixels; /*!< Données de l'image */
-} Image;
-
 /*!
  * \fn extern GLuint loadTexture(SDL_Surface* tex)
  * \brief Charge une texture
@@ -54,7 +42,7 @@ extern GLuint loadTexture(SDL_Surface* tex);
  * \param image Chemin de l'image que l'on veut charger
  * \return SDL_Surface contenant l'image que l'on a chargé
  */
-extern SDL_Surface* loadImage(char* image);
+extern SDL_Surface* loadImage(const char* image);
 
 /*!
  * \fn extern void deleteImage(SDL_Surface* tex)

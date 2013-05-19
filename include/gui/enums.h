@@ -12,7 +12,8 @@ typedef enum {
 typedef enum {
 	GUI_BUTTON,
 	GUI_TEXT,
-	GUI_TEXTAREA
+	GUI_TEXTAREA,
+	GUI_IMAGE
 } GUI_WidgetType;
 
 /* Buttons */

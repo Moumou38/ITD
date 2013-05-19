@@ -23,6 +23,10 @@
 #endif
 
 #define EPSILON 2
+
+#define MAP_WIDTH 600
+#define MAP_HEIGHT 550
+
 /**
  * \struct Color3ub
  * \brief Représente une couleur RGB sur 24bits..

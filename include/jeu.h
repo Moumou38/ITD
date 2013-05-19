@@ -21,6 +21,7 @@
 #include "map.h"
 #include "monster.h"
 #include "tower.h"
+#include "resource.h"
 
 /*!
  * \enum MENU_CHOICE
@@ -31,7 +32,7 @@ typedef enum {
 	MENU_MAP = 1, /*!< Affichage des maps */
 	MENU_HELP = 2, /*!< Affichage de l'aide */
 	MENU_GAME = 4, /*!< Menu en jeu */
-	MENU_GENERAL = 8
+	MENU_GENERAL = 8 /*!< Menu principal */
 } MENU_CHOICE;
 
 /*!
@@ -90,7 +91,27 @@ extern void showHelpMenu();
  */
 extern int play(Map* map);
 
+/*!
+ * \fn extern void createWave(int level, List* monsters, Map* map)
+ * \brief Créé une vague de monstres
+ *
+ * \param level niveau de la vague à créer
+ * \param monsters Liste de monstres à remplir
+ * \param map carte du jeu
+ */
 extern void createWave(int level, List* monsters, Map* map);
+
+/*!
+ * \fn extern int createWave(int level, List* monsters, Map* map)
+ * \brief Créé une vague de monstres
+ *
+ * \param level niveau de la vague à créer
+ * \param monsters Liste de monstres à remplir
+ * \param map carte du jeu
+ *
+ * \return 1 si la tour peut être placée, 0 sinon.
+ */
+extern int canPlaceTower(Map* map, List* towers, Position coord, Position size);
 
 /*!
  * \fn extern void showEndMenu(int victory)

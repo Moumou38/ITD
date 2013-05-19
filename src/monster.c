@@ -1,9 +1,10 @@
 #include "monster.h"
 
-const int Normal = 3;
-const int Fast = 1;
-const int Slow  =4;
-const int Flyer = 2;
+// number of movements every 1/10 sec.
+const float Normal = 2;
+const float Fast = 4;
+const float Slow  = 1;
+const float Flyer = 2;
 
 Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer){
 	Monster* m = malloc(sizeof(Monster));
@@ -13,37 +14,79 @@ Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer){
 	m->coord.y = start->coord.y;
 	m->life = 100;
 	m->life_max = 100;
-	m->msecSinceLastMvt = timer;
+	m->msecSinceLastMvt = SDL_GetTicks()+timer;
+	m->deltaOnPause = -timer;
+	m->invulnerable = 1;
+	Position norm = {18.f, 43.f}, fly = {51.f, 45.f};
+	m->size = norm;
+	switch(type) {
+		case NORMAL:
+			m->tex = getTexture("images/game/pokeball.png");
+			m->mvtTime = 100/Normal;
+			break;
+		case FLYER:
+			m->tex = getTexture("images/game/flyer.png");
+			m->size = fly;
+			while(m->direction->next != NULL)
+				m->direction = m->direction->next;
+			m->mvtTime = 100/Flyer;
+			break;
+		case FAST:
+			m->tex = getTexture("images/game/pokeballY.png");
+			m->mvtTime = 100/Fast;
+			break;
+		case SLOW:
+			m->tex = getTexture("images/game/pokeballB.png");
+			m->mvtTime = 100/Slow;
+			break;
+		default:
+			m->tex = 0;
+			break;
+	}
+	
+	m->animOffset = 0;
+	m->animTimer = SDL_GetTicks();
+	m->animUp = 1;
+
 	return m;
 }
 
-void drawMonster(Monster* m)
+void drawMonster(Monster* m, Position camPos)
 {
-	int size = 10.f;
-	glColor3ub(0,0,255);//pour le moment
+	if(m->invulnerable)
+		return;
+
+	if(m->coord.x-camPos.x < 0 || m->coord.x-camPos.x > MAP_WIDTH || m->coord.y-camPos.y-50.f < 0 || m->coord.y-camPos.y-50.f > MAP_HEIGHT)
+		return;
+
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m->tex);
-
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glPushMatrix();
+	glTranslatef(m->coord.x-camPos.x, m->coord.y-camPos.y, 0.f);
+	glPushMatrix();
+	glScalef(m->size.x, m->size.y, 1.f);
 	glBegin(GL_QUADS);
 		//Monstre
-		glTexCoord2f(0.f, 0.f);
-		glVertex2f(m->coord.x, m->coord.y);
+		glColor3ub(255,255,255);
+		glTexCoord2f((m->animOffset+0.01f)/5.f,1.f);
+		glVertex2f(-0.5, 0.5);
 
-		glTexCoord2f(0.f,1.f);
-		glVertex2f(m->coord.x, m->coord.y+size);
+		glTexCoord2f((m->animOffset+0.01f)/5.f, 0.01f);
+		glVertex2f(-0.5, -0.5);
 
-		glTexCoord2f(1.f,1.f); 
-		glVertex2f(m->coord.x+size, m->coord.y+size);
+		glTexCoord2f((m->animOffset+0.98f)/5.f, 0.01f);
+		glVertex2f(0.5, -0.5);
 
-		glTexCoord2f(1.f, 0.f); 
-		glVertex2f(m->coord.x+size, m->coord.y);
-
-		//Vie
-		
+		glTexCoord2f((m->animOffset+0.98f)/5.f,1.f);
+		glVertex2f(0.5, 0.5);
 	glEnd();
-	
+	glDisable(GL_BLEND);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
+	
+	glPopMatrix();
 
 	glBegin(GL_QUADS);
 		glColor3ub(0,255,0);
@@ -55,23 +98,44 @@ void drawMonster(Monster* m)
 			glColor3ub(255,0,0);
 		
 		glTexCoord2f(0.f, 0.f);
-		glVertex2f(m->coord.x, m->coord.y-6.f);
+		glVertex2f(-m->size.x/2.f, m->size.y/2.f+6.f);
 
 		glTexCoord2f(0.f,1.f);
-		glVertex2f(m->coord.x, m->coord.y-3.f);
+		glVertex2f(-m->size.x/2.f, m->size.y/2.f+3.f);
 
 		glTexCoord2f(1.f,1.f); 
-		glVertex2f(m->coord.x+(size*m->life/m->life_max), m->coord.y-3.f);
+		glVertex2f((m->size.x*m->life/m->life_max)-m->size.x/2.f, m->size.y/2.f+3.f);
 
 		glTexCoord2f(1.f, 0.f); 
-		glVertex2f(m->coord.x+(size*m->life/m->life_max), m->coord.y-6.f);
+		glVertex2f((m->size.x*m->life/m->life_max)-m->size.x/2.f, m->size.y/2.f+6.f);
 	glEnd();
+	glPopMatrix();
 }
 
-void updateMonster(Monster* m, GLuint elapsed)
+void updateMonster(Monster* m)
 {
-	m->msecSinceLastMvt += elapsed;
-	//printf("%d %d\n", m->msecSinceLastMvt, elapsed);
+	//m->msecSinceLastMvt += elapsed;
+	int now = SDL_GetTicks();
+
+	if(now-m->animTimer > 75)
+	{
+		m->animTimer = now;
+		if(m->animUp && m->animOffset == 4)
+		{
+			m->animOffset--;
+			m->animUp = 0;
+		} else if(m->animUp)
+			m->animOffset++;
+		else if(!m->animUp && m->animOffset == 0)
+		{
+			m->animOffset++;
+			m->animUp = 1;
+		} else if(!m->animUp)
+			m->animOffset--;
+
+	}
+	//printf("%d %d %d\n", m->msecSinceLastMvt, now, now-m->msecSinceLastMvt);
+	
 	if(m->direction==NULL)
 		return;
 	//printf("%f %f %f %f\n", m->coord.x, m->coord.y, fabs(m->coord.x- m->direction->coord.x), fabs(m->coord.y-m->direction->coord.y));
@@ -82,68 +146,20 @@ void updateMonster(Monster* m, GLuint elapsed)
 	if(m->direction==NULL)
 		return;
 
-	switch(m->type){
-		case NORMAL : {
-			if(m->msecSinceLastMvt> Normal){
-				float dx = m->direction->coord.x - m->coord.x;
-				float dy = m->direction->coord.y - m->coord.y;
-				float dist = sqrt(dx*dx + dy*dy);
-				dx = dx/dist;
-				dy = dy/dist;
-				m->coord.x += dx;
-				m->coord.y += dy;
-				//printf("%f %f\n", dx, dy);
-				m->msecSinceLastMvt = 0;
-			}
-		}
-		break;
-
-		/*case FAST : {
-			if(m->msecSinceLastMvt> Fast){
-				float dx = m->direction->coord.x - m->coord.x;
-				float dy = m->direction->coord.y - m->coord.y;
-				float dist = sqrt(dx*dx + dy*dy);
-				dx = dx/dist;
-				dy = dy/dist;
-				m->coord.x += dx*2;
-				m->coord.y += dy*2;
-				
-				m->msecSinceLastMvt = 0;
-			}
-		}
-		break;
-
-		case SLOW : {
-			if(m->msecSinceLastMvt> Slow){
-				float dx = m->direction->coord.x - m->coord.x;
-				float dy = m->direction->coord.y - m->coord.y;
-				float dist = sqrt(dx*dx + dy*dy);
-				dx = dx/dist;
-				dy = dy/dist;
-				m->coord.x += dx;
-				m->coord.y += dy;
-				
-				m->msecSinceLastMvt = 0;
-			}
-		}
-		break;
-
-		case FLYER : {
-			if(m->msecSinceLastMvt> Flyer){
-				float dx = m->direction->coord.x - m->coord.x;
-				float dy = m->direction->coord.y - m->coord.y;
-				float dist = sqrt(dx*dx + dy*dy);
-				dx = dx/dist;
-				dy = dy/dist;
-				m->coord.x += dx;
-				m->coord.y += dy;
-				
-				m->msecSinceLastMvt = 0;
-			}
-		}
-		break;*/
-	}
 	
+	
+	if((now-m->msecSinceLastMvt)> m->mvtTime){
+		m->invulnerable = 0;
+		float dx = m->direction->coord.x - m->coord.x;
+		float dy = m->direction->coord.y - m->coord.y;
+		float dist = sqrt(dx*dx + dy*dy);
+		dx = dx/dist;
+		dy = dy/dist;		
+		m->coord.x += dx;
+		m->coord.y += dy;
+		//printf("move\n");
+		m->msecSinceLastMvt = now;
+	}
 }
 
 int isDead(Monster* m){
@@ -153,6 +169,18 @@ int isDead(Monster* m){
 int hasFinishedMonster(Monster* m)
 {
 	return (m->direction == NULL);
+}
+
+void onPauseMonster(Monster* m)
+{
+	/*m->deltaOnPause = SDL_GetTicks()-m->msecSinceLastMvt;
+	printf("delta: %d\n", m->deltaOnPause);*/
+}
+
+void onResumeMonster(Monster* m)
+{
+	/*m->msecSinceLastMvt = SDL_GetTicks()+m->deltaOnPause;
+	printf("delta: %d\n", m->deltaOnPause);*/
 }
 
 void deleteMonster(Monster* m){

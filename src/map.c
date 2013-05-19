@@ -1,8 +1,5 @@
 #include "map.h"
 
-const static float MAP_WIDTH = 600.f;
-const static float MAP_HEIGHT = 550.f;
-
 Map* loadMap(char const* map){
 	Map* m = malloc(sizeof(Map));
 	Node* tete = malloc(sizeof(Node));
@@ -102,21 +99,24 @@ Map* loadMap(char const* map){
 	//printf("nombre de node %d\n", num);
 	Node* tmp = tete;
 	fscanf(f, "%f %f", &(tete->coord.x), &(tete->coord.y));
-	tete->coord.x = (tete->coord.x/m->ppm->w)*MAP_WIDTH;
-	tete->coord.y = (tete->coord.y/m->ppm->h)*MAP_HEIGHT +50.f;
-
+	/*tete->coord.x = (tete->coord.x/m->ppm->w)*MAP_WIDTH;
+	tete->coord.y = (tete->coord.y/m->ppm->h)*MAP_HEIGHT +50.f;*/
+	tete->coord.y += 50.f;
 	for(i=1; i<num; i++){
 		Node* n = malloc(sizeof(Node));
 		n->next = NULL;
 		n->color = tete->color;
 		fscanf(f, "%f %f", &(n->coord.x), &(n->coord.y));
-		n->coord.x = (n->coord.x/m->ppm->w)*MAP_WIDTH;
-		n->coord.y = (n->coord.y/m->ppm->h)*MAP_HEIGHT +50.f;
+		/*n->coord.x = (n->coord.x/m->ppm->w)*MAP_WIDTH;
+		n->coord.y = (n->coord.y/m->ppm->h)*MAP_HEIGHT +50.f;*/
+		n->coord.y += 50.f;
 		//printf("%f %f\n", n->coord.x, n->coord.y);
 		tmp->next = n;
 		tmp = n;
 	}
 	m->nodes = tete;
+	m->camPos.x = 0; m->camPos.y = 0;
+	m->camDir.x = 0; m->camDir.y = 0;
 	SDL_Surface* image = paintImage(m->ppm, construct);	
 	m->tex = loadTexture(image);
 	SDL_FreeSurface(image);
@@ -127,11 +127,11 @@ Map* loadMap(char const* map){
 
 }
 
-void drawNode(Node* n){
+void drawNode(Node* n, Position camPos){
 		glBegin(GL_LINE_STRIP);
 			while(n != NULL){
 				glColor3ub(n->color.r, n->color.g, n->color.b);
-				glVertex2f(n->coord.x, n->coord.y);
+				glVertex2f(n->coord.x-camPos.x, n->coord.y-camPos.y);
 				//printf("%f %f\n", n->coord.x/100.f, n->coord.y/100.f);
 				n = n->next;
 				
@@ -153,32 +153,92 @@ void dessinRepere(){
 
 void drawMap(Map* m){
 	//printf("begin\n");
+	
 	glColor3ub(255,255,255);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m->tex);
+	float texX = (MAP_WIDTH/(m->ppm->w*1.f));
+	float deltaX = 0.f;
+	if(m->camPos.x != 0)
+		deltaX = m->camPos.x/(m->ppm->w*1.f);
 
+	float texY = (MAP_HEIGHT/(m->ppm->h*1.f));
+	float deltaY = 0.f;
+
+	if(m->camPos.y != 0)
+		deltaY = m->camPos.y /(m->ppm->h*1.f);
+	
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.f, 0.f);
+		glTexCoord2f(deltaX, deltaY);
 		glVertex2f(0.f, 50.f);
 
-		glTexCoord2f(0.f,1);
+		glTexCoord2f(deltaX,texY+deltaY);
 		glVertex2f(0.f, MAP_HEIGHT+50.f);
 
-		glTexCoord2f(1,1); 
+		glTexCoord2f(texX+deltaX,texY+deltaY); 
 		glVertex2f(MAP_WIDTH, MAP_HEIGHT+50.f);
 
-		glTexCoord2f(1, 0.f); 
+		glTexCoord2f(texX+deltaX,deltaY); 
 		glVertex2f(MAP_WIDTH, 50.f);
 	glEnd();
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-
-	//drawNode(m->nodes);
+	//drawNode(m->nodes, m->camPos);
 }
 
-void deleteMap(Map* m){
+void deleteMap(Map* m)
+{
+	if(m == NULL)
+		return;
+
 	deleteImage(m->ppm);
 	deleteTexture(m->tex);
 	freeNode(&(m->nodes));
+}
+
+int collideWithMap(Map* m, Position pos, Position size)
+{
+	if(pos.x-m->camPos.x < 0 || (pos.x+size.x)-m->camPos.x >= MAP_WIDTH || pos.y- m->camPos.y < 0 || (pos.y+size.y)- m->camPos.y >= MAP_HEIGHT)
+		return 1;
+ 	
+	return 0;
+}
+
+void updateMap(Map* m)
+{
+	if(m == NULL)
+		return;
+
+	moveCamera(m, m->camDir);
+}
+
+void addCameraDirection(Map* m, Position pos)
+{
+	if(m == NULL)
+		return;
+
+	m->camDir.x += pos.x;
+	m->camDir.y += pos.y;
+}
+
+void moveCamera(Map* m, Position pos)
+{
+	if(m == NULL)
+		return;
+
+	m->camPos.x += pos.x;
+
+	if(m->camPos.x < 0)
+		m->camPos.x = 0;
+	else if(m->camPos.x+MAP_WIDTH >= m->ppm->w)
+		m->camPos.x = m->ppm->w-MAP_WIDTH;
+
+	m->camPos.y += pos.y;
+	if(m->camPos.y < 0)
+		m->camPos.y = 0;
+	else if(m->camPos.y+MAP_HEIGHT >= m->ppm->h)
+		m->camPos.y = m->ppm->h-MAP_HEIGHT;
+
+	//printf("%d %d %d %f\n", m->cameraY, m->cameraY+(int)MAP_HEIGHT, m->ppm->h, MAP_HEIGHT);
 }
