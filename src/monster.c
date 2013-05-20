@@ -23,6 +23,10 @@ Monster* createMonster(TYPE_MONSTER type, float life, Node* start, GLint timer){
 		case NORMAL:
 			m->tex = getTexture("images/game/pokeball.png");
 			m->mvtTime = 100/Normal;
+			m->resist.resistRocket = 8; 
+			m->resist.resistHybrid = 5;
+			m->resist.resistMachinegun = 6;
+			m->resist.resistLaser = 4;
 			break;
 		case FLYER:
 			m->tex = getTexture("images/game/flyer.png");
@@ -30,14 +34,26 @@ Monster* createMonster(TYPE_MONSTER type, float life, Node* start, GLint timer){
 			while(m->direction->next != NULL)
 				m->direction = m->direction->next;
 			m->mvtTime = 100/Flyer;
+			m->resist.resistRocket = 2; 
+			m->resist.resistHybrid = 3;
+			m->resist.resistMachinegun = 4;
+			m->resist.resistLaser = 1;
 			break;
 		case FAST:
 			m->tex = getTexture("images/game/pokeballY.png");
 			m->mvtTime = 100/Fast;
+			m->resist.resistRocket = 5; 
+			m->resist.resistHybrid = 2;
+			m->resist.resistMachinegun = 2;
+			m->resist.resistLaser = 3;
 			break;
 		case SLOW:
 			m->tex = getTexture("images/game/pokeballB.png");
 			m->mvtTime = 100/Slow;
+			m->resist.resistRocket = 10; 
+			m->resist.resistHybrid = 12;
+			m->resist.resistMachinegun = 13;
+			m->resist.resistLaser = 11;
 			break;
 		default:
 			m->tex = 0;

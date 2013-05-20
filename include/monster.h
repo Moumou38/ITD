@@ -39,7 +39,13 @@ extern const float Fast;
 extern const float Slow;
 extern const float Flyer;
 
-
+typedef struct _resist
+{
+	float resistRocket;
+	float resistHybrid;
+	float resistMachinegun;
+	float resistLaser;
+}ResistTower;
 /**
  * \struct Monster
  * \brief Représente un monstre ennemi
@@ -58,7 +64,7 @@ typedef struct _monster{
 	int deltaOnPause;
 	int invulnerable;
 	float mvtTime;
-
+	ResistTower resist;
 	float animOffset;
 	Uint32 animTimer;
 	int animUp;

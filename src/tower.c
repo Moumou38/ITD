@@ -193,13 +193,13 @@ void shoot(Tower* t, Monster* target){
 		return;
 
 	if(t->type == ROCKET)
-		target->life -= Rocket_Dmg;
+		target->life -= ((100-target->resist.resistRocket)*Rocket_Dmg)/100;
 	else if(t->type == LASER)
-		target->life -= Laser_Dmg;
+		target->life -= ((100-target->resist.resistRocket)*Laser_Dmg)/100;
 	else if(t->type == MACHINEGUN)
-		target->life -= Machinegun_Dmg;
+		target->life -= ((100-target->resist.resistRocket)*Machinegun_Dmg)/100;
 	else if(t->type == HYBRID)
-		target->life -= Hybrid_Dmg;
+		target->life -= ((100-target->resist.resistRocket)*Hybrid_Dmg)/100;
 
 }
 
