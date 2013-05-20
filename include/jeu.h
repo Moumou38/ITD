@@ -36,73 +36,73 @@ typedef enum {
 } MENU_CHOICE;
 
 /*!
- * \fn extern void launchGameWithMap(const char* map)
+ * \fn void launchGameWithMap(const char* map)
  * \brief Lance une partie directement avec la carte map
  *
  * \param map Carte à charger
  */
-extern void launchGameWithMap(const char* map);
+void launchGameWithMap(const char* map);
 
 /*!
- * \fn extern List* getMapList()
+ * \fn List* getMapList()
  * \brief Créer la liste des cartes
  *
  * \return La liste de cartes
  */
-extern List* getMapList();
+List* getMapList();
 
 /*!
- * \fn extern int startMenu()
+ * \fn int startMenu()
  * \brief Lance la boucle de menus
  *
  * \return -1 en cas d'erreur, 0 sinon.
  */
-extern int startMenu();
+int startMenu();
 
 /*!
- * \fn extern int showMainMenu()
+ * \fn int showMainMenu()
  * \brief Affiche le menu principal
  *
  * \return Option choisie
  */
-extern MENU_CHOICE showMainMenu();
+MENU_CHOICE showMainMenu();
 
 /*!
- * \fn extern Map* showMapMenu()
+ * \fn Map* showMapMenu()
  * \brief Affiche le menu de sélection de map
  * 
  * \return La carte chargée.
  */
-extern Map* showMapMenu();
+Map* showMapMenu();
 
 /*!
- * \fn extern void showHelpMenu()
+ * \fn void showHelpMenu()
  * \brief Affiche le menu d'aide
  */
-extern void showHelpMenu();
+void showHelpMenu();
 
 
 /*!
- * \fn extern int play(Map* map)
+ * \fn int play(Map* map)
  * \brief Boucle de jeu
  *
  * \param map Carte du jeu à afficher
  * \return 1 si victoire, 0 si défaite, -1 si quitte.
  */
-extern int play(Map* map);
+int play(Map* map);
 
 /*!
- * \fn extern void createWave(int level, List* monsters, Map* map)
+ * \fn void createWave(int level, List* monsters, Map* map)
  * \brief Créé une vague de monstres
  *
  * \param level niveau de la vague à créer
  * \param monsters Liste de monstres à remplir
  * \param map carte du jeu
  */
-extern void createWave(int level, List* monsters, Map* map);
+void createWave(int level, List* monsters, Map* map);
 
 /*!
- * \fn extern int createWave(int level, List* monsters, Map* map)
+ * \fn int createWave(int level, List* monsters, Map* map)
  * \brief Créé une vague de monstres
  *
  * \param level niveau de la vague à créer
@@ -111,14 +111,17 @@ extern void createWave(int level, List* monsters, Map* map);
  *
  * \return 1 si la tour peut être placée, 0 sinon.
  */
-extern int canPlaceTower(Map* map, List* towers, Position coord, Position size);
+int canPlaceTower(Map* map, List* towers, Position coord, Position size);
+
+
+void removeTower(List* towers, Tower* tower);
 
 /*!
- * \fn extern void showEndMenu(int victory)
+ * \fn void showEndMenu(int victory)
  * \brief Affiche le menu de victoire/défaite
  *
  * \param victory Entier différent de 0 si victoire.
  */
-extern void showEndMenu(int victory);
+void showEndMenu(int victory);
 
 #endif

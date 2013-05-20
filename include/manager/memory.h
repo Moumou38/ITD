@@ -1,5 +1,5 @@
-#ifndef MEMORY_POOL
-#define MEMORY_POOL
+#ifndef MEMORY_MANAGER
+#define MEMORY_MANAGER
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,6 +11,16 @@ typedef struct _allocatedMemory {
 	struct _allocatedMemory* next;
 } AllocatedMemory;
 
-void* allocate(size_t size);
+void* allocatePtr(size_t size);
+
+void deallocatePtr(void* ptr);
+
+void* grabPtr(void* ptr);
+
+void releasePtr(void* ptr);
+
+unsigned long int getAllocatedBytes();
+
+void clearMemoryManager();
 
 #endif

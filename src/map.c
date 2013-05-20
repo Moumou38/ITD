@@ -99,8 +99,9 @@ Map* loadMap(char const* map){
 		tmp = n;
 	}
 	m->nodes = tete;
-	m->camPos.x = 0; m->camPos.y = 0;
+	m->camPos.x = 0; m->camPos.y = 0; m->camPos.z = .5f;
 	m->camDir.x = 0; m->camDir.y = 0;
+	m->drawNodes = 0;
 
 	Color3ub old = {120,120,120};
 	SDL_Surface* image = swapColorsImage(m->ppm, old, construct);	
@@ -111,7 +112,7 @@ Map* loadMap(char const* map){
 
 }
 
-int nodeOnMap(Node* n, Position camPos)
+int nodeOnMap(Node* n, Vector3 camPos)
 {
 	if(n == NULL)
 		return 0;
@@ -124,7 +125,7 @@ int nodeOnMap(Node* n, Position camPos)
 	return 1;
 }
 
-void nodeXYCoordinates(Node* n, Position camPos, float* x, float* y)
+void nodeXYCoordinates(Node* n, Vector3 camPos, float* x, float* y)
 {
 	if(n->coord.x-camPos.x < 0)
 		*x = 0;
@@ -141,7 +142,7 @@ void nodeXYCoordinates(Node* n, Position camPos, float* x, float* y)
 			*y = n->coord.y-camPos.y;
 }
 
-void drawNode(Node* n, Position camPos){
+void drawNode(Node* n, Vector3 camPos){
 		Node* tmp = n;
 		glBegin(GL_LINE_STRIP);
 			while(n != NULL){
@@ -161,7 +162,7 @@ void drawNode(Node* n, Position camPos){
 					
 				}
 				*/
-				glVertex2f(n->coord.x-camPos.x, n->coord.y-camPos.y);
+				glVertex2f((n->coord.x-camPos.x), (n->coord.y-camPos.y));
 				n = n->next;
 				
 			}
@@ -175,7 +176,7 @@ void drawNode(Node* n, Position camPos){
 						n->coord.x-camPos.x > MAP_WIDTH || 
 						n->coord.y-camPos.y -50.f > MAP_HEIGHT)) {
 					glColor3ub(n->color.r, n->color.g, n->color.b);
-					glVertex2f(n->coord.x-camPos.x, n->coord.y-camPos.y);
+					glVertex2f((n->coord.x-camPos.x), (n->coord.y-camPos.y));
 				}
 				n = n->next;
 				
@@ -200,16 +201,16 @@ void drawMap(Map* m){
 	glColor3ub(255,255,255);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m->tex);
-	float texX = (MAP_WIDTH/(m->ppm->w*1.f));
+	float texX = MAP_WIDTH/(m->ppm->w*1.0f);//*m->camPos.z));
 	float deltaX = 0.f;
 	if(m->camPos.x != 0)
-		deltaX = m->camPos.x/(m->ppm->w*1.f);
+		deltaX = m->camPos.x/(m->ppm->w*1.0f);//*m->camPos.z);
 
-	float texY = (MAP_HEIGHT/(m->ppm->h*1.f));
+	float texY = MAP_HEIGHT/(m->ppm->h*1.0f);//*m->camPos.z));
 	float deltaY = 0.f;
 
 	if(m->camPos.y != 0)
-		deltaY = m->camPos.y /(m->ppm->h*1.f);
+		deltaY = m->camPos.y /(m->ppm->h*1.0f);//*m->camPos.z);
 	
 	glBegin(GL_QUADS);
 		glTexCoord2f(deltaX, deltaY);
@@ -227,7 +228,9 @@ void drawMap(Map* m){
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-	drawNode(m->nodes, m->camPos);
+
+	if(m->drawNodes)
+		drawNode(m->nodes, m->camPos);
 }
 
 void deleteMap(Map* m)
@@ -240,17 +243,28 @@ void deleteMap(Map* m)
 	freeList(&(m->nodes));
 }
 
-int collideWithMap(Map* m, Position pos, Position size, Position camPos)
+int collideWithMap(Map* m, Position pos, Position size, Vector3 camPos)
 {
 	pos.x -= size.x/2;
+	//pos.x /= camPos.z;
 	pos.y -= size.y/2;
 	pos.y -= 50.f;
+	//pos.y /= 
+
 	if(pos.x-m->camPos.x < 0 || (pos.x+size.x)-m->camPos.x >= MAP_WIDTH || pos.y- m->camPos.y < 0 || (pos.y+size.y)- m->camPos.y >= MAP_HEIGHT)
 		return 1;
 
+	glBegin(GL_QUADS);
+		glColor3ub(255,0,0);
+		glVertex2f((pos.x+2)-camPos.x			, (pos.y+2)-camPos.y +50.f);
+		glVertex2f((pos.x+size.x -2)-camPos.x	, (pos.y+2)-camPos.y +50.f);
+		glVertex2f((pos.x+size.x -2)-camPos.x	, (pos.y+size.y -2)-camPos.y +50.f);
+		glVertex2f((pos.x+2)-camPos.x			, (pos.y+size.y -2)-camPos.y +50.f);
+	glEnd();
+
 	int h, w;
-	for(w = pos.x+2; w<pos.x+size.x -2; w++)
-		for(h = pos.y+2; h<pos.y+size.y -2; h++)
+	for(w = (pos.x+2); w<(pos.x+size.x -2); w++)
+		for(h = (pos.y+2); h<(pos.y+size.y -2); h++)
 		{
 			Uint8 r,g,b,a;
 			GetPixel(m->ppm, w,h,&r,&g,&b,&a);
@@ -290,12 +304,12 @@ void moveCamera(Map* m, Position pos)
 	if(m->camPos.x < 0)
 		m->camPos.x = 0;
 	else if(m->camPos.x+MAP_WIDTH >= m->ppm->w)
-		m->camPos.x = m->ppm->w-MAP_WIDTH;
+		m->camPos.x = (m->ppm->w-MAP_WIDTH);
 
 	m->camPos.y += pos.y;
 	if(m->camPos.y < 0)
 		m->camPos.y = 0;
 	else if(m->camPos.y+MAP_HEIGHT >= m->ppm->h)
-		m->camPos.y = m->ppm->h-MAP_HEIGHT;
+		m->camPos.y = (m->ppm->h-MAP_HEIGHT);
 
 }

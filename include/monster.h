@@ -72,7 +72,7 @@ typedef struct _monster{
  * \param start Noeud de départ du monstre
  * \return Pointeur vers le monstre si la création a réussi, NULL sinon.
  */
-extern Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer);
+extern Monster* createMonster(TYPE_MONSTER type, float life, Node* start, GLint timer);
 
 /*!
  * \fn extern void drawMonster(Monster* m, Position camPos)
@@ -80,7 +80,7 @@ extern Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer);
  *
  * \param m Pointeur vers le monstre à créer
  */
-extern void drawMonster(Monster* m, Position camPos);
+extern void drawMonster(Monster* m, Vector3 camPos);
 
 /*!
  * \fn extern void updateMonster(Monster* m)

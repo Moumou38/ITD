@@ -20,7 +20,7 @@ Button* createButton(unsigned int id, char* text, char* imagefile, SDL_Color col
 		int len = strlen(text);
 		b->text = malloc(sizeof(char)*(len+1));
 		strcpy(b->text, text);
-		SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, color));
+		SDL_Surface* tmptext = TTF_RenderText_Blended(police, text, color);
 		if(tmptext == NULL)
 		{
 			fprintf(stderr,"Erreur au chargement du bouton %s\n", text);
@@ -29,15 +29,15 @@ Button* createButton(unsigned int id, char* text, char* imagefile, SDL_Color col
 		b->tex[0] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 
-		tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, hovered));
+		tmptext = TTF_RenderText_Blended(police, text, hovered);
 		b->tex[1] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 
-		tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, pressed));
+		tmptext = TTF_RenderText_Blended(police, text, pressed);
 		b->tex[2] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 
-		tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(police, text, gris));
+		tmptext = TTF_RenderText_Blended(police, text, gris);
 		b->tex[3] = loadTexture(tmptext);
 		SDL_FreeSurface(tmptext);
 	}
@@ -104,6 +104,7 @@ int injectEventToButton(Button* b, SDL_Event* event, GUI_ButtonEvent* guiev)
 			case SDL_MOUSEMOTION:
 				{
 					Position p = {event->motion.x, event->motion.y};
+					ButtonState old = b->state;
 					if(mouseInButton(b,p)) {
 						int x = event->motion.xrel;
 						int y = event->motion.yrel;
@@ -114,19 +115,21 @@ int injectEventToButton(Button* b, SDL_Event* event, GUI_ButtonEvent* guiev)
 							btnEv.action = GUI_BTEV_MOVED;
 							*guiev = btnEv;
 							break;
-						} else {
+						} else if(hoverButton(b,p)){
 							btnEv.action = GUI_BTEV_HOVER;
 							*guiev = btnEv;
 							break;
 						}
-					}
-
-					if(b->state == BS_HOVER)
-						if(!hoverButton(b, p))
+					} else {
+						
+						b->state = BS_DEFAULT;
+						if(b->state == BS_DEFAULT && old == BS_HOVER)
 						{
+							//printf("toto\n");
 							btnEv.action = GUI_BTEV_LEFTHOVER;
 							*guiev = btnEv;
 						}
+					}
 				}					
 				break;
 			case SDL_MOUSEBUTTONDOWN:

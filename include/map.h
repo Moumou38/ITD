@@ -33,7 +33,9 @@ typedef struct _map{
 	GLuint tex;
 	Node* nodes;
 	SDL_Surface* ppm;
-	Position camPos, camDir;
+	Vector3 camPos;
+	Position camDir;
+	int drawNodes;
 } Map;
 
 /*!
@@ -46,12 +48,12 @@ typedef struct _map{
 extern Map* loadMap(char const* map);
 
 /*!
- * \fn extern void drawNode(Node* n, Position camPos)
+ * \fn extern void drawNode(Node* n, Vector3 camPos)
  * \brief Dessine un noeud sur la carte
  *
  * \param n Noeud que l'on souhaite dessiner
  */
-extern void drawNode(Node* n, Position camPos);
+extern void drawNode(Node* n, Vector3 camPos);
 
 /*!
  * \fn extern void drawMap(Map* m)
@@ -79,7 +81,7 @@ extern void deleteMap(Map* m);
  *
  * \return 1 si la tour est en collision avec la map, 0 sinon.
  */
-extern int collideWithMap(Map* m, Position p, Position s, Position camPos);
+extern int collideWithMap(Map* m, Position p, Position s, Vector3 camPos);
 
 extern void updateMap(Map* m);
 

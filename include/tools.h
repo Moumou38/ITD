@@ -51,6 +51,19 @@ typedef struct _position{
 } Position;
 
 /**
+ * \struct Vector3
+ * \brief Représente une position en 3D
+ *
+ * Comporte une position en x (abscisse), une position en y (ordonnée) et une position en z (hauteur)
+ */
+typedef struct _Vector3{
+	float x;
+	float y;
+	float z;
+} Vector3;
+
+
+/**
  * \struct Node
  * \brief Représente une liste de noeuds
  *

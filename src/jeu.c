@@ -17,10 +17,14 @@ enum {
 	BTN_HYBRID,
 	BTN_EXIT_GAME,
 	BTN_LEAVE_HELP,
+	BTN_SELL,
 	TXT_CASH,
 	TXT_WAVE,
 	TXT_TOWERNAME,
-	TXT_COST
+	TXT_COST,
+	TXT_FIELD3,
+	TXT_FIELD4,
+	TXT_FIELD5
 };
 
 void reshape() {
@@ -53,10 +57,15 @@ void initGUI()
 	GUI_CreateButton(BTN_EXIT, MENU_GENERAL, "Quitter", NULL, textColor3,10,500,150,70);
 	GUI_CreateText(0, MENU_GAME, "Argent: ", textColor, 0,0, FONT_32);
 	GUI_CreateText(0, MENU_GAME, "Wave: ", textColor, 300,0, FONT_32);
-	GUI_CreateText(TXT_CASH, MENU_GAME, "a", textColor, 110,0, FONT_32);
-	GUI_CreateText(TXT_WAVE, MENU_GAME, "a", textColor, 380,0, FONT_32);
-	GUI_CreateText(TXT_TOWERNAME, MENU_GAME, "None", textColor, 625,250, FONT_32);
-	GUI_CreateText(TXT_COST, MENU_GAME, "Cost: 0", textColor, 625,300, FONT_32);
+	GUI_CreateText(TXT_CASH, MENU_GAME, "", textColor, 110,0, FONT_32);
+	GUI_CreateText(TXT_WAVE, MENU_GAME, "", textColor, 380,0, FONT_32);
+	GUI_CreateText(TXT_TOWERNAME, MENU_GAME, "", textColor, 625,300, FONT_24);
+	GUI_CreateText(TXT_COST, MENU_GAME, "", textColor, 625,330, FONT_24);
+	GUI_CreateText(TXT_FIELD3, MENU_GAME, "", textColor, 625,360, FONT_24);
+	GUI_CreateText(TXT_FIELD4, MENU_GAME, "", textColor, 625,390, FONT_24);
+	GUI_CreateText(TXT_FIELD5, MENU_GAME, "", textColor,680,420, FONT_24);
+	GUI_CreateButton(BTN_SELL, MENU_GAME, "Sell", NULL, textColor2, 625,420,50,30);
+
 	GUI_CreateButton(BTN_ROCKET, MENU_GAME, NULL, "images/menus/rocket.png", textColor, 625,110,50,50);
 	GUI_CreateButton(BTN_LASER, MENU_GAME, NULL, "images/menus/laser.png", textColor, 700,110,50,50);
 	GUI_CreateButton(BTN_MACHINEGUN, MENU_GAME, NULL, "images/menus/machinegun.png", textColor, 625,185,50,50);
@@ -90,7 +99,6 @@ void initGUI()
 	GUI_CreateText(0, MENU_HELP, "et une bonne cadence de tir mais occasionnent peu de degats. ", textColor, 10,540, FONT_24);
 
 	GUI_CreateButton(BTN_LEAVE_HELP, MENU_HELP, "Ok", NULL, textColor2, 680,480,100,100);
-
 }
 
 void initSDL(){
@@ -100,6 +108,8 @@ void initSDL(){
 	}
 	TTF_Init();
 	setVideoMode();
+	SDL_WM_SetCaption("ITD", NULL);
+
 	initGUI();
 	initResourcesManager();
 }
@@ -145,8 +155,6 @@ int startMenu()
 {
 	initSDL();
 	List* map_list = getMapList();
-	SDL_WM_SetCaption("ITD", NULL);
-	
 	int choice;
 	do {
 		choice = showMainMenu();
@@ -350,7 +358,7 @@ int play(Map* map)
 	SDL_Color textColor = {255,255,255};
 	int cash = 100;
 	int pause = 1;
-	int wave = 0, state = 0;
+	int wave = 0, state = 0, left = 0, right = 0, up = 0, down = 0;
 	int running = 1;
 	char buff[64];
 
@@ -362,12 +370,22 @@ int play(Map* map)
 	Text* costtxt = tmp->w.text;
 	tmp = GUI_GetWidget(TXT_TOWERNAME);
 	Text* nametxt = tmp->w.text;
+	tmp = GUI_GetWidget(TXT_FIELD3);
+	Text* field3txt = tmp->w.text;
+	tmp = GUI_GetWidget(TXT_FIELD4);
+	Text* field4txt = tmp->w.text;
+	tmp = GUI_GetWidget(TXT_FIELD5);
+	Text* field5txt = tmp->w.text;
+	tmp = GUI_GetWidget(BTN_SELL);
+	Button* sellbtn = tmp->w.button;
+
+	Tower* selectedTower = NULL;
 
 	sprintf(buff, "%d", cash);
 	setText(cashtxt, buff);
-	sprintf(buff, "Appuyer sur 'P' pour lancer");
+	sprintf(buff, "Appuyer sur 'P' pour lancer ");
 	setText(wavetxt, buff);
-	
+
 	Position cursor;
 	int tmpint = 0;
 	while(running)
@@ -397,8 +415,6 @@ int play(Map* map)
 
 		if(placer_tour) {
 			Position size = getTowerSize(placer_type);
-			//Position p = {cursor.x + map->camPos.x - ( ((int)cursor.x)%32 - 1), cursor.y + map->camPos.y - (((int)cursor.y)%32 - 18)};
-			//canPlaceTower(map, towers, p, size);
 			canPlaceTower(map, towers, cursor, size);
 			drawTower2(placer_type, cursor, 0.f, 1, map->camPos);
 		}
@@ -417,7 +433,7 @@ int play(Map* map)
 			while(GUI_PollEvent(&gui)) {
 				switch(gui.type) {
 					case GUI_ET_BUTTON:
-							if(gui.button.action == GUI_BTEV_PRESSED) {
+							if(gui.button.action == GUI_BTEV_RELEASED) {
 								if(gui.button.id == BTN_EXIT_GAME)
 									running = 0;
 								else if(gui.button.id == BTN_ROCKET) {
@@ -432,12 +448,23 @@ int play(Map* map)
 								else if(gui.button.id == BTN_HYBRID) {
 									placer_tour = 1; placer_type = HYBRID;
 								}
-							} else if(gui.button.action == GUI_BTEV_HOVER) {
+								else if(gui.button.id == BTN_SELL) {
+									if(selectedTower != NULL)
+									{
+										int give = (int)(getTowerCost(selectedTower->type)*3/4.f);
+										cash += give;
+										sprintf(buff, "%d", cash);
+										setText(cashtxt, buff);
+										removeTower(towers, selectedTower);
+										selectedTower = NULL;
+									}
+								}
+							} else if(gui.button.action == GUI_BTEV_HOVER) { 
 								if(gui.button.id == BTN_ROCKET) {
 									if(placer_tour != 1 && hover_type != ROCKET) {
 										hover_type = ROCKET;
-										setText(nametxt, "Rocket");
-										sprintf(buff,"Cost: %d", getTowerCost(ROCKET));
+										setText(nametxt, "Rocket ");
+										sprintf(buff,"Cost: %d ", getTowerCost(ROCKET));
 										setText(costtxt, buff);
 									}
 									//placer_tour = 1;
@@ -445,8 +472,8 @@ int play(Map* map)
 								else if(gui.button.id == BTN_LASER) {
 									if(placer_tour != 1 && hover_type != LASER) {
 										hover_type = LASER;
-										setText(nametxt, "Laser");
-										sprintf(buff,"Cost: %d", getTowerCost(LASER));
+										setText(nametxt, "Laser ");
+										sprintf(buff,"Cost: %d ", getTowerCost(LASER));
 										setText(costtxt, buff);
 									}
 									//placer_tour = 1;
@@ -454,8 +481,8 @@ int play(Map* map)
 								else if(gui.button.id == BTN_MACHINEGUN) {
 									if(placer_tour != 1 && hover_type != MACHINEGUN) {
 										hover_type = MACHINEGUN;
-										setText(nametxt, "Machinegun");
-										sprintf(buff,"Cost: %d", getTowerCost(MACHINEGUN));
+										setText(nametxt, "Machinegun ");
+										sprintf(buff,"Cost: %d ", getTowerCost(MACHINEGUN));
 										setText(costtxt, buff);
 									}
 									//placer_tour = 1;
@@ -463,8 +490,8 @@ int play(Map* map)
 								else if(gui.button.id == BTN_HYBRID) {
 									if(placer_tour != 1 && hover_type != HYBRID) {
 										hover_type = HYBRID;
-										setText(nametxt, "Hybrid");
-										sprintf(buff,"Cost: %d", getTowerCost(HYBRID));
+										setText(nametxt, "Hybrid ");
+										sprintf(buff,"Cost: %d ", getTowerCost(HYBRID));
 										setText(costtxt, buff);
 									}
 									//placer_tour = 1;
@@ -474,9 +501,8 @@ int play(Map* map)
 								if(gui.button.id == BTN_ROCKET || gui.button.id == BTN_LASER || gui.button.id == BTN_MACHINEGUN || gui.button.id == BTN_HYBRID) {
 									if(placer_tour != 1 && hover_type != -1) {
 										hover_type = -1;
-										setText(nametxt, "None");
-										sprintf(buff,"No cost");
-										setText(costtxt, buff);
+										setText(nametxt, "");
+										setText(costtxt, "");
 									}
 								}
 							}
@@ -491,7 +517,7 @@ int play(Map* map)
 						case SDLK_p:
 							pause = 1-pause;
 							if(pause) {
-								sprintf(buff, "Appuyer sur 'P' pour reprendre");
+								sprintf(buff, "Appuyer sur 'P' pour reprendre ");
 								setText(wavetxt, buff);
 								list_foreach(monsters, onPauseMonster);
 							} else {
@@ -501,26 +527,31 @@ int play(Map* map)
 								list_foreach(towers, onResumeTower);
 							}
 							break;
+						case SDLK_n:
+							map->drawNodes = 1-map->drawNodes;
+							break;
 						case SDLK_LEFT:
-							{
+							if(!left) {
 								Position p = {-10.f, 0};
 								addCameraDirection(map, p);
+								left = 1;
 							}
 							break;
 						case SDLK_RIGHT:
-							{
+							if(!right) {
 								Position p = {10.f, 0};
 								addCameraDirection(map, p);
+								right = 1;							
 							}
 							break;
 						case SDLK_UP:
-							{
+							if(!up) { up = 1;
 								Position p = {0,-10.f};
 								addCameraDirection(map, p);
 							}
 							break;
 						case SDLK_DOWN:
-							{
+							if(!down) { down = 1;
 								Position p = {0, 10.f};
 								addCameraDirection(map, p);
 							}
@@ -532,25 +563,25 @@ int play(Map* map)
 				case SDL_KEYUP:
 					switch(event.key.keysym.sym){
 						case SDLK_LEFT:
-								{
+								if(left) { left = 0;
 									Position p = {10.f, 0};
 									addCameraDirection(map, p);
 								}
 								break;
 							case SDLK_RIGHT:
-								{
+								if(right) { right = 0;
 									Position p = {-10.f, 0};
 									addCameraDirection(map, p);
 								}
 								break;
 							case SDLK_UP:
-								{
+								if(up) { up = 0;
 									Position p = {0,10.f};
 									addCameraDirection(map, p);
 								}
 								break;
 							case SDLK_DOWN:
-								{
+								if(down) { down = 0;
 									Position p = {0,-10.f};
 									addCameraDirection(map, p);
 								}
@@ -562,9 +593,7 @@ int play(Map* map)
 				case SDL_MOUSEBUTTONDOWN:
 					switch(event.button.button){
 						case SDL_BUTTON_LEFT:
-							//printf("clic\n");
 							if(placer_tour == 1){
-								//printf("placer\n");
 								Position size = getTowerSize(placer_type);
 								Position coord = {event.button.x+map->camPos.x, event.button.y+map->camPos.y};
 								coord.x -= ((int)coord.x)%32 - 33;
@@ -584,16 +613,44 @@ int play(Map* map)
 							else {
 								Position coord = {event.button.x+map->camPos.x, event.button.y+map->camPos.y};
 								int i;
+								setText(nametxt, "");
+								setText(costtxt, "");
+								setText(field3txt, "");
+								setText(field4txt, "");
+								setText(field5txt, "");
 								for(i = 0; i<list_size(towers); i++)
 								{
 									Tower* t = list_get(towers, i);
 									selectTower(t, coord);
+									if(t->selected) {
+										sprintf(buff, "%s", getTowerName(t->type));
+										setText(nametxt, buff);
+										sprintf(buff, "Portee: %d ", (int)t->range);
+										setText(costtxt, buff);
+										sprintf(buff, "Degats: %d ", (int)t->damages);
+										setText(field3txt, buff);
+										sprintf(buff, "Cooldowns: %d ", t->reloadTime);
+										setText(field4txt, buff);
+										sprintf(buff, "pour %d ", (int)(getTowerCost(t->type)*3/4.f));
+										setText(field5txt, buff);
+										selectedTower = t;
+									}
 								}
 							}
 
 							break;
 						case SDL_BUTTON_RIGHT:
 							placer_tour = 0;
+							break;
+						case SDL_BUTTON_WHEELUP:
+								map->camPos.z += 0.1f;
+								if(map->camPos.z > 1.f)
+									map->camPos.z = 1.f;
+							break;
+						case SDL_BUTTON_WHEELDOWN:
+								map->camPos.z -= 0.1f;
+								if(map->camPos.z < .5f)
+									map->camPos.z = .5f;
 							break;
 						default:
 							break;
@@ -602,10 +659,9 @@ int play(Map* map)
 				case SDL_MOUSEMOTION:
 					cursor.x = event.motion.x + map->camPos.x;
 					cursor.y = event.motion.y + map->camPos.y;
-					cursor.x -= ((int)cursor.x)%32 - 33;
-					cursor.y -= ((int)cursor.y)%32 - 18;
+					cursor.x -= ((int)cursor.x)%32 - 33;//*map->camPos.z;
+					cursor.y -= ((int)cursor.y)%32 - 18;//*map->camPos.z;
 					break;
-				  
 				default:
 					break;
 			}
@@ -660,7 +716,7 @@ int play(Map* map)
 
 				if(isDead(mons)){
 					list_remove(monsters, i--);
-					cash += 10;
+					cash += 5+2*(wave-1);
 					sprintf(buff, "%d", cash);
 					setText(cashtxt, buff);
 					deleteMonster(mons);
@@ -676,16 +732,12 @@ int play(Map* map)
 				}
 				
 			}
-			//if(tmpint++ > 0)
-			//	exit(0);
 		}
 		Uint32 elapsed = SDL_GetTicks() - startTime;
 		if(elapsed < FRAMERATE_MILLISECONDS)
 		{
 			SDL_Delay(FRAMERATE_MILLISECONDS - elapsed);
 		}
-		//printf("elapsed: %dmsec %d %d\n", SDL_GetTicks() - startTime, elapsed, FRAMERATE_MILLISECONDS);
-		//exit(0);
 	}
 	
 	list_delete(towers);
@@ -695,18 +747,107 @@ int play(Map* map)
 
 void createWave(int level, List* monsters, Map* map){
 	TYPE_MONSTER type;
-	if(level % 4 == 0)
-		type = NORMAL;
-	else if(level % 4 == 1)
-		type = FAST;
-	else if(level % 4 == 2)
-		type = SLOW;
-	else
-		type = FLYER;
+	float life = level*100;
+	switch(level){
+		case 1:
+			type = NORMAL;
+			break;
+		case 2:
+			type = NORMAL;
+			break;
+		case 3:
+			type = FAST;
+			break;
 
+		case 4:
+			type = NORMAL;
+			break;
+
+		case 5:
+			type = SLOW;
+			break;
+
+		case 6:
+			type = FLYER;
+			break;
+
+		case 7:
+			type = FAST;
+			break;
+
+		case 8:
+			type = NORMAL;
+			break;
+
+		case 9:
+			type = SLOW;
+			break;
+
+		case 10:
+			type = FAST;
+			break;
+
+		case 11:
+			type = FLYER;
+			break;
+
+		case 12:
+			type = NORMAL;
+			break;
+
+		case 13:
+			type = SLOW;
+			break;
+
+		case 14:
+			type = FLYER;
+			break;
+
+		case 15:
+			type = NORMAL;
+			break;
+
+		case 16:
+			type = FAST;
+			break;
+
+		case 17:
+			type = NORMAL;
+			break;
+
+		case 18:
+			type = SLOW;
+			break;
+
+		case 19:
+			type = FLYER;
+			break;
+
+		case 20:
+			type = FLYER;
+			break;
+		default:
+			return;
+	}
+	int delay = 2000;
+	switch(type)
+	{
+		case NORMAL:
+			delay = 1500;
+			break;
+		case SLOW:
+			delay = 2000;
+			break;
+		case FAST:
+			delay = 1000;
+			break;
+		case FLYER:
+			delay = 2000;
+			break;
+	}
 	int i = 0;
 	for(i = 0; i<10; i++){
-		Monster* m = createMonster(type, map->nodes, (i*3000));
+		Monster* m = createMonster(type, life, map->nodes, (i+1)*delay);
 		//printf("%p\n", m);
 		list_append(monsters, m);
 	}
@@ -725,6 +866,20 @@ int canPlaceTower(Map* map, List* towers, Position coord, Position size)
 			return 0;
 	}
 	return 1;
+}
+
+void removeTower(List* towers, Tower* tower)
+{
+	int i;
+	for(i = 0; i<list_size(towers); ++i)
+	{
+		Tower* t = list_get(towers, i);
+		if(t == tower)
+		{
+			list_remove(towers, i);
+			return;
+		}
+	}
 }
 
 void showEndMenu(int victory)

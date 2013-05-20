@@ -39,53 +39,77 @@ Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, F
 	Text* t = malloc(sizeof(Text));
 	t->text = NULL;
 	int len = strlen(text);
-	t->text = malloc(sizeof(char)*(len+1));
-	strcpy(t->text, text);
-	SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(polices[size], text, color));
-	if(tmptext == NULL)
-	{
-		fprintf(stderr,"Erreur au chargement du texte %s", text);
-		exit(-1);
+	if(len > 0) {	
+		t->text = malloc(sizeof(char)*(len+1));
+		strcpy(t->text, text);
+		SDL_Surface* tmptext = TTF_RenderText_Blended(polices[size], text, color);
+		if(tmptext == NULL)
+		{
+			fprintf(stderr,"Erreur au chargement du texte %s", text);
+			exit(-1);
+		}
+		t->tex[0] = loadTexture(tmptext);
+		t->size.x = tmptext->w;
+		t->size.y = tmptext->h;
+		SDL_FreeSurface(tmptext);
+	} else {
+		t->tex[0] = 0;
+		t->size.x = 0;
+		t->size.y = 0;
 	}
-	t->tex[0] = loadTexture(tmptext);
-	
-
 
 	t->id = id;
 	t->pos.x = px;
 	t->pos.y = py;
 	t->font = polices[size];
-	t->size.x = tmptext->w;
-	t->size.y = tmptext->h;
+	
 	t->color = color;
-	SDL_FreeSurface(tmptext);
 	return t;
 }
 
 void setText(Text* t, const char* text)
 {
-	if(text == NULL || strcmp(t->text, text) == 0)
+	if(text == NULL)
 		return;
 
-	deleteTexture(t->tex[0]);
-	free(t->text);
+	if(t->text != NULL && text != NULL && strcmp(t->text, text) == 0)
+		return;
+
+	if(t->tex[0] != 0)
+		deleteTexture(t->tex[0]);
+	
+	if(t->text != NULL)
+	{
+		free(t->text);
+		t->text = NULL;
+	}
 
 	int len = strlen(text);
-	t->text = malloc(sizeof(char)*(len+1));
-	strcpy(t->text, text);
+	if(len > 0) {
+		t->text = malloc(sizeof(char)*(len+1));
+		if(t->text == NULL)
+		{	
+			fprintf(stderr, "memory allocation error");
+			exit(-1);
+		}
+		strcpy(t->text, text);
+		SDL_Surface* tmptext = TTF_RenderText_Blended(t->font, text, t->color);
+		if(tmptext == NULL)
+		{
+			fprintf(stderr,"Erreur au chargement du texte %s", text);
+			exit(-1);
+		}
+		t->size.x = tmptext->w;
+		t->size.y = tmptext->h;
 
-	SDL_Surface* tmptext = SDL_DisplayFormatAlpha(TTF_RenderText_Blended(t->font, text, t->color));
-	if(tmptext == NULL)
-	{
-		fprintf(stderr,"Erreur au chargement du texte %s", text);
-		exit(-1);
+		t->tex[0] = loadTexture(tmptext);
+		SDL_FreeSurface(tmptext);
+		
+	} else {
+		t->tex[0] = 0;
+		t->size.x = 0;
+		t->size.y = 0;
 	}
-	t->size.x = tmptext->w;
-	t->size.y = tmptext->h;
-
-	t->tex[0] = loadTexture(tmptext);
-	SDL_FreeSurface(tmptext);
-	//printf("edit\n");
 }
 
 void drawText(Text* t)
@@ -182,7 +206,9 @@ void removeText(Text* t)
 	if(t == NULL)
 		return;
 
-	deleteTexture(t->tex[0]);
+	if(t->tex[0] != 0)
+		deleteTexture(t->tex[0]);
+	
 	if(t->text != NULL)
 		free(t->text);
 	

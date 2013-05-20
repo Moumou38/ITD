@@ -68,74 +68,76 @@ typedef struct _tower{
 } Tower;
 
 /*!
- * \fn extern Tower* createTower(Position coord, TYPE_TOWER type)
+ * \fn Tower* createTower(Position coord, TYPE_TOWER type)
  * \brief Création d'une tour
  *
  * \param coord Coordonnées de la tour
  * \param type Type de la tour à créer
  * \return Pointeur vers la tour si la création a réussi, NULL sinon.
  */
-extern Tower* createTower(Position coord, TYPE_TOWER type);
+Tower* createTower(Position coord, TYPE_TOWER type);
 
 /*!
- * \fn extern void drawTower(Tower* t)
+ * \fn void drawTower(Tower* t)
  * \brief Dessine une tour
  *
  * \param t Pointeur vers la tour à créer
  */
-extern void drawTower(Tower* t, Position camPos);
+void drawTower(Tower* t, Vector3 camPos);
 
-extern void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Position camPos);
+void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Vector3 camPos);
 /*!
- * \fn extern void updateTower(Tower* t))
+ * \fn void updateTower(Tower* t))
  * \brief Met à jour une tour
  *
  * \param t Pointeur vers la tour à mettre à jour
  */
-extern void updateTower(Tower* t);
+void updateTower(Tower* t);
 
 /*!
- * \fn extern void deleteTower(Tower* t)
+ * \fn void deleteTower(Tower* t)
  * \brief Supprime une tour
  *
  * \param t Pointeur vers la tour à supprimer
  */
-extern void deleteTower(Tower* t);
+void deleteTower(Tower* t);
 
 /*!
- * \fn extern void lookForBestTarget(Tower* t,  List* monsters)
+ * \fn void lookForBestTarget(Tower* t,  List* monsters)
  * \brief Cherche la cible la plus proche
  *
  * \param t Pointeur vers la tour qui cherche une cible
  * \param monsters Liste de monstres présents dans le jeu
  */
-extern void lookForBestTarget(Tower* t, List* monsters);
+void lookForBestTarget(Tower* t, List* monsters);
 
 /*!
- * \fn extern void shoot(Tower* t, Monster* target)
+ * \fn void shoot(Tower* t, Monster* target)
  * \brief 
  *
  * \param t Pointeur vers la tour qui tire
  * \param target Pointeur vers le monstre ciblé
  */
-extern void shoot(Tower* t, Monster* target);
+void shoot(Tower* t, Monster* target);
 
-extern int outOfRange(Position p1, Position p2, float range);
+int outOfRange(Position p1, Position p2, float range);
 
-extern void onResumeTower(Tower* t);
+void onResumeTower(Tower* t);
 
-extern int getTowerCost(TYPE_TOWER type);
+int getTowerCost(TYPE_TOWER type);
 
-extern void selectTower(Tower* t, Position coord);
+void selectTower(Tower* t, Position coord);
 
-extern Position getTowerSize(TYPE_TOWER type);
+Position getTowerSize(TYPE_TOWER type);
 
-extern float getTowerRange(TYPE_TOWER type);
+float getTowerRange(TYPE_TOWER type);
 
-extern GLuint getTowerTexture(TYPE_TOWER type);
+GLuint getTowerTexture(TYPE_TOWER type);
+
+const char* getTowerName(TYPE_TOWER type);
 
 /*!
- * \fn extern int collideWithTower(Tower* t, Position p, Position s)
+ * \fn int collideWithTower(Tower* t, Position p, Position s)
  * \brief Vérifie si une tour de coordonnée p et taille s est en collision avec t.
  *
  * \param t Tour à tester
@@ -144,6 +146,6 @@ extern GLuint getTowerTexture(TYPE_TOWER type);
  *
  * \return 1 si la tour est en collision avec t, 0 sinon.
  */
-extern int collideWithTower(Tower* t, Position p, Position s);
+int collideWithTower(Tower* t, Position p, Position s);
 
 #endif

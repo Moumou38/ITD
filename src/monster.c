@@ -6,14 +6,14 @@ const float Fast = 8;
 const float Slow  = 2;
 const float Flyer = 4;
 
-Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer){
+Monster* createMonster(TYPE_MONSTER type, float life, Node* start, GLint timer){
 	Monster* m = malloc(sizeof(Monster));
 	m->type = type;
 	m->direction = start;
 	m->coord.x = start->coord.x;
 	m->coord.y = start->coord.y;
-	m->life = 100;
-	m->life_max = 100;
+	m->life = life;
+	m->life_max = life;
 	m->msecSinceLastMvt = SDL_GetTicks()+timer;
 	m->deltaOnPause = -timer;
 	m->invulnerable = 1;
@@ -51,7 +51,7 @@ Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer){
 	return m;
 }
 
-void drawMonster(Monster* m, Position camPos)
+void drawMonster(Monster* m, Vector3 camPos)
 {
 	if(m->invulnerable)
 		return;

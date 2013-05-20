@@ -1,19 +1,24 @@
 #include "tower.h"
 
-const float Rocket_Range = 100;
-const float Laser_Range = 50;
-const float Machinegun_Range= 30;
-const float Hybrid_Range = 80;
-
-const int Rocket_Dmg = 10;
-const int Laser_Dmg = 5;
-const int Machinegun_Dmg= 3;
-const int Hybrid_Dmg = 8;
-
+const float Rocket_Range = 200;
+const int Rocket_Dmg = 100;
 const int Rocket_Time= 500;
+const int Rocket_Cost= 80;
+
+const float Laser_Range = 140;
+const int Laser_Dmg = 50;
 const int Laser_Time = 100;
-const int Machinegun_Time = 50;
-const int Hybrid_Time = 150;
+const int Laser_Cost = 50;
+
+const float Machinegun_Range= 100;
+const int Machinegun_Dmg= 10;
+const int Machinegun_Time = 100;
+const int Machinegun_Cost = 25;
+
+const float Hybrid_Range = 200;
+const int Hybrid_Dmg = 20;
+const int Hybrid_Time = 200;
+const int Hybrid_Cost = 80;
 
 Tower* createTower(Position coord, TYPE_TOWER type){
 	Tower* t = malloc(sizeof(Tower));
@@ -60,7 +65,7 @@ Tower* createTower(Position coord, TYPE_TOWER type){
 	return t;
 }
 
-void drawTower(Tower* t, Position camPos)
+void drawTower(Tower* t, Vector3 camPos)
 {
 	drawTower2(t->type, t->coord, t->angle, t->selected, camPos);
 	if(t->msecSinceLastShot < 100 && t->target != NULL)
@@ -73,7 +78,7 @@ void drawTower(Tower* t, Position camPos)
 	}
 }
 
-void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Position camPos)
+void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Vector3 camPos)
 {
 	if(pos.x-camPos.x  < 0 || pos.x-camPos.x > MAP_WIDTH || pos.y-camPos.y-50.f < 0 || pos.y-camPos.y-50.f > MAP_HEIGHT)
 		return;
@@ -115,14 +120,14 @@ void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Positi
 
 	glPopMatrix();
 
-	if(selected) {
+	/*if(selected) {
 		glBegin(GL_LINE_LOOP);
 			glVertex2f(-0.5f, -0.5f);
 			glVertex2f(-0.5f, 0.5f);
 			glVertex2f(0.5f, 0.5f);
 			glVertex2f(0.5f, -0.5f);
 		glEnd();
-	}
+	}*/
 	glPopMatrix();
 
 	if(selected) {
@@ -156,59 +161,8 @@ void updateTower(Tower* t)
 		}
 	}
 
-	/*if(t->target != NULL) {
-		float angle = atan(((t->target->coord.y-t->coord.y)/(t->target->coord.x-t->coord.x)))*180/M_PI - 90;
-		t->angle = angle;
-		//printf("%f\n", angle);
-	}*/
-
 	t->lastUpdate = now;
 
-	/*switch(t->type){
-		case ROCKET :{
-			if(t->msecSinceLastShot>Rocket_Time){
-				if(t->target != NULL){
-					//shoot(t, t->target);
-					t->target->life -= Rocket_Dmg;
-					t->msecSinceLastShot=0;
-				}
-			}
-		}
-		break;
-
-		case LASER : {
-			if(t->msecSinceLastShot>Laser_Time){
-				if(t->target != NULL){
-					shoot(t, t->target);
-					t->msecSinceLastShot=0;
-				}
-			}
-		}
-		break;
-
-		case MACHINEGUN :{
-			if(t->msecSinceLastShot>Machinegun_Time){
-				if(t->target != NULL){
-					shoot(t, t->target);
-					t->msecSinceLastShot=0;
-				}
-			}
-		}
-		break;
-
-		case HYBRIDE : {
-			if(t->msecSinceLastShot>Hybride_Time){
-				if(t->target != NULL){
-					shoot(t, t->target);
-					t->msecSinceLastShot=0;
-				}
-			}
-		}
-		break;
-
-		default : 
-			break;
-	}*/
 }
 
 void lookForBestTarget(Tower* t, List* monsters)
@@ -231,9 +185,7 @@ void lookForBestTarget(Tower* t, List* monsters)
 		}
 	}
 	
-	
 	t->target = best;
-	//printf("best %p\n", best);
 }
 
 void shoot(Tower* t, Monster* target){
@@ -265,13 +217,13 @@ int getTowerCost(TYPE_TOWER type)
 {
 	switch(type) {
 		case ROCKET:
-			return 60;
+			return Rocket_Cost;
 		case LASER:
-			return 40;
+			return Laser_Cost;
 		case MACHINEGUN:
-			return 25;
+			return Machinegun_Cost;
 		case HYBRID:
-			return 40;
+			return Hybrid_Cost;
 		default:
 			return 10;
 	}
@@ -318,6 +270,22 @@ GLuint getTowerTexture(TYPE_TOWER type)
 			return getTexture("images/game/machinegun.png");
 		case HYBRID:
 			return getTexture("images/game/hybrid.png");
+		default:
+			return 0;
+	}
+}
+
+const char* getTowerName(TYPE_TOWER type)
+{
+	switch(type) {
+		case ROCKET:
+			return "Rocket";
+		case LASER:
+			return "Laser";
+		case MACHINEGUN:
+			return "Machinegun";
+		case HYBRID:
+			return "Hybrid";
 		default:
 			return 0;
 	}
