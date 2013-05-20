@@ -57,17 +57,17 @@ typedef struct _position{
  * Comporte une couleur, une position et un pointeur vers son suivant
  */
 typedef struct _node{
-	Color3ub color;
+	Color3ub color, path;
 	Position coord;
 	struct _node* next;
 } Node;
 
 /**
- * \fn extern void freeNode(Node** node)
+ * \fn void freeList(Node** node)
  * \brief Libère la mémoire utilisée pour la liste de Node
  *
  * \param node Pointeur vers la tête de la liste de node
  */
-extern void freeNode(Node** node);
+void freeList(Node** node);
 
 #endif

@@ -53,24 +53,49 @@ void deleteImage(SDL_Surface* tex){
 void deleteTexture(GLuint image){
 	glDeleteTextures(1, &image);
 }
-/*
-void SDL_GetRGBA(SDL_Surface* s, int x, int y, char* red, char* green, char* blue, char* alpha)
-{
-	switch(s->format->BytesPerPixel)
-	{
-		case 4:
-			{
-				int color = s->pixels[y*s->w+y];
-				*red = color << 16;
-				*green = color << 8;
-				*blue = color;
-				*alpha = color << 24;
-			}
-			break;
-		default:
-			break;
-	}
-}*/
+
+
+void GetPixel(SDL_Surface* surface, int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* a) {
+    int bpp = surface->format->BytesPerPixel;
+    
+    Uint8* p = (Uint8*) surface->pixels + y * surface->pitch + x * bpp;
+
+    switch(bpp) {
+    case 1:
+        
+        break;
+
+    case 2:
+
+        break;
+
+    case 3:
+        if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+            *r = p[0];
+            *g = p[1];
+            *b = p[2];
+        } else {
+            *r = p[2];
+            *g = p[1];
+            *b = p[0];
+        }
+        break;
+
+    case 4:
+        if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+            *r = p[0];
+            *g = p[1];
+            *b = p[2];
+			*a = p[3];
+        } else {
+            *r = p[3];
+            *g = p[2];
+            *b = p[1];
+			*a = p[0];
+        }
+        break;
+    }
+}
 
 void PutPixel(SDL_Surface* surface, int x, int y, Uint32 pixel) {
     int bpp = surface->format->BytesPerPixel;
@@ -125,21 +150,16 @@ SDL_Surface* filterImage(SDL_Surface* s, SDL_Color filter)
 	return tmp;
 }
 
-SDL_Surface* paintImage(SDL_Surface* s, Color3ub color)
+SDL_Surface* swapColorsImage(SDL_Surface* s, Color3ub old, Color3ub color)
 {
 	SDL_Surface* tmp = SDL_ConvertSurface(s, s->format, s->flags);
 	Uint8 r,g,b,a;
 	int i, j;
-	Uint8* p = (Uint8*)tmp->pixels;
-	int bpp = s->format->BytesPerPixel;
-    
-    
 	for(i = 0; i<s->h; i++)
 		for(j = 0; j<s->w; j++)
 		{
-			Uint8 c = p[i* tmp->pitch+j*bpp];
-			SDL_GetRGBA(c, tmp->format,&r,&g,&b,&a);
-			if(r == 120 && g == 120 && b == 120)
+			GetPixel(tmp, j,i, &r,&g,&b,&a);
+			if(r == old.r && g == old.g && b == old.b)
 				PutPixel(tmp, j,i, SDL_MapRGB(tmp->format, color.r, color.g, color.b));
 		}
 

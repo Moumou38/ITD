@@ -16,6 +16,7 @@ enum {
 	BTN_MACHINEGUN,
 	BTN_HYBRID,
 	BTN_EXIT_GAME,
+	BTN_LEAVE_HELP,
 	TXT_CASH,
 	TXT_WAVE,
 	TXT_TOWERNAME,
@@ -61,6 +62,35 @@ void initGUI()
 	GUI_CreateButton(BTN_MACHINEGUN, MENU_GAME, NULL, "images/menus/machinegun.png", textColor, 625,185,50,50);
 	GUI_CreateButton(BTN_HYBRID, MENU_GAME, NULL, "images/menus/hybrid.png", textColor, 700,185,50,50);
 	GUI_CreateButton(BTN_EXIT_GAME, MENU_GAME, "Quitter", NULL, textColor, 610,500,180,70);
+	GUI_CreateText(0, MENU_HELP, "HELP", textColor2, 10,10, FONT_48);
+	GUI_CreateText(0, MENU_HELP, "Votre but est d'empecher les monstres essayant d'atteindre la sortie. ", textColor, 10,60, FONT_24);
+	GUI_CreateText(0, MENU_HELP, "en les detruisant. ", textColor, 10,90, FONT_24);
+	GUI_CreateText(0, MENU_HELP, "Vous commencez le jeu avec une petite somme d'argent. ", textColor, 10,120, FONT_24);
+	 GUI_CreateText(0, MENU_HELP, "Utilisez-le pour construire des tours! ", textColor, 10,150, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "Chaque monstre tue vous rapporte une quantite d'argent que vous pouvez ", textColor, 10,180, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "investir dans d'autres tours. ", textColor, 10,210, FONT_24);
+	GUI_CreateText(0, MENU_HELP, "Si un monstre arrive a franchir vos defenses, vous avez perdu. ", textColor, 10,240, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "Tours Rocket : Ces tours infligent beaucoup de degats mais ", textColor, 50,300, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "ont une cadence de feu faible. ", textColor, 10,330, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "Tours Laser: Elles tirent tres rapidement mais ont une faible portee ", textColor, 50,360, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "et occasionnent des dommages moyens. ", textColor, 10,390, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "Tours Machinegun: Elles occasionnent peu de degats, ont une portee ", textColor, 50,420, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "tres limitee mais une bonne cadence de tir et tirent sur tous les ", textColor, 10,450, FONT_24);
+	 GUI_CreateText(0, MENU_HELP, "monstres a leur portee. ", textColor, 10,480, FONT_24);
+	GUI_CreateText(0, MENU_HELP, "Tours Hybrides: Elles ont une tres bonne portee ", textColor, 50,510, FONT_24);
+
+	GUI_CreateText(0, MENU_HELP, "et une bonne cadence de tir mais occasionnent peu de degats. ", textColor, 10,540, FONT_24);
+
+	GUI_CreateButton(BTN_LEAVE_HELP, MENU_HELP, "Ok", NULL, textColor2, 680,480,100,100);
+
 }
 
 void initSDL(){
@@ -79,7 +109,6 @@ void launchGameWithMap(const char* mapfile)
 	if(mapfile == NULL)
 		return;
 	initSDL();
-	printf("Map à charger: %s\n", mapfile);
 	Map* m = loadMap(mapfile);
 	int a = play(m);
 	if(a != -1)
@@ -93,7 +122,7 @@ List* getMapList(){
 
 	if(dir == NULL)
 	{
-		printf("Impossible d'ouvrir le dossier data!\n");
+		fprintf(stderr, "Impossible d'ouvrir le dossier data!\n");
 		exit(-1);
 	}
 	//int i = 1;
@@ -250,19 +279,65 @@ Map* showMapMenu(List* map_list)
 
 void showHelpMenu()
 {
-	printf("--- Help Menu---\n");
-	printf("Objectif:\n");
-	printf("\tVotre but est d'empêcher les monstres essayant d'atteindre la sortie\n en les détruisant\n");
-	printf("\tVous commencez le jeu avec une petite somme d'argent. Utilisez-le pour\n construire des tours!\n");
-	printf("\tChaque monstre tué vous rapporte une quantité d'argent que vous pouvez\n investir dans d'autres tours.\n");
-	printf("\tSi un monstre arrive à franchir vos défenses, vous avez perdu!\n");
-	printf("\n\n");
-	printf("Tours:\n");
-	printf("\tROCKET\n");
-	printf("\tLASER\n");
-	printf("\tMACHINEGUN\n");
-	printf("\tHYBRID\n");
-	return;
+	int running = 1;
+	while(running) {
+		Uint32 start = SDL_GetTicks();
+
+		// dessin
+		glClear(GL_COLOR_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+	
+		GUI_Draw(MENU_HELP);
+		SDL_GL_SwapBuffers();
+
+		SDL_Event event;
+		while(SDL_PollEvent(&event))
+		{
+			if(event.type == SDL_QUIT) {
+				running = 0;
+				break;
+			} 
+			GUI_ProceedEvents(&event);
+			GUI_Event gui;				
+			while(GUI_PollEvent(&gui)) {
+				switch(gui.type) {
+					case GUI_ET_BUTTON:
+							if(gui.button.action == GUI_BTEV_RELEASED) {
+								if(gui.button.id == BTN_LEAVE_HELP)  {
+									running = 0;
+								} 
+							}
+						break;
+					default:
+						break;
+				}
+			}
+			
+			
+			switch(event.type) {
+				case SDL_KEYDOWN:
+			  		switch(event.key.keysym.sym){
+						case 'q' : 
+						case SDLK_ESCAPE : 
+							running = 0;
+							break;
+						default : 
+							break;
+					}
+					break;
+				  
+				default:
+					break;
+			}
+		}
+
+		Uint32 elapsed = SDL_GetTicks() - start;
+		if(elapsed < FRAMERATE_MILLISECONDS)
+		{
+			SDL_Delay(FRAMERATE_MILLISECONDS - elapsed);
+		}
+	}
 }
 
 int play(Map* map)
@@ -322,6 +397,9 @@ int play(Map* map)
 
 		if(placer_tour) {
 			Position size = getTowerSize(placer_type);
+			//Position p = {cursor.x + map->camPos.x - ( ((int)cursor.x)%32 - 1), cursor.y + map->camPos.y - (((int)cursor.y)%32 - 18)};
+			//canPlaceTower(map, towers, p, size);
+			canPlaceTower(map, towers, cursor, size);
 			drawTower2(placer_type, cursor, 0.f, 1, map->camPos);
 		}
 
@@ -356,7 +434,7 @@ int play(Map* map)
 								}
 							} else if(gui.button.action == GUI_BTEV_HOVER) {
 								if(gui.button.id == BTN_ROCKET) {
-									if(hover_type != ROCKET) {
+									if(placer_tour != 1 && hover_type != ROCKET) {
 										hover_type = ROCKET;
 										setText(nametxt, "Rocket");
 										sprintf(buff,"Cost: %d", getTowerCost(ROCKET));
@@ -365,7 +443,7 @@ int play(Map* map)
 									//placer_tour = 1;
 								}
 								else if(gui.button.id == BTN_LASER) {
-									if(hover_type != LASER) {
+									if(placer_tour != 1 && hover_type != LASER) {
 										hover_type = LASER;
 										setText(nametxt, "Laser");
 										sprintf(buff,"Cost: %d", getTowerCost(LASER));
@@ -374,7 +452,7 @@ int play(Map* map)
 									//placer_tour = 1;
 								}
 								else if(gui.button.id == BTN_MACHINEGUN) {
-									if(hover_type != MACHINEGUN) {
+									if(placer_tour != 1 && hover_type != MACHINEGUN) {
 										hover_type = MACHINEGUN;
 										setText(nametxt, "Machinegun");
 										sprintf(buff,"Cost: %d", getTowerCost(MACHINEGUN));
@@ -383,7 +461,7 @@ int play(Map* map)
 									//placer_tour = 1;
 								}
 								else if(gui.button.id == BTN_HYBRID) {
-									if(hover_type != HYBRID) {
+									if(placer_tour != 1 && hover_type != HYBRID) {
 										hover_type = HYBRID;
 										setText(nametxt, "Hybrid");
 										sprintf(buff,"Cost: %d", getTowerCost(HYBRID));
@@ -394,7 +472,7 @@ int play(Map* map)
 							}
 							else if(gui.button.action == GUI_BTEV_LEFTHOVER) {
 								if(gui.button.id == BTN_ROCKET || gui.button.id == BTN_LASER || gui.button.id == BTN_MACHINEGUN || gui.button.id == BTN_HYBRID) {
-									if(hover_type != -1) {
+									if(placer_tour != 1 && hover_type != -1) {
 										hover_type = -1;
 										setText(nametxt, "None");
 										sprintf(buff,"No cost");
@@ -419,8 +497,8 @@ int play(Map* map)
 							} else {
 								sprintf(buff, "%d", wave);
 								setText(wavetxt, buff);
-								//list_foreach(monsters, onResumeMonster);
-								//list_foreach(towers, onResumeTower);
+								list_foreach(monsters, onResumeMonster);
+								list_foreach(towers, onResumeTower);
 							}
 							break;
 						case SDLK_LEFT:
@@ -484,9 +562,13 @@ int play(Map* map)
 				case SDL_MOUSEBUTTONDOWN:
 					switch(event.button.button){
 						case SDL_BUTTON_LEFT:
+							//printf("clic\n");
 							if(placer_tour == 1){
+								//printf("placer\n");
 								Position size = getTowerSize(placer_type);
 								Position coord = {event.button.x+map->camPos.x, event.button.y+map->camPos.y};
+								coord.x -= ((int)coord.x)%32 - 33;
+								coord.y -= ((int)coord.y)%32 - 18;
 								int cost = getTowerCost(placer_type);
 								if(cash >= cost && canPlaceTower(map, towers, coord, size))
 								{
@@ -510,7 +592,9 @@ int play(Map* map)
 							}
 
 							break;
-
+						case SDL_BUTTON_RIGHT:
+							placer_tour = 0;
+							break;
 						default:
 							break;
 					}
@@ -518,8 +602,8 @@ int play(Map* map)
 				case SDL_MOUSEMOTION:
 					cursor.x = event.motion.x + map->camPos.x;
 					cursor.y = event.motion.y + map->camPos.y;
-					cursor.x -= ((int)cursor.x)%32 - 3;
-					cursor.y -= ((int)cursor.y)%32 - 19;
+					cursor.x -= ((int)cursor.x)%32 - 33;
+					cursor.y -= ((int)cursor.y)%32 - 18;
 					break;
 				  
 				default:
@@ -630,7 +714,7 @@ void createWave(int level, List* monsters, Map* map){
 
 int canPlaceTower(Map* map, List* towers, Position coord, Position size)
 {
-	if(collideWithMap(map, coord, size))
+	if(collideWithMap(map, coord, size, map->camPos))
 		return 0;
 
 	int i;

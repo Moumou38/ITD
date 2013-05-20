@@ -67,8 +67,8 @@ void drawTower(Tower* t, Position camPos)
 	{
 		glColor3ub(255,0,0);
 		glBegin(GL_LINES);
-			glVertex2f(t->coord.x, t->coord.y);
-			glVertex2f(t->target->coord.x+5.f, t->target->coord.y+5.f);
+			glVertex2f(t->coord.x-camPos.x, t->coord.y-camPos.y);
+			glVertex2f(t->target->coord.x+5.f -camPos.x, t->target->coord.y+5.f-camPos.y);
 		glEnd();
 	}
 }
@@ -325,9 +325,9 @@ GLuint getTowerTexture(TYPE_TOWER type)
 
 int collideWithTower(Tower* t, Position pos, Position size)
 {
-	if(pos.x+size.x/2.f  <  t->coord.x-t->size/2.f || 
+	if(pos.x+size.x/2.f  <=  t->coord.x-t->size/2.f || 
 		pos.x-size.x/2.f >= t->coord.x+t->size/2.f || 
-		pos.y+size.y/2.f <  t->coord.y-t->size/2.f || 
+		pos.y+size.y/2.f <=  t->coord.y-t->size/2.f || 
 		pos.y-size.y/2.f >= t->coord.y+t->size/2.f)
 		return 0;
  	

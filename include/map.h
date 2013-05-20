@@ -79,7 +79,7 @@ extern void deleteMap(Map* m);
  *
  * \return 1 si la tour est en collision avec la map, 0 sinon.
  */
-extern int collideWithMap(Map* m, Position p, Position s);
+extern int collideWithMap(Map* m, Position p, Position s, Position camPos);
 
 extern void updateMap(Map* m);
 

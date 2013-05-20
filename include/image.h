@@ -60,8 +60,10 @@ extern void deleteImage(SDL_Surface* tex);
  */
 extern void deleteTexture(GLuint image);
 
+extern void GetPixel(SDL_Surface* surface, int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* a);
+
 extern SDL_Surface* filterImage(SDL_Surface* s, SDL_Color filter);
 
-extern SDL_Surface* paintImage(SDL_Surface* s, Color3ub color);
+extern SDL_Surface* swapColorsImage(SDL_Surface* s, Color3ub old, Color3ub color);
 
 #endif

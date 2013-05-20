@@ -23,64 +23,52 @@ Map* loadMap(char const* map){
 
 	//Nom de l'image représentant la carte
 	fscanf(f, "%s", img);
-	//printf("%s\n", img);
 	if (strcmp(img, "@ITD") != 0){
 		fprintf(stderr, "Le fichier n'est pas une carte valide. Fin du programme.\n");
 		return NULL;
 	}
 	fscanf(f, "%d", &num);
-	//printf("Vous utilisez la version du fichier %d\n", num);
 	if (num != 1){
 		fprintf(stderr, "La version du fichier n'est pas valide. Fin du programme.\n");
 		return NULL;
 	}
 
-	int full =0;
-	int cnt =0;
+	int full =0, cnt = 0;
 
 	while(full == 0){
 		cnt = fscanf(f, "%s", img);
-		//printf("%s\n", img);
 
 		if (strcmp(img, "carte") == 0){
 			fscanf(f, "%s", img);
-			//printf("%s\n", img);
 			char* tmp = malloc(sizeof(char)*(7+strlen(img)+1));
 			sprintf(tmp,"images/%s", img);
 			m->ppm = loadImage(tmp);
 			free(tmp);
-			//printf("juste après\n");
 		}else if (strcmp(img, "energie") == 0){
 			fscanf(f, "%d", &num);
-			//printf("%d\n", num);
 			energie = num;
 		}else if (strcmp(img, "chemin") == 0){
-			fscanf(f, "%d %d %d", &r, &g, &b);
-			//printf("%d %d %d\n", r, g, b);
-			chemin.r = r;
-			chemin.g = g;
-			chemin.b = b;
+			fscanf(f, "%d %d %d",&r, &g, &b);
+			tete->path.r = r;
+			tete->path.g = g;
+			tete->path.b = b;
 		}else if (strcmp(img, "noeud") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			//printf("%d %d %d\n", r, g, b);
 			tete->color.r = r;
 			tete->color.g = g;
 			tete->color.b = b;
 		}else if (strcmp(img, "construct") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			//printf("%d %d %d\n", r, g, b);
 			construct.r = r;
 			construct.g = g;
 			construct.b = b;
 		}else if (strcmp(img, "in") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			//printf("%d %d %d\n", r, g, b);
 			in.r = r;
 			in.g = g;
 			in.b = b;
 		}else if (strcmp(img, "out") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
-			//printf("%d %d %d\n", r, g, b);
 			out.r = r;
 			out.g = g;
 			out.b = b;
@@ -96,48 +84,104 @@ Map* loadMap(char const* map){
 		}
 
 	}
-	//printf("nombre de node %d\n", num);
+
 	Node* tmp = tete;
 	fscanf(f, "%f %f", &(tete->coord.x), &(tete->coord.y));
-	/*tete->coord.x = (tete->coord.x/m->ppm->w)*MAP_WIDTH;
-	tete->coord.y = (tete->coord.y/m->ppm->h)*MAP_HEIGHT +50.f;*/
 	tete->coord.y += 50.f;
 	for(i=1; i<num; i++){
 		Node* n = malloc(sizeof(Node));
 		n->next = NULL;
 		n->color = tete->color;
+		n->path = tete->path;
 		fscanf(f, "%f %f", &(n->coord.x), &(n->coord.y));
-		/*n->coord.x = (n->coord.x/m->ppm->w)*MAP_WIDTH;
-		n->coord.y = (n->coord.y/m->ppm->h)*MAP_HEIGHT +50.f;*/
 		n->coord.y += 50.f;
-		//printf("%f %f\n", n->coord.x, n->coord.y);
 		tmp->next = n;
 		tmp = n;
 	}
 	m->nodes = tete;
 	m->camPos.x = 0; m->camPos.y = 0;
 	m->camDir.x = 0; m->camDir.y = 0;
-	SDL_Surface* image = paintImage(m->ppm, construct);	
+
+	Color3ub old = {120,120,120};
+	SDL_Surface* image = swapColorsImage(m->ppm, old, construct);	
 	m->tex = loadTexture(image);
 	SDL_FreeSurface(image);
 
-	printf("map loaded\n");
-//	exit(0);
 	return m;
 
 }
 
+int nodeOnMap(Node* n, Position camPos)
+{
+	if(n == NULL)
+		return 0;
+
+	if(n->coord.x-camPos.x < 0 
+		|| n->coord.y-camPos.y - 50.f < 0 
+		|| n->coord.x-camPos.x > MAP_WIDTH 
+		|| n->coord.y-camPos.y - 50.f > MAP_HEIGHT)
+		return 0;
+	return 1;
+}
+
+void nodeXYCoordinates(Node* n, Position camPos, float* x, float* y)
+{
+	if(n->coord.x-camPos.x < 0)
+		*x = 0;
+	else if(n->coord.x-camPos.x > MAP_WIDTH)
+		*x = MAP_WIDTH;
+	else
+		*x = n->coord.x-camPos.x;
+
+	if(n->coord.y-camPos.y -50.f < 0)
+			*y = 0;
+	else if(n->coord.y-camPos.y-50.f > MAP_HEIGHT)
+			*y = MAP_HEIGHT;
+	else
+			*y = n->coord.y-camPos.y;
+}
+
 void drawNode(Node* n, Position camPos){
+		Node* tmp = n;
 		glBegin(GL_LINE_STRIP);
 			while(n != NULL){
-				glColor3ub(n->color.r, n->color.g, n->color.b);
+				glColor3ub(n->path.r, n->path.g, n->path.b);
+				/*if(nodeOnMap(n, camPos))
+				{
+					glVertex2f(n->coord.x-camPos.x, n->coord.y-camPos.y);
+				} else {
+					//if(nodeOnMap(n->next, camPos))	
+					//{
+						float x,y;
+						nodeXYCoordinates(n, camPos, &x, &y);
+						glVertex2f(x, y);
+					//}
+					//glEnd();
+					//glBegin(GL_LINE_STRIP);
+					
+				}
+				*/
 				glVertex2f(n->coord.x-camPos.x, n->coord.y-camPos.y);
-				//printf("%f %f\n", n->coord.x/100.f, n->coord.y/100.f);
 				n = n->next;
 				
 			}
 		glEnd();
-//	printf("end\n");
+		n = tmp;
+		glPointSize(5);
+		glBegin(GL_POINTS);
+			while(n != NULL){
+				if(!(n->coord.x-camPos.x < 0 || 
+						n->coord.y-camPos.y -50.f < 0 || 
+						n->coord.x-camPos.x > MAP_WIDTH || 
+						n->coord.y-camPos.y -50.f > MAP_HEIGHT)) {
+					glColor3ub(n->color.r, n->color.g, n->color.b);
+					glVertex2f(n->coord.x-camPos.x, n->coord.y-camPos.y);
+				}
+				n = n->next;
+				
+			}
+		glEnd();
+		glPointSize(1);
 }
 
 void dessinRepere(){
@@ -152,7 +196,6 @@ void dessinRepere(){
 }
 
 void drawMap(Map* m){
-	//printf("begin\n");
 	
 	glColor3ub(255,255,255);
 	glEnable(GL_TEXTURE_2D);
@@ -184,7 +227,7 @@ void drawMap(Map* m){
 	
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-	//drawNode(m->nodes, m->camPos);
+	drawNode(m->nodes, m->camPos);
 }
 
 void deleteMap(Map* m)
@@ -194,14 +237,29 @@ void deleteMap(Map* m)
 
 	deleteImage(m->ppm);
 	deleteTexture(m->tex);
-	freeNode(&(m->nodes));
+	freeList(&(m->nodes));
 }
 
-int collideWithMap(Map* m, Position pos, Position size)
+int collideWithMap(Map* m, Position pos, Position size, Position camPos)
 {
+	pos.x -= size.x/2;
+	pos.y -= size.y/2;
+	pos.y -= 50.f;
 	if(pos.x-m->camPos.x < 0 || (pos.x+size.x)-m->camPos.x >= MAP_WIDTH || pos.y- m->camPos.y < 0 || (pos.y+size.y)- m->camPos.y >= MAP_HEIGHT)
 		return 1;
- 	
+
+	int h, w;
+	for(w = pos.x+2; w<pos.x+size.x -2; w++)
+		for(h = pos.y+2; h<pos.y+size.y -2; h++)
+		{
+			Uint8 r,g,b,a;
+			GetPixel(m->ppm, w,h,&r,&g,&b,&a);
+			if(r != 120 || g != 120 || b != 120) {
+				return 1; 
+			}
+		} 
+
+	
 	return 0;
 }
 
@@ -240,5 +298,4 @@ void moveCamera(Map* m, Position pos)
 	else if(m->camPos.y+MAP_HEIGHT >= m->ppm->h)
 		m->camPos.y = m->ppm->h-MAP_HEIGHT;
 
-	//printf("%d %d %d %f\n", m->cameraY, m->cameraY+(int)MAP_HEIGHT, m->ppm->h, MAP_HEIGHT);
 }

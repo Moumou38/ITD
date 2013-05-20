@@ -1,9 +1,17 @@
 #include "tools.h"
 
-void freeNode(Node** node){
+void freeNode(Node* node)
+{
 	if(node == NULL)
 		return;
-	Node* curr = *node;
-	*node = (*node)->next;
-	free(curr);
+
+	freeNode(node->next);
+	free(node);
+}
+
+void freeList(Node** node){
+	if(node == NULL || *node == NULL)
+		return;
+
+	freeNode(*node);
 }

@@ -12,10 +12,12 @@ GUI_Event* createGuiEvent()
 
 void GUI_Init()
 {
-	events = queue_init();
-	widgets = list_init();
-	Text_Init();	
-	printf("GUI initialized\n");
+	if(events == NULL && widgets == NULL) {
+		events = queue_init();
+		widgets = list_init();
+		Text_Init();	
+		//printf("GUI initialized\n");
+	}
 }
 
 void GUI_Quit()
@@ -189,6 +191,9 @@ void GUI_RemoveWidget(unsigned int id)
 				break;
 			case GUI_TEXT:
 					removeText(w->w.text);
+				break;
+			case GUI_IMAGE:
+					removeImage(w->w.image);
 				break;
 			default:
 				break;

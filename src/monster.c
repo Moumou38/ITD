@@ -1,10 +1,10 @@
 #include "monster.h"
 
 // number of movements every 1/10 sec.
-const float Normal = 2;
-const float Fast = 4;
-const float Slow  = 1;
-const float Flyer = 2;
+const float Normal = 4;
+const float Fast = 8;
+const float Slow  = 2;
+const float Flyer = 4;
 
 Monster* createMonster(TYPE_MONSTER type, Node* start, GLint timer){
 	Monster* m = malloc(sizeof(Monster));
@@ -114,6 +114,7 @@ void drawMonster(Monster* m, Position camPos)
 
 void updateMonster(Monster* m)
 {
+	//printf("toto\n");
 	//m->msecSinceLastMvt += elapsed;
 	int now = SDL_GetTicks();
 
@@ -173,14 +174,14 @@ int hasFinishedMonster(Monster* m)
 
 void onPauseMonster(Monster* m)
 {
-	/*m->deltaOnPause = SDL_GetTicks()-m->msecSinceLastMvt;
-	printf("delta: %d\n", m->deltaOnPause);*/
+	m->deltaOnPause = m->msecSinceLastMvt-SDL_GetTicks();
+	printf("delta: %d\n", m->deltaOnPause);
 }
 
 void onResumeMonster(Monster* m)
 {
-	/*m->msecSinceLastMvt = SDL_GetTicks()+m->deltaOnPause;
-	printf("delta: %d\n", m->deltaOnPause);*/
+	m->msecSinceLastMvt = SDL_GetTicks()+m->deltaOnPause;
+	printf("delta: %d\n", m->deltaOnPause);
 }
 
 void deleteMonster(Monster* m){
