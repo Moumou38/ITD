@@ -12,3 +12,16 @@ int main(int argc, char** argv)
 
 	return startMenu();
 }
+
+/*! \mainpage Imac Tower Defense Documentation
+ *
+ * \section intro_sec Introduction
+ *
+ * Documentation du projet Imac tower defense
+ *
+ * \section copyright Copyright and License
+ * Copyright Landrau Laury et Sochard André | 2013
+ *
+ * <BR><BR>
+ *
+ */

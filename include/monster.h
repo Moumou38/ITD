@@ -34,88 +34,114 @@ typedef enum{
 	FLYER
 } TYPE_MONSTER;
 
-extern const float Normal;
-extern const float Fast;
-extern const float Slow;
-extern const float Flyer;
+const float Normal;
+const float Fast;
+const float Slow;
+const float Flyer;
 
-typedef struct _resist
+/**
+ * \struct ResistTower
+ * \brief Représente la résistance d'un monstre pour chaque type de tour
+ *
+ * Comporte la résistance pour la tour Rocket, pour la tour Hybrid, pour la tour Machinegun et pour la tour Laser.
+ */
+typedef struct 
 {
-	float resistRocket;
-	float resistHybrid;
-	float resistMachinegun;
-	float resistLaser;
+	float resistRocket;		/*!< Coefficient de résistance aux rockets */
+	float resistHybrid;		/*!< Coefficient de résistance aux hybrids */
+	float resistMachinegun;	/*!< Coefficient de résistance aux machineguns */
+	float resistLaser;		/*!< Coefficient de résistance aux lasers */
 }ResistTower;
+
 /**
  * \struct Monster
  * \brief Représente un monstre ennemi
  *
  * Comporte des points de vie, une texture, un type, des coordonnées, une direction et le temps écoulé depuis le dernier mouvement
  */
-typedef struct _monster{
-	int life;
-	int life_max;
-	GLuint tex;
-	TYPE_MONSTER type;
-	Position coord;
-	Position size;
-	Node* direction;
-	int msecSinceLastMvt;
-	int deltaOnPause;
-	int invulnerable;
-	float mvtTime;
-	ResistTower resist;
-	float animOffset;
-	Uint32 animTimer;
-	int animUp;
+typedef struct {
+	int life;				/*!< Vie */
+	int life_max;			/*!< Vie max */
+	GLuint tex;				/*!< Texture */
+	TYPE_MONSTER type;		/*!< Type */
+	Position coord;			/*!< Position */
+	Position size;			/*!< Taille*/
+	Node* direction;		/*!< Direction */
+	int msecSinceLastMvt;	/*!< Temps depuis la dernière update*/
+	int deltaOnPause;		/*!< Temps à la pause */
+	int invulnerable;		/*!< Booléen invulnérabilité*/
+	float mvtTime;			/*!< Vitesse de mouvement */
+	ResistTower resist;		/*!< Résistance aux tours */
+	float animOffset;		/*!< Offset de texture */
+	Uint32 animTimer;		/*!< Temps d'animation */
+	int animUp;				/*!< Direction d'animation */
 } Monster;
 
 /*!
- * \fn extern Monster* createMonster(TYPE_MONSTER type, Node* start)
+ * \fn Monster* createMonster(TYPE_MONSTER type, Node* start)
  * \brief Création d'un monstre
  *
  * \param type Type du monstre à créer
  * \param start Noeud de départ du monstre
  * \return Pointeur vers le monstre si la création a réussi, NULL sinon.
  */
-extern Monster* createMonster(TYPE_MONSTER type, float life, Node* start, GLint timer);
+Monster* createMonster(TYPE_MONSTER type, float life, Node* start, GLint timer);
 
 /*!
- * \fn extern void drawMonster(Monster* m, Position camPos)
+ * \fn void drawMonster(Monster* m, Position camPos)
  * \brief Dessine un monstre
  *
  * \param m Pointeur vers le monstre à créer
  */
-extern void drawMonster(Monster* m, Vector3 camPos);
+void drawMonster(Monster* m, Vector3 camPos);
 
 /*!
- * \fn extern void updateMonster(Monster* m)
+ * \fn void updateMonster(Monster* m)
  * \brief Met à jour un monstre
  *
  * \param m Pointeur vers le monstre à mettre à jour
  */
-extern void updateMonster(Monster* m);
+ void updateMonster(Monster* m);
 
 /*!
- * \fn extern int hasFinishedMonster(Monster* m)
+ * \fn int hasFinishedMonster(Monster* m)
  * \brief Détermine si un monstre a terminé le parcours
  *
  * \param m Pointeur vers le monstre
  */
-extern int hasFinishedMonster(Monster* m);
-
-extern void onPauseMonster(Monster* m);
-
-extern void onResumeMonster(Monster* m);
+int hasFinishedMonster(Monster* m);
 
 /*!
- * \fn extern void deleteMonster(Monster* m)
+ * \fn void onPauseMonster(Monster* m)
+ * \brief Met en pause un monstre
+ *
+ * \param m Pointeur vers le monstre
+ */
+void onPauseMonster(Monster* m);
+
+/*!
+ * \fn void onResumeMonster(Monster* m)
+ * \brief Fait reprendre le monstre
+ *
+ * \param m Pointeur vers le monstre
+ */
+void onResumeMonster(Monster* m);
+
+/*!
+ * \fn void deleteMonster(Monster* m)
  * \brief Supprime un monstre
  *
  * \param m Pointeur vers le monstre à supprimer
  */
-extern void deleteMonster(Monster* m);
+void deleteMonster(Monster* m);
 
-extern int isDead(Monster* m);
+/*!
+ * \fn int isDead(Monster* m)
+ * \brief Défini si le monstre est vivant ou non
+ *
+ * \param m Pointeur vers le monstre à supprimer
+ * \return 1 si le monstre est mort, 0 sinon
+ */
+int isDead(Monster* m);
 
 #endif

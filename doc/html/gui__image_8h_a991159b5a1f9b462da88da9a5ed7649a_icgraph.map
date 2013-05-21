@@ -1,0 +1,10 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$gui_8h.html#a4c358cdc94a71ebf47fb317c7b99c110" title="dessine le niveau de widgets demandé" alt="" coords="143,184,225,213"/>
+<area shape="rect" id="node5" href="$gui_8h.html#a921be0fbd9c7f926b212a87af295707c" title="dessine l&#39;intégralité des widgets enregistrés" alt="" coords="283,29,381,59"/>
+<area shape="rect" id="node9" href="$jeu_8h.html#ad531a9fca877560d9fb111a66e965b7b" title="Affiche le menu principal." alt="" coords="276,184,388,213"/>
+<area shape="rect" id="node15" href="$jeu_8h.html#a9f37fde344a841a4ace642433d69bfb2" title="Affiche le menu d&#39;aide." alt="" coords="276,107,388,136"/>
+<area shape="rect" id="node19" href="$jeu_8h.html#ac5513b11925beef96d7ceb6a34539c03" title="Boucle de jeu." alt="" coords="309,339,355,368"/>
+<area shape="rect" id="node26" href="$jeu_8h.html#a07839dce3c40244319de22a659319ca4" title="Affiche le menu de victoire/défaite." alt="" coords="279,261,385,291"/>
+<area shape="rect" id="node11" href="$jeu_8h.html#a3bd019c071fe96105524873879e16c06" title="Lance la boucle de menus." alt="" coords="471,223,551,252"/>
+<area shape="rect" id="node21" href="$jeu_8h.html#a3e35ab34cc98e7429c1146ad64645716" title="Lance une partie directement avec la carte map." alt="" coords="437,300,584,329"/>
+</map>

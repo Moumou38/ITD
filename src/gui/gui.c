@@ -123,6 +123,12 @@ int GUI_PollEvent(GUI_Event* gui)
 	}
 }
 
+void GUI_ClearEvents()
+{
+	GUI_Event ev;
+	while(GUI_PollEvent(&ev));
+}
+
 void GUI_RegisterButton(Button* b)
 {
 	GUI_Widget* w = malloc(sizeof(GUI_Widget));

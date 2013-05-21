@@ -27,43 +27,72 @@
 #include "tools.h"
 
 /*!
- * \fn extern GLuint loadTexture(SDL_Surface* tex)
+ * \fn GLuint loadTexture(SDL_Surface* tex)
  * \brief Charge une texture
  *
  * \param tex SDL_Surface à partir de laquelle on souhaite charger la texture
  * \return Entier pointant vers un espace mémoire sur la carte graphique
  */
-extern GLuint loadTexture(SDL_Surface* tex);
+GLuint loadTexture(SDL_Surface* tex);
 
 /*!
- * \fn extern SDL_Surface* loadImage(char* image)
+ * \fn SDL_Surface* loadImage(char* image)
  * \brief Charge une image
  *
  * \param image Chemin de l'image que l'on veut charger
  * \return SDL_Surface contenant l'image que l'on a chargé
  */
-extern SDL_Surface* loadImage(const char* image);
+SDL_Surface* loadImage(const char* image);
 
 /*!
- * \fn extern void deleteImage(SDL_Surface* tex)
+ * \fn void deleteImage(SDL_Surface* tex)
  * \brief Supprime une Image
  *
  * \param tex Pointeur vers la SDL_Surface à supprimer
  */
-extern void deleteImage(SDL_Surface* tex);
+void deleteImage(SDL_Surface* tex);
 
 /*!
- * \fn extern void deleteTexture(GLuint image)
+ * \fn void deleteTexture(GLuint image)
  * \brief Supprime une texture
  *
  * \param tex Pointeur vers la zone mémoire de la carte graphique à supprimer
  */
-extern void deleteTexture(GLuint image);
+void deleteTexture(GLuint image);
 
-extern void GetPixel(SDL_Surface* surface, int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* a);
+/*!
+ * \fn void GetPixel(SDL_Surface* surface, int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* a)
+ * \brief Récupère le pixel
+ *
+ * \param surface Surface dont on veut récupérer le pixel
+ * \param x Position en x du pixel
+ * \param y Position en y du pixel
+ * \param r Composante rouge du pixel
+ * \param g Composante vert du pixel
+ * \param b Composante bleu du pixel
+ * \param a Composante alpha(transparence) du pixel
+ */
+void GetPixel(SDL_Surface* surface, int x, int y, Uint8* r, Uint8* g, Uint8* b, Uint8* a);
 
-extern SDL_Surface* filterImage(SDL_Surface* s, SDL_Color filter);
+/*!
+ * \fn SDL_Surface* filterImage(SDL_Surface* s, SDL_Color filter)
+ * \brief Ajout d'un filtre de couleur sur une image
+ *
+ * \param s SDL_Surface à partir de laquelle on veut filtrer l'image
+ * \param filter La couleur du filtre
+ * \return La SDL_Surface résultante
+ */
+SDL_Surface* filterImage(SDL_Surface* s, SDL_Color filter);
 
-extern SDL_Surface* swapColorsImage(SDL_Surface* s, Color3ub old, Color3ub color);
+/*!
+ * \fn SDL_Surface* swapColorsImage(SDL_Surface* s, Color3ub old, Color3ub color)
+ * \brief Echange les couleurs d'une image
+ *
+ * \param s SDL_Surface à partir de laquelle on souhaite échanger des couleurs
+ * \param old Ancienne couleur
+ * \param color Nouvelle couleur
+ * \return La SDL_Surface résultante
+ */
+SDL_Surface* swapColorsImage(SDL_Surface* s, Color3ub old, Color3ub color);
 
 #endif

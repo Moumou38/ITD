@@ -24,6 +24,7 @@
 #include "tools.h"
 #include "monster.h"
 #include "resource.h"
+#include "projectile.h"
 
 /*!
  * \enum TYPE_TOWER
@@ -33,18 +34,19 @@ typedef enum{
 	ROCKET,
 	LASER,
 	MACHINEGUN,
-	HYBRID
+	HYBRID,
+	DISABLED
 } TYPE_TOWER;
 
-extern const int Rocket_Dmg;
-extern const int Laser_Dmg;
-extern const int Machinegun_Dmg;
-extern const int Hybrid_Dmg;
+const int Rocket_Dmg;
+const int Laser_Dmg;
+const int Machinegun_Dmg;
+const int Hybrid_Dmg;
 
-extern const int Rocket_Time;
-extern const int Laser_Time;
-extern const int Machinegun_Time;
-extern const int Hybrid_Time;
+const int Rocket_Time;
+const int Laser_Time;
+const int Machinegun_Time;
+const int Hybrid_Time;
 
 /**
  * \struct Tower
@@ -52,19 +54,24 @@ extern const int Hybrid_Time;
  *
  * Comporte une texture, des coordonnées, une taille, un type, le temps écoulé depuis le dernier tir et le monstre ciblé
  */
-typedef struct _tower{
-	GLuint tex;
-	Position coord;
-	int size;
-	float damages;
-	float range;
-	TYPE_TOWER type;
-	int msecSinceLastShot;
-	int lastUpdate;
-	int reloadTime;
-	int selected;
-	float angle;
-	Monster* target;
+typedef struct {
+	TYPE_TOWER type; 		/*!< Type */
+	Position coord;  		/*!< Position */
+	int size;				/*!< Taille*/
+	float damages;			/*!< Dégâts */
+	float range;			/*!< Portée */
+	Monster* target;		/*!< Cible */
+	Projectile* projectile; /*!< Projectile */
+	GLuint tex;				/*!< Texture */
+	int msecSinceLastShot;	/*!< Temps depuis le dernier tir*/
+	int lastUpdate;			/*!< Temps depuis la dernière update*/
+	int reloadTime;			/*!< Temps de rechargement de la tour*/
+	int selected;			/*!< 1 si la tour est sélectionnée, 0 sinon */
+	
+	int offset;				/*!< Offset texture */
+	int line;				/*!< Offset texture*/
+	int animTimer;			/*!< Temps depuis la dernière animation */
+	
 } Tower;
 
 /*!
@@ -85,7 +92,19 @@ Tower* createTower(Position coord, TYPE_TOWER type);
  */
 void drawTower(Tower* t, Vector3 camPos);
 
-void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Vector3 camPos);
+/*!
+ * \fn void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Vector3 camPos, int offset, int line)
+ * \brief Dessine une tour sans pointeur valide
+ *
+ * \param type Type de la tour
+ * \param pos Position de la tour
+ * \param selected 1 si la tour est sélectionnée, 0 sinon
+ * \param camPos Vecteur représentant la position de la caméra
+ * \param offset colonne de la texture
+ * \param line ligne de la texture
+ */
+void drawTower2(TYPE_TOWER type, Position pos, int selected, Vector3 camPos, int offset, int line);
+
 /*!
  * \fn void updateTower(Tower* t))
  * \brief Met à jour une tour
@@ -112,28 +131,97 @@ void deleteTower(Tower* t);
 void lookForBestTarget(Tower* t, List* monsters);
 
 /*!
- * \fn void shoot(Tower* t, Monster* target)
- * \brief 
+ * \fn Projectile* hasShot(Tower* t)
+ * \brief Fait tirer la tour
  *
  * \param t Pointeur vers la tour qui tire
- * \param target Pointeur vers le monstre ciblé
+ *
+ * \return Pointeur vers le projectile créé
  */
-void shoot(Tower* t, Monster* target);
+Projectile* hasShot(Tower* t);
 
+/*!
+ * \fn float damagesShot(Tower* t, Monster* target)
+ * \brief Calcul les dégâts infligés par la tour
+ *
+ * \param t Pointeur vers la tour qui tire
+ * \param target Pointeur vers le monstre ciblé.
+ *
+ * \return dégâts infligés.
+ */
+float damagesShot(Tower* t, Monster* target);
+
+/*!
+ * \fn int outOfRange(Position p1, Position p2, float range)
+ * \brief Cherche si un élément est dans la portée d'un autre élément
+ *
+ * \param p1 Position du premier élément (par exemple la tour)
+ * \param p2 Position du deuxième élément (par exemple le monstre)
+ * \param range Portée de la tour
+ * \return 1 si il est hors de la portée, 0 sinon.
+ */
 int outOfRange(Position p1, Position p2, float range);
 
+/*!
+ * \fn void onResumeTower(Tower* t)
+ * \brief Fait reprendre la tour
+ *
+ * \param t Pointeur vers la tour
+ */
 void onResumeTower(Tower* t);
 
+/*!
+ * \fn int getTowerCost(TYPE_TOWER type)
+ * \brief Donne le prix de la tour en fonction de son type
+ *
+ * \param type Type de la tour
+ * \return Le prix de la tour
+ */
 int getTowerCost(TYPE_TOWER type);
 
+/*!
+ * \fn void selectTower(Tower* t, Position coord)
+ * \brief Sélectionner une tour
+ *
+ * \param t Pointeur vers la tour
+ * \param coord Position de la tour (coordonnées x et y)
+ */
 void selectTower(Tower* t, Position coord);
 
+/*!
+ * \fn Position getTowerSize(TYPE_TOWER type)
+ * \brief Donne la taille de la tour en fonction de son type
+ *
+ * \param type Type de la tour
+ * \return La taille en x et en y
+ */
 Position getTowerSize(TYPE_TOWER type);
 
+/*!
+ * \fn float getTowerRange(TYPE_TOWER type)
+ * \brief Donne la portée de la tour en fonction de son type
+ *
+ * \param type Type de la tour
+ * \return La portée de la tour
+ */
 float getTowerRange(TYPE_TOWER type);
 
+/*!
+ * \fn GLuint getTowerTexture(TYPE_TOWER type)
+ * \brief Donne la texture de la tour en fonction de son type
+ *
+ * \param type Type de la tour
+ * \return L'identifiant de la texture
+ */
 GLuint getTowerTexture(TYPE_TOWER type);
 
+/*!
+ * \fn const char* getTowerName(TYPE_TOWER type)
+ * \brief Donne le nom de la tour en fonction de son type
+ *
+ * \param type Type de la tour
+ * \return Le nom de la tour
+ */
 const char* getTowerName(TYPE_TOWER type);
 
 /*!

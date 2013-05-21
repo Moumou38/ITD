@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$jeu_8h.html" title="Fonctions du jeu (menu, déroulement)." alt="" coords="83,237,440,267"/>
+<area shape="rect" id="node5" href="$tower_8h.html" title="Structures de données et fonctions des tours." alt="" coords="187,160,560,189"/>
+<area shape="rect" id="node8" href="$projectile_8h.html" title="Structures de données et fonctions des projectiles." alt="" coords="237,83,632,112"/>
+</map>

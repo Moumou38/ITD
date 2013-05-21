@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node4" href="$gui_8h.html#a2124aa28c179749505a55158e95edb6f" title="détruit tous les widgets enregistés." alt="" coords="188,29,271,59"/>
+<area shape="rect" id="node13" href="$gui_8h.html#aeb61c025ede9a878cb5134de41dd2df8" title="supprime le widget ayant l&#39;identifiant id." alt="" coords="159,107,300,136"/>
+<area shape="rect" id="node6" href="$gui_8h.html#a401d9c9d530e5beea0a886e434db19e3" title="détruit le module GUI" alt="" coords="349,29,427,59"/>
+<area shape="rect" id="node9" href="$jeu_8h.html#a3bd019c071fe96105524873879e16c06" title="Lance la boucle de menus." alt="" coords="475,29,555,59"/>
+</map>

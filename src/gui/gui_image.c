@@ -30,9 +30,9 @@ void drawImage(Image* t)
 	if(t == NULL)
 		return;
 
-	//glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindTexture(GL_TEXTURE_2D, t->tex[0]);
 	glColor3ub(255,255,255);
 	glBegin(GL_QUADS);
@@ -43,7 +43,7 @@ void drawImage(Image* t)
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-	//glDisable(GL_BLEND);
+	glDisable(GL_BLEND);
 	//printf("dessin!\n");
 }
 

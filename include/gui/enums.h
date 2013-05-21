@@ -1,7 +1,19 @@
+/*!
+ *	\file enums.h
+ *	\author André & Laury
+ *	\version 0.1
+ *	\date 10/04/13
+ *	
+ *	\brief Enumération et structures de données de la GUI
+ */
+
 #ifndef GUI_ENUMS
 #define GUI_ENUMS
 
-
+/*!
+ * \enum GUI_EventType
+ * \brief Type d'évènement GUI.
+ */
 typedef enum {
 	GUI_NONE,
 	GUI_ET_BUTTON,
@@ -9,6 +21,10 @@ typedef enum {
 	GUI_ET_TEXTAREA
 } GUI_EventType;
 
+/*!
+ * \enum GUI_WidgetType
+ * \brief Type de widget
+ */
 typedef enum {
 	GUI_BUTTON,
 	GUI_TEXT,
@@ -16,7 +32,10 @@ typedef enum {
 	GUI_IMAGE
 } GUI_WidgetType;
 
-/* Buttons */
+/*!
+ * \enum GUI_EventButtonAction
+ * \brief Type d'évènement déclenché par un bouton
+ */
 typedef enum {
 	GUI_BTEV_HOVER,
 	GUI_BTEV_LEFTHOVER,
@@ -26,6 +45,12 @@ typedef enum {
 	GUI_BTEV_NONE
 } GUI_EventButtonAction;
 
+
+/**
+ * \struct GUI_ButtonEvent
+ * \brief Evènement déclenché par un bouton
+ *
+ */
 typedef struct {
 	GUI_EventType type;
 	unsigned int id;
@@ -33,6 +58,10 @@ typedef struct {
 } GUI_ButtonEvent;
 
 /* Text */
+/*!
+ * \enum GUI_EventTextAction
+ * \brief Type d'évènement déclenché par un texte
+ */
 typedef enum {
 	GUI_TXEV_HOVER,
 	GUI_TXEV_LEFTHOVER,
@@ -42,12 +71,20 @@ typedef enum {
 	GUI_TXEV_NONE
 } GUI_EventTextAction;
 
+/**
+ * \struct GUI_TextEvent
+ * \brief Evènement déclenché par un texte
+ */
 typedef struct {
 	GUI_EventType type;
 	unsigned int id;
 	GUI_EventTextAction action;
 } GUI_TextEvent;
 
+/*!
+ * \union GUI_Event
+ * \brief Evènement déclenché par l'interface utilisateur.
+ */
 typedef union {
 	GUI_EventType type;
 	GUI_ButtonEvent button;

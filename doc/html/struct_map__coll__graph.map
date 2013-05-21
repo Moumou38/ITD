@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$struct_position.html" title="Représente une position." alt="" coords="5,5,75,35"/>
+<area shape="rect" id="node6" href="$struct__node.html" title="Représente une liste de noeuds." alt="" coords="103,117,159,147"/>
+<area shape="rect" id="node4" href="$struct_vector3.html" title="Représente une position en 3D." alt="" coords="236,117,303,147"/>
+<area shape="rect" id="node8" href="$struct_color3ub.html" title="Représente une couleur RGB sur 24bits.." alt="" coords="107,5,181,35"/>
+</map>

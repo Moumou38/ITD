@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node4" href="$image_8h.html#a89d9d655c47626f3c7013959854559c7" title="Echange les couleurs d&#39;une image." alt="" coords="127,29,252,59"/>
+<area shape="rect" id="node7" href="$map_8h.html#a1578bbb670c1208ca37fda6ba5941c12" title="Charge une carte de jeu." alt="" coords="303,29,372,59"/>
+<area shape="rect" id="node9" href="$jeu_8h.html#a3e35ab34cc98e7429c1146ad64645716" title="Lance une partie directement avec la carte map." alt="" coords="421,29,568,59"/>
+</map>

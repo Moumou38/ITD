@@ -15,25 +15,28 @@ Map* loadMap(char const* map){
 	f = fopen(map, "rb");
 
 	if(f == NULL){
-		fprintf(stderr, "Impossible d'ouvrir le fichier %s. Fin du programme.\n", map);
+		fprintf(stderr, "Impossible d'ouvrir le fichier %s.\n", map);
 		return NULL;
 	}else{
-		printf("Fichier bien chargé !\n");
 	}
 
 	//Nom de l'image représentant la carte
 	fscanf(f, "%s", img);
 	if (strcmp(img, "@ITD") != 0){
-		fprintf(stderr, "Le fichier n'est pas une carte valide. Fin du programme.\n");
+		fprintf(stderr, "Le fichier %s n'est pas une carte valide.\n", map);
+		fclose(f);
 		return NULL;
 	}
 	fscanf(f, "%d", &num);
 	if (num != 1){
-		fprintf(stderr, "La version du fichier n'est pas valide. Fin du programme.\n");
+		fprintf(stderr, "La version du fichier %s n'est pas valide.\n", map);
+		fclose(f);
 		return NULL;
 	}
 
 	int full =0, cnt = 0;
+
+	unsigned int flag = 0;
 
 	while(full == 0){
 		cnt = fscanf(f, "%s", img);
@@ -44,70 +47,107 @@ Map* loadMap(char const* map){
 			sprintf(tmp,"images/%s", img);
 			m->ppm = loadImage(tmp);
 			free(tmp);
+			flag |= 0x00000001;
+			//printf("carte %d\n", flag);
 		}else if (strcmp(img, "energie") == 0){
 			fscanf(f, "%d", &num);
 			energie = num;
+			flag |= 0x00000010;//printf("energie %d\n", flag);
 		}else if (strcmp(img, "chemin") == 0){
 			fscanf(f, "%d %d %d",&r, &g, &b);
 			tete->path.r = r;
 			tete->path.g = g;
 			tete->path.b = b;
+			flag |= 0x00000100;//printf("chemin %d\n", flag);
 		}else if (strcmp(img, "noeud") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			tete->color.r = r;
 			tete->color.g = g;
 			tete->color.b = b;
+			flag |= 0x00001000;//printf("noeud %d\n", flag);
 		}else if (strcmp(img, "construct") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			construct.r = r;
 			construct.g = g;
 			construct.b = b;
+			flag |= 0x00010000;//printf("construct %d\n", flag);
 		}else if (strcmp(img, "in") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			in.r = r;
 			in.g = g;
 			in.b = b;
+			flag |= 0x00100000;//printf("in %d\n", flag);
 		}else if (strcmp(img, "out") == 0){
 			fscanf(f, "%d %d %d", &r, &g, &b);
 			out.r = r;
 			out.g = g;
 			out.b = b;
+			flag |= 0x01000000;//printf("out %d\n", flag);
 		}else {
 			long int longnum = strtol(img,NULL, 10);
 			if(longnum != 0 && longnum != LONG_MAX && longnum != LONG_MIN){
 				full=1;
 				num = (int)longnum;
+				flag |= 0x10000000;//printf("num %d\n", flag);
 			}else{
-				printf("La carte n'a pas un format valide.\n");
-				exit(-1);
+				break;
 			}
 		}
-
+	}
+	//printf("flag %d %d %d\n", flag, 0x11111111, flag & 0x11111111);
+	if(flag != 0x11111111)
+	{
+		if(flag & 0x00000001)
+		{
+			deleteImage(m->ppm);
+		}
+		free(m);
+		free(tete);
+		printf("Impossible de charger la map!\n");
+		fclose(f);
+		return NULL;
 	}
 
 	Node* tmp = tete;
 	fscanf(f, "%f %f", &(tete->coord.x), &(tete->coord.y));
 	tete->coord.y += 50.f;
+
+	int nOk = 1;
 	for(i=1; i<num; i++){
 		Node* n = malloc(sizeof(Node));
 		n->next = NULL;
 		n->color = tete->color;
 		n->path = tete->path;
-		fscanf(f, "%f %f", &(n->coord.x), &(n->coord.y));
+		cnt = fscanf(f, "%f %f", &(n->coord.x), &(n->coord.y));
+		if(cnt != 2)
+		{
+			free(n);
+			nOk = 0;
+			break;
+		}
 		n->coord.y += 50.f;
 		tmp->next = n;
 		tmp = n;
 	}
-	m->nodes = tete;
-	m->camPos.x = 0; m->camPos.y = 0; m->camPos.z = .5f;
-	m->camDir.x = 0; m->camDir.y = 0;
-	m->drawNodes = 0;
+	if(!nOk) {
+		freeList(&tete);
+		deleteImage(m->ppm);
+		free(m);
+		printf("Erreur lors de la lecture des nodes.\nImpossible de charger la map!\n");
+		fclose(f);
+		return NULL;
+	} else {
+		m->nodes = tete;
+		m->camPos.x = 0; m->camPos.y = 0; m->camPos.z = .5f;
+		m->camDir.x = 0; m->camDir.y = 0;
+		m->drawNodes = 0;
 
-	Color3ub old = {120,120,120};
-	SDL_Surface* image = swapColorsImage(m->ppm, old, construct);	
-	m->tex = loadTexture(image);
-	SDL_FreeSurface(image);
-
+		Color3ub old = {120,120,120};
+		SDL_Surface* image = swapColorsImage(m->ppm, old, construct);	
+		m->tex = loadTexture(image);
+		SDL_FreeSurface(image);
+		fclose(f);
+	}
 	return m;
 
 }
@@ -254,13 +294,7 @@ int collideWithMap(Map* m, Position pos, Position size, Vector3 camPos)
 	if(pos.x-m->camPos.x < 0 || (pos.x+size.x)-m->camPos.x >= MAP_WIDTH || pos.y- m->camPos.y < 0 || (pos.y+size.y)- m->camPos.y >= MAP_HEIGHT)
 		return 1;
 
-	glBegin(GL_QUADS);
-		glColor3ub(255,0,0);
-		glVertex2f((pos.x+2)-camPos.x			, (pos.y+2)-camPos.y +50.f);
-		glVertex2f((pos.x+size.x -2)-camPos.x	, (pos.y+2)-camPos.y +50.f);
-		glVertex2f((pos.x+size.x -2)-camPos.x	, (pos.y+size.y -2)-camPos.y +50.f);
-		glVertex2f((pos.x+2)-camPos.x			, (pos.y+size.y -2)-camPos.y +50.f);
-	glEnd();
+
 
 	int h, w;
 	for(w = (pos.x+2); w<(pos.x+size.x -2); w++)

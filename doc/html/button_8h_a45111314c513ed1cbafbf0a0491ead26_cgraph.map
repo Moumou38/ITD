@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node4" href="$button_8h.html#a30784e245983ab8303e97ad76ca38829" title="mouseInButton" alt="" coords="347,51,456,80"/>
+<area shape="rect" id="node7" href="$button_8h.html#a1b10e86995db99862ea00eed83c34b90" title="isButtonClicked" alt="" coords="344,155,459,184"/>
+<area shape="rect" id="node10" href="$button_8h.html#a58a8a9a4e38feaa2531273995148afb4" title="Action au survol du bouton." alt="" coords="200,128,291,157"/>
+<area shape="rect" id="node15" href="$button_8h.html#a75f4ebf5550aacb974be7d16694eb9b7" title="clickedButton" alt="" coords="195,51,296,80"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$struct__position.html" title="_position" alt="" coords="5,5,80,35"/>
+<area shape="rect" id="node6" href="$struct_projectile.html" title="Représente un projectile infligeant des dégâts." alt="" coords="71,117,145,147"/>
+<area shape="rect" id="node4" href="$struct_monster.html" title="Représente un monstre ennemi." alt="" coords="116,5,185,35"/>
+</map>

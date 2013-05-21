@@ -1,10 +1,5 @@
 #include "resource.h"
 
-typedef struct {
-	char* name;
-	GLuint data;
-} Resource;
-
 List* textures = NULL;
 
 void deleteResource(Resource* r)
@@ -12,7 +7,7 @@ void deleteResource(Resource* r)
 	if(r == NULL)
 		return;
 
-	printf("Freed: %s\n", r->name);
+	//printf("Freed: %s\n", r->name);
 	free(r->name);
 	deleteTexture(r->data);
 	free(r);
@@ -22,7 +17,7 @@ void initResourcesManager()
 {
 	if(textures == NULL) {
 		textures = list_init();
-		printf("Resources Manager Initialized\n");
+		//printf("Resources Manager Initialized\n");
 	}
 }
 
@@ -35,7 +30,7 @@ void deleteResourcesManager()
 		list_remove(textures, 0);
 	}
 	list_delete(textures);
-	printf("Resources Manager Destroyed\n");
+	//printf("Resources Manager Destroyed\n");
 }
 
 Resource* createResource(const char* name)
@@ -47,7 +42,7 @@ Resource* createResource(const char* name)
 	SDL_Surface* tmp = loadImage(name);
 	r->data = loadTexture(tmp);
 	SDL_FreeSurface(tmp);
-	printf("Loaded: %s\n", name);
+	//printf("Loaded: %s\n", name);
 	return r;
 }
 

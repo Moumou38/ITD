@@ -28,11 +28,14 @@
  * \brief Toutes les options du menu principal
  */
 typedef enum {
-	MENU_EXIT = 0, /*!< Quitter le jeu */
-	MENU_MAP = 1, /*!< Affichage des maps */
-	MENU_HELP = 2, /*!< Affichage de l'aide */
-	MENU_GAME = 4, /*!< Menu en jeu */
-	MENU_GENERAL = 8 /*!< Menu principal */
+	MENU_EXIT = 0, 		/*!< Quitter le jeu */
+	MENU_MAP = 1, 		/*!< Affichage des maps */
+	MENU_HELP = 2, 		/*!< Affichage de l'aide */
+	MENU_HELP2 = 4,		/*!< Affichage de l'aide 2 */
+	MENU_GAME = 8, 		/*!< Menu en jeu */
+	MENU_VICTORY = 16,	/*!< écran de victoire */
+	MENU_DEFEAT = 32,	/*!< écran de défaite */
+	MENU_GENERAL = 64 	/*!< Menu principal */
 } MENU_CHOICE;
 
 /*!
@@ -44,12 +47,12 @@ typedef enum {
 void launchGameWithMap(const char* map);
 
 /*!
- * \fn List* getMapList()
- * \brief Créer la liste des cartes
+ * \fn int loadMapList()
+ * \brief Charge la liste des cartes
  *
- * \return La liste de cartes
+ * \return le nombre de cartes chargées
  */
-List* getMapList();
+int loadMapList();
 
 /*!
  * \fn int startMenu()
@@ -68,12 +71,12 @@ int startMenu();
 MENU_CHOICE showMainMenu();
 
 /*!
- * \fn Map* showMapMenu()
+ * \fn Map* showMapMenu(int count)
  * \brief Affiche le menu de sélection de map
  * 
  * \return La carte chargée.
  */
-Map* showMapMenu();
+Map* showMapMenu(int count);
 
 /*!
  * \fn void showHelpMenu()
@@ -102,18 +105,24 @@ int play(Map* map);
 void createWave(int level, List* monsters, Map* map);
 
 /*!
- * \fn int createWave(int level, List* monsters, Map* map)
- * \brief Créé une vague de monstres
+ * \fn int canPlaceTower(Map* map, List* towers, Position coord, Position size)
+ * \brief Vérifie si une tour peut être placée
  *
- * \param level niveau de la vague à créer
- * \param monsters Liste de monstres à remplir
  * \param map carte du jeu
- *
+ * \param towers liste des tours
+ * \param coord position de la tour à placer
+ * \param size taille de la tour
  * \return 1 si la tour peut être placée, 0 sinon.
  */
 int canPlaceTower(Map* map, List* towers, Position coord, Position size);
 
-
+/*!
+ * \fn void removeTower(List* towers, Tower* tower);
+ * \brief Supprime une tour de la liste de tours
+ *
+ * \param towers Liste des tours
+ * \param tower Tour à supprimer
+ */
 void removeTower(List* towers, Tower* tower);
 
 /*!

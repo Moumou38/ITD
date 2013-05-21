@@ -33,7 +33,7 @@
  *
  * Comporte 3 canaux pour les 3 composantes de la couleur.
  */
-typedef struct _color3ub{
+typedef struct {
 	unsigned char r; /*!< Canal rouge */
 	unsigned char g; /*!< Canal vert */
 	unsigned char b; /*!< Canal bleu */
@@ -45,7 +45,7 @@ typedef struct _color3ub{
  *
  * Comporte une position en x (abscisse) et une position en y (ordonnée)
  */
-typedef struct _position{
+typedef struct {
 	float x;
 	float y;
 } Position;
@@ -56,7 +56,7 @@ typedef struct _position{
  *
  * Comporte une position en x (abscisse), une position en y (ordonnée) et une position en z (hauteur)
  */
-typedef struct _Vector3{
+typedef struct {
 	float x;
 	float y;
 	float z;
@@ -64,7 +64,7 @@ typedef struct _Vector3{
 
 
 /**
- * \struct Node
+ * \struct _node Node
  * \brief Représente une liste de noeuds
  *
  * Comporte une couleur, une position et un pointeur vers son suivant

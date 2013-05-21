@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node4" href="$gui_8h.html#ae76cbd739235ae89ea83c70afaa8be6c" title="Créé un évènement de gui." alt="" coords="212,29,324,59"/>
+<area shape="rect" id="node7" href="$button_8h.html#a45111314c513ed1cbafbf0a0491ead26" title="Ajoute un événement sur un bouton." alt="" coords="199,107,337,136"/>
+<area shape="rect" id="node10" href="$button_8h.html#a30784e245983ab8303e97ad76ca38829" title="mouseInButton" alt="" coords="539,68,648,97"/>
+<area shape="rect" id="node13" href="$button_8h.html#a1b10e86995db99862ea00eed83c34b90" title="isButtonClicked" alt="" coords="536,172,651,201"/>
+<area shape="rect" id="node16" href="$button_8h.html#a58a8a9a4e38feaa2531273995148afb4" title="Action au survol du bouton." alt="" coords="392,145,483,175"/>
+<area shape="rect" id="node21" href="$button_8h.html#a75f4ebf5550aacb974be7d16694eb9b7" title="clickedButton" alt="" coords="387,68,488,97"/>
+</map>

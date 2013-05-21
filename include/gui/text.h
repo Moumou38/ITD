@@ -22,38 +22,89 @@
 #include "image.h"
 #include "gui/enums.h"
 
+/*!
+ * \enum FONT_SIZE
+ * \brief Différentes tailles de police
+ */
 typedef enum {
-	FONT_8 = 0,
-	FONT_12 = 1,
-	FONT_24 = 2,
-	FONT_32 = 3,
-	FONT_48 = 4,
-	MAX_FONTS = 5
+	FONT_8,		/*!< Taille 8 */
+	FONT_12,	/*!< Taille 12 */
+	FONT_24,	/*!< Taille 24 */
+	FONT_32,	/*!< Taille 32 */
+	FONT_48,	/*!< Taille 48 */
+	MAX_FONTS	/*!< nombre max de polices */
 } FONT_SIZE;
 
-
+/**
+ * \struct Text
+ * \brief Représente un texte
+ * 
+ */
 typedef struct {
-	unsigned int id;
-	unsigned int type;
-	char* text;
-	GLuint tex[1];
-	Position pos, size;
-	SDL_Color color;
-	TTF_Font* font;
+	unsigned int id;	/*!< identifiant */
+	unsigned int type;	/*!< GUI_TEXT */
+	char* text;			/*!< texte */
+	GLuint tex[1];		/*!< texture */
+	Position pos;		/*!< position */
+	Position size;		/*!< taille */
+	SDL_Color color;	/*!< Couleur  */
+	TTF_Font* font;		/*!< Police */
 } Text;
 
-extern TTF_Font *polices[MAX_FONTS];
 
-extern void Text_Init();
+TTF_Font *polices[MAX_FONTS];
 
-extern void Text_Quit();
+/*!
+ * \fn void Text_Init()
+ * \brief Initialise le module d'écriture de texte.
+ *
+ */
+void Text_Init();
 
-extern Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, FONT_SIZE size);
+/*!
+ * \fn void Text_Quit()
+ * \brief ferme le module d'écriture de texte.
+ *
+ */
+void Text_Quit();
 
-extern void setText(Text* t, const char* text);
+/*!
+ * \fn Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, FONT_SIZE size)
+ * \brief Créé un widget de texte.
+ *
+ * \param id	identifiant du nouveau texte
+ * \param text	texte affiché
+ * \param color	couleur du texte
+ * \param px	position x du texte
+ * \param py	position y du texte
+ * \param size	taille de la police
+ * \return Pointeur vers un widget de texte valide.
+ */
+Text* createText(unsigned int id, char* text, SDL_Color color, int px, int py, FONT_SIZE size);
 
-extern void drawText(Text* t);
+/*!
+ * \fn void setText(Text* t, const char* text)
+ * \brief Modifie un texte
+ *
+ * \param t Pointeur vers le texte à modifier
+ * \param text Nouveau texte
+ */
+void setText(Text* t, const char* text);
 
-extern void removeText(Text* t);
+/*!
+ * \fn void drawText(Text* t)
+ * \brief Dessine un texte
+ *
+ * \param t Pointeur vers le texte à dessiner
+ */
+void drawText(Text* t);
+
+/*!
+ * \fn void removeText(Text* t)
+ * \brief Supprime un texte
+ *
+ * \param t Pointeur vers le texte à supprimer
+ */
+void removeText(Text* t);
 
 #endif

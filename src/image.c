@@ -25,7 +25,7 @@ GLuint loadTexture(SDL_Surface* tex){
 			break;
 		default:
 			fprintf(stderr, "Format des pixels de l’image non pris en charge\n");
-			exit(-1);
+			return 0;
 	}
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex->w, tex->h, 0, format, GL_UNSIGNED_BYTE, tex->pixels); 
@@ -38,12 +38,9 @@ GLuint loadTexture(SDL_Surface* tex){
 SDL_Surface* loadImage(const char* image){
 	SDL_Surface* tex = IMG_Load(image);
 	if (tex == NULL){
-		fprintf(stderr, "Impossible d'afficher l'image. Fin du programme.\n");
-		exit(-1);
-	} else {
-		return tex;
+		fprintf(stderr, "Impossible d'afficher l'image %s.\n", image);
 	}
-
+	return tex;
 }	
 
 void deleteImage(SDL_Surface* tex){

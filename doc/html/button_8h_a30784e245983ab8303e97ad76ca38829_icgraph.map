@@ -1,0 +1,12 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$button_8h.html#a45111314c513ed1cbafbf0a0491ead26" title="Ajoute un événement sur un bouton." alt="" coords="316,145,455,175"/>
+<area shape="rect" id="node31" href="$button_8h.html#a58a8a9a4e38feaa2531273995148afb4" title="Action au survol du bouton." alt="" coords="171,145,261,175"/>
+<area shape="rect" id="node35" href="$button_8h.html#a75f4ebf5550aacb974be7d16694eb9b7" title="clickedButton" alt="" coords="165,223,267,252"/>
+<area shape="rect" id="node6" href="$gui_8h.html#a4b58b2a86fd0caf2429c2dcd7fafac29" title="Teste si l&#39;évènement event déclenche un évènement GUI." alt="" coords="505,145,647,175"/>
+<area shape="rect" id="node9" href="$jeu_8h.html#ad531a9fca877560d9fb111a66e965b7b" title="Affiche le menu principal." alt="" coords="697,29,809,59"/>
+<area shape="rect" id="node15" href="$jeu_8h.html#a9f37fde344a841a4ace642433d69bfb2" title="Affiche le menu d&#39;aide." alt="" coords="697,107,809,136"/>
+<area shape="rect" id="node19" href="$jeu_8h.html#ac5513b11925beef96d7ceb6a34539c03" title="Boucle de jeu." alt="" coords="731,184,776,213"/>
+<area shape="rect" id="node26" href="$jeu_8h.html#a07839dce3c40244319de22a659319ca4" title="Affiche le menu de victoire/défaite." alt="" coords="700,261,807,291"/>
+<area shape="rect" id="node11" href="$jeu_8h.html#a3bd019c071fe96105524873879e16c06" title="Lance la boucle de menus." alt="" coords="892,127,972,156"/>
+<area shape="rect" id="node21" href="$jeu_8h.html#a3e35ab34cc98e7429c1146ad64645716" title="Lance une partie directement avec la carte map." alt="" coords="859,243,1005,272"/>
+</map>

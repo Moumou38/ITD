@@ -23,10 +23,10 @@ Monster* createMonster(TYPE_MONSTER type, float life, Node* start, GLint timer){
 		case NORMAL:
 			m->tex = getTexture("images/game/pokeball.png");
 			m->mvtTime = 100/Normal;
-			m->resist.resistRocket = 8; 
-			m->resist.resistHybrid = 5;
-			m->resist.resistMachinegun = 6;
-			m->resist.resistLaser = 4;
+			m->resist.resistRocket = 0.8; 
+			m->resist.resistHybrid = 0.8;
+			m->resist.resistMachinegun = 0.8;
+			m->resist.resistLaser = 0.8;
 			break;
 		case FLYER:
 			m->tex = getTexture("images/game/flyer.png");
@@ -34,26 +34,26 @@ Monster* createMonster(TYPE_MONSTER type, float life, Node* start, GLint timer){
 			while(m->direction->next != NULL)
 				m->direction = m->direction->next;
 			m->mvtTime = 100/Flyer;
-			m->resist.resistRocket = 2; 
-			m->resist.resistHybrid = 3;
-			m->resist.resistMachinegun = 4;
-			m->resist.resistLaser = 1;
+			m->resist.resistRocket = 0.9; 
+			m->resist.resistHybrid = 0.8;
+			m->resist.resistMachinegun = 0;
+			m->resist.resistLaser = 1.5;
 			break;
 		case FAST:
 			m->tex = getTexture("images/game/pokeballY.png");
 			m->mvtTime = 100/Fast;
-			m->resist.resistRocket = 5; 
-			m->resist.resistHybrid = 2;
-			m->resist.resistMachinegun = 2;
-			m->resist.resistLaser = 3;
+			m->resist.resistRocket = 0.4; 
+			m->resist.resistHybrid = 0.4;
+			m->resist.resistMachinegun = 0.8;
+			m->resist.resistLaser = 0.6;
 			break;
 		case SLOW:
 			m->tex = getTexture("images/game/pokeballB.png");
 			m->mvtTime = 100/Slow;
-			m->resist.resistRocket = 10; 
-			m->resist.resistHybrid = 12;
-			m->resist.resistMachinegun = 13;
-			m->resist.resistLaser = 11;
+			m->resist.resistRocket = 0.2; 
+			m->resist.resistHybrid = 0.2;
+			m->resist.resistMachinegun = 0.2;
+			m->resist.resistLaser = 0.2;
 			break;
 		default:
 			m->tex = 0;
@@ -120,10 +120,10 @@ void drawMonster(Monster* m, Vector3 camPos)
 		glVertex2f(-m->size.x/2.f, m->size.y/2.f+3.f);
 
 		glTexCoord2f(1.f,1.f); 
-		glVertex2f((m->size.x*m->life/m->life_max)-m->size.x/2.f, m->size.y/2.f+3.f);
+		glVertex2f((m->size.x*m->life/m->life_max)-m->size.x/2.f+1, m->size.y/2.f+3.f);
 
 		glTexCoord2f(1.f, 0.f); 
-		glVertex2f((m->size.x*m->life/m->life_max)-m->size.x/2.f, m->size.y/2.f+6.f);
+		glVertex2f((m->size.x*m->life/m->life_max)-m->size.x/2.f+1, m->size.y/2.f+6.f);
 	glEnd();
 	glPopMatrix();
 }

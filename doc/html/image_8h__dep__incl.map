@@ -1,0 +1,12 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$button_8h.html" title="Structures de données et fonctions des boutons." alt="" coords="5,83,403,112"/>
+<area shape="rect" id="node9" href="$gui__image_8h.html" title="/home/andre/Documents/Cours/OpenGL/ITD/include/gui/gui_image.h" alt="" coords="427,83,848,112"/>
+<area shape="rect" id="node12" href="$text_8h.html" title="Structures de données et fonctions du text." alt="" coords="872,83,1256,112"/>
+<area shape="rect" id="node15" href="$map_8h.html" title="Structures de données et fonctions de la carte." alt="" coords="941,237,1307,267"/>
+<area shape="rect" id="node18" href="$resource_8h.html" title="Structures de données et fonctions du gestionnaire de ressources." alt="" coords="1380,83,1772,112"/>
+<area shape="rect" id="node5" href="$gui_8h.html" title="/home/andre/Documents/Cours/OpenGL/ITD/include/gui/gui.h" alt="" coords="515,160,893,189"/>
+<area shape="rect" id="node7" href="$jeu_8h.html" title="Fonctions du jeu (menu, déroulement)." alt="" coords="1165,392,1523,421"/>
+<area shape="rect" id="node20" href="$monster_8h.html" title="Structures de données et fonctions des monstres." alt="" coords="1381,160,1771,189"/>
+<area shape="rect" id="node23" href="$tower_8h.html" title="Structures de données et fonctions des tours." alt="" coords="1463,315,1836,344"/>
+<area shape="rect" id="node26" href="$projectile_8h.html" title="Structures de données et fonctions des projectiles." alt="" coords="1483,237,1877,267"/>
+</map>

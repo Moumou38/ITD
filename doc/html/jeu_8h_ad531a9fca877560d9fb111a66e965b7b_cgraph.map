@@ -1,0 +1,14 @@
+<map id="G" name="G">
+<area shape="rect" id="node4" href="$gui_8h.html#a4c358cdc94a71ebf47fb317c7b99c110" title="dessine le niveau de widgets demandé" alt="" coords="199,145,281,175"/>
+<area shape="rect" id="node16" href="$gui_8h.html#a4b58b2a86fd0caf2429c2dcd7fafac29" title="Teste si l&#39;évènement event déclenche un évènement GUI." alt="" coords="169,261,311,291"/>
+<area shape="rect" id="node40" href="$gui_8h.html#ac57a291e71ed2e8a690e669e3ca39457" title="Remplis un GUI_Event des informations du premier évènement GUI dans la file." alt="" coords="185,339,295,368"/>
+<area shape="rect" id="node7" href="$button_8h.html#a6b67bf2074065c1eb71a94658a8e37f7" title="Dessine un bouton." alt="" coords="387,29,475,59"/>
+<area shape="rect" id="node10" href="$text_8h.html#ada8b702fc65bb121604c8acf2a4e0a44" title="Dessine un texte." alt="" coords="393,107,468,136"/>
+<area shape="rect" id="node13" href="$gui__image_8h.html#a991159b5a1f9b462da88da9a5ed7649a" title="Dessine une image." alt="" coords="388,184,473,213"/>
+<area shape="rect" id="node19" href="$gui_8h.html#ae76cbd739235ae89ea83c70afaa8be6c" title="Créé un évènement de gui." alt="" coords="375,261,487,291"/>
+<area shape="rect" id="node22" href="$button_8h.html#a45111314c513ed1cbafbf0a0491ead26" title="Ajoute un événement sur un bouton." alt="" coords="361,339,500,368"/>
+<area shape="rect" id="node25" href="$button_8h.html#a30784e245983ab8303e97ad76ca38829" title="mouseInButton" alt="" coords="701,300,811,329"/>
+<area shape="rect" id="node28" href="$button_8h.html#a1b10e86995db99862ea00eed83c34b90" title="isButtonClicked" alt="" coords="699,404,813,433"/>
+<area shape="rect" id="node31" href="$button_8h.html#a58a8a9a4e38feaa2531273995148afb4" title="Action au survol du bouton." alt="" coords="555,377,645,407"/>
+<area shape="rect" id="node36" href="$button_8h.html#a75f4ebf5550aacb974be7d16694eb9b7" title="clickedButton" alt="" coords="549,300,651,329"/>
+</map>

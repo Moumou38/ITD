@@ -1,0 +1,14 @@
+<map id="G" name="G">
+<area shape="rect" id="node13" href="$gui_8h.html" title="gui/gui.h" alt="" coords="725,237,795,267"/>
+<area shape="rect" id="node67" href="$map_8h.html" title="Structures de données et fonctions de la carte." alt="" coords="1245,315,1304,344"/>
+<area shape="rect" id="node75" href="$monster_8h.html" title="Structures de données et fonctions des monstres." alt="" coords="1588,237,1668,267"/>
+<area shape="rect" id="node81" href="$resource_8h.html" title="Structures de données et fonctions du gestionnaire de ressources." alt="" coords="1736,315,1819,344"/>
+<area shape="rect" id="node88" href="$tower_8h.html" title="Structures de données et fonctions des tours." alt="" coords="1515,83,1579,112"/>
+<area shape="rect" id="node20" href="$button_8h.html" title="Structures de données et fonctions des boutons." alt="" coords="715,315,805,344"/>
+<area shape="rect" id="node50" href="$text_8h.html" title="Structures de données et fonctions du text." alt="" coords="464,315,539,344"/>
+<area shape="rect" id="node58" href="$gui__image_8h.html" title="gui/gui_image.h" alt="" coords="856,315,968,344"/>
+<area shape="rect" id="node29" href="$tools_8h.html" title="Structures de données et fonctions des outils nécessaires." alt="" coords="1121,469,1183,499"/>
+<area shape="rect" id="node38" href="$image_8h.html" title="Structures de données et fonctions de l&#39;image ppm." alt="" coords="949,392,1016,421"/>
+<area shape="rect" id="node48" href="$enums_8h.html" title="Enumération et structures de données de la GUI." alt="" coords="579,392,672,421"/>
+<area shape="rect" id="node97" href="$projectile_8h.html" title="Structures de données et fonctions des projectiles." alt="" coords="1584,160,1669,189"/>
+</map>

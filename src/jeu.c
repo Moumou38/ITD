@@ -16,7 +16,7 @@ enum {
 	BTN_MACHINEGUN,
 	BTN_HYBRID,
 	BTN_EXIT_GAME,
-	BTN_LEAVE_HELP,
+	BTN_LEAVE,
 	BTN_SELL,
 	TXT_CASH,
 	TXT_WAVE,
@@ -24,7 +24,8 @@ enum {
 	TXT_COST,
 	TXT_FIELD3,
 	TXT_FIELD4,
-	TXT_FIELD5
+	TXT_FIELD5,
+	BTN_MAPSLIST
 };
 
 void reshape() {
@@ -55,6 +56,7 @@ void initGUI()
 	GUI_CreateButton(BTN_MAPS, MENU_GENERAL, "Maps", NULL, textColor2,250,60,150,70);
 	GUI_CreateButton(BTN_HELP, MENU_GENERAL, "Aide", NULL, textColor2,250,160,150,70);
 	GUI_CreateButton(BTN_EXIT, MENU_GENERAL, "Quitter", NULL, textColor3,10,500,150,70);
+	GUI_CreateText(0, MENU_MAP, "Choisissez la carte de jeu ", textColor, 10,10, FONT_48);
 	GUI_CreateText(0, MENU_GAME, "Argent: ", textColor, 0,0, FONT_32);
 	GUI_CreateText(0, MENU_GAME, "Wave: ", textColor, 300,0, FONT_32);
 	GUI_CreateText(TXT_CASH, MENU_GAME, "", textColor, 110,0, FONT_32);
@@ -71,7 +73,7 @@ void initGUI()
 	GUI_CreateButton(BTN_MACHINEGUN, MENU_GAME, NULL, "images/menus/machinegun.png", textColor, 625,185,50,50);
 	GUI_CreateButton(BTN_HYBRID, MENU_GAME, NULL, "images/menus/hybrid.png", textColor, 700,185,50,50);
 	GUI_CreateButton(BTN_EXIT_GAME, MENU_GAME, "Quitter", NULL, textColor, 610,500,180,70);
-	GUI_CreateText(0, MENU_HELP, "HELP", textColor2, 10,10, FONT_48);
+	GUI_CreateText(0, MENU_HELP | MENU_HELP2, "HELP", textColor2, 10,10, FONT_48);
 	GUI_CreateText(0, MENU_HELP, "Votre but est d'empecher les monstres essayant d'atteindre la sortie. ", textColor, 10,60, FONT_24);
 	GUI_CreateText(0, MENU_HELP, "en les detruisant. ", textColor, 10,90, FONT_24);
 	GUI_CreateText(0, MENU_HELP, "Vous commencez le jeu avec une petite somme d'argent. ", textColor, 10,120, FONT_24);
@@ -97,8 +99,30 @@ void initGUI()
 	GUI_CreateText(0, MENU_HELP, "Tours Hybrides: Elles ont une tres bonne portee ", textColor, 50,510, FONT_24);
 
 	GUI_CreateText(0, MENU_HELP, "et une bonne cadence de tir mais occasionnent peu de degats. ", textColor, 10,540, FONT_24);
+	GUI_CreateImage(0, MENU_VICTORY, "images/menus/victoire.png", 0, 0, 1.f, 1.f);
+	GUI_CreateImage(0, MENU_DEFEAT, "images/menus/defaite.png", 0, 0, 1.f, 1.f);
 
-	GUI_CreateButton(BTN_LEAVE_HELP, MENU_HELP, "Ok", NULL, textColor2, 680,480,100,100);
+	/*
+	*/
+	GUI_CreateText(0, MENU_HELP2, "Utilisez les touches directionnelles ", textColor, 10,60, FONT_24);
+	GUI_CreateText(0, MENU_HELP2, "pour vous deplacer sur la map. ", textColor, 10,80, FONT_24);
+	GUI_CreateImage(0, MENU_HELP2, "images/menus/keys.png", 50, 100, 0.2f, 0.2f);
+
+	GUI_CreateText(0, MENU_HELP2, "La touche P met en pause le jeu ", textColor, 10,410, FONT_24);
+	GUI_CreateImage(0, MENU_HELP2, "images/menus/P.png", 135, 440, 0.3f, 0.3f);
+	
+	GUI_CreateText(0, MENU_HELP2, "La touche N affiche le chemin ", textColor, 10,260, FONT_24);
+	GUI_CreateImage(0, MENU_HELP2, "images/menus/N.png", 135, 290, 0.3f, 0.3f);
+
+	GUI_CreateText(0, MENU_HELP2, "En mode construction, ", textColor, 400,100, FONT_24);
+	GUI_CreateText(0, MENU_HELP2, "le clic gauche place la tour ", textColor, 400,130, FONT_24);
+	GUI_CreateImage(0, MENU_HELP2, "images/menus/mouseleft.png", 400, 150, .3f, .3f);
+
+	GUI_CreateText(0, MENU_HELP2, "Le clic droit permet de sortir ", textColor, 400,350, FONT_24);
+	GUI_CreateText(0, MENU_HELP2, "du mode construction ", textColor, 400,380, FONT_24);
+	GUI_CreateImage(0, MENU_HELP2, "images/menus/mouse.png", 400, 400, .3f, .3f);
+
+	GUI_CreateButton(BTN_LEAVE, MENU_HELP | MENU_HELP2 | MENU_VICTORY | MENU_DEFEAT | MENU_MAP, "Ok", NULL, textColor2, 680,480,100,100);
 }
 
 void initSDL(){
@@ -120,49 +144,58 @@ void launchGameWithMap(const char* mapfile)
 		return;
 	initSDL();
 	Map* m = loadMap(mapfile);
-	int a = play(m);
-	if(a != -1)
-		showEndMenu(a);
+	if(m != NULL) {
+		int a = play(m);
+		if(a != -1)
+			showEndMenu(a);
+	}
 }
 
-List* getMapList(){
+int loadMapList(){
 	DIR* dir = opendir("./data");
 	struct dirent* file;
-	List* list_map = list_init();
+	SDL_Color textColor2 = {127,0,0};
 
 	if(dir == NULL)
 	{
 		fprintf(stderr, "Impossible d'ouvrir le dossier data!\n");
 		exit(-1);
 	}
-	//int i = 1;
+	int i = 0;
 	while((file = readdir(dir)) != NULL)
 	{
 		if(strstr(file->d_name, ".itd") != NULL)
 		{
-			char* map = malloc(sizeof(char)*(strlen(file->d_name)+1));
+			/*char* map = malloc(sizeof(char)*(strlen(file->d_name)+1));
 			list_append(list_map, map);
-			strcpy(map, file->d_name);
+			strcpy(map, file->d_name);*/
+			
+			GUI_CreateButton(BTN_MAPSLIST+i, MENU_MAP, file->d_name, NULL, textColor2, 300,100+70*i,200,50);
 			//printf("%d - %s\n", i++, file->d_name);
+			i++;
 		}
 	}
 	closedir(dir);
 
-	return list_map;
+	return i;
 }
 
 int startMenu()
 {
 	initSDL();
-	List* map_list = getMapList();
+	int map_count = loadMapList();
 	int choice;
 	do {
 		choice = showMainMenu();
 		if(choice == MENU_MAP)
 		{
-			Map* map = showMapMenu(map_list);
+			Map* map = showMapMenu(map_count);
 			if(map != NULL)
-				play(map);
+			{
+				int res = play(map);
+				if(res != -1)
+					showEndMenu(res);			
+			}
 			deleteMap(map);
 		} 
 		else if(choice == MENU_HELP)
@@ -170,13 +203,6 @@ int startMenu()
 			showHelpMenu();
 		}
 	} while(choice != MENU_EXIT);
-	while(list_size(map_list))
-	{
-		char* t = list_get(map_list, 0);
-		free(t);
-		list_remove(map_list, 0);
-	}
-	list_delete(map_list);
 
 	deleteResourcesManager();
 	GUI_Quit();
@@ -187,6 +213,7 @@ int startMenu()
 
 MENU_CHOICE showMainMenu()
 {
+	GUI_ClearEvents();
 	//int val = 0;
 	int running = 1;
 	while(running) {
@@ -255,38 +282,11 @@ MENU_CHOICE showMainMenu()
 	return MENU_EXIT;
 }
 
-Map* showMapMenu(List* map_list)
+Map* showMapMenu(int count)
 {
-	int i, size;
-	char* map;
-	printf("--- Menu Maps ---\n");
-	size = list_size(map_list);
-	for(i=0; i<size; i++){
-		map =list_get(map_list, i);
-		printf("%d - %s\n", i+1, map);
-	}
-	printf("0 - Quitter\n");
-	int choice;
-	do {
-		printf("choix: ");
-		scanf("%d", &choice);
-	} while(choice < 0 || choice > i);
-	if(choice == 0)
-		return NULL;
-	else{
-		map = list_get(map_list, choice-1);
-		char* tmp = malloc(sizeof(char)*(7+strlen(map)+1));
-		sprintf(tmp,"data/%s", map);
-		//printf("%s\n", map);
-		Map* m= loadMap(tmp);
-		free(tmp);
-		return m;
-	}
+	GUI_ClearEvents();
 
-}
-
-void showHelpMenu()
-{
+	Map* m = NULL;
 	int running = 1;
 	while(running) {
 		Uint32 start = SDL_GetTicks();
@@ -296,7 +296,7 @@ void showHelpMenu()
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 	
-		GUI_Draw(MENU_HELP);
+		GUI_Draw(MENU_MAP);
 		SDL_GL_SwapBuffers();
 
 		SDL_Event event;
@@ -312,8 +312,89 @@ void showHelpMenu()
 				switch(gui.type) {
 					case GUI_ET_BUTTON:
 							if(gui.button.action == GUI_BTEV_RELEASED) {
-								if(gui.button.id == BTN_LEAVE_HELP)  {
+								if(gui.button.id == BTN_LEAVE)  {
 									running = 0;
+								} 
+								int i;
+								for(i = 0; i<count; i++) {
+									if(gui.button.id == (BTN_MAPSLIST+i)) {
+										char* map = GUI_GetWidget(BTN_MAPSLIST+i)->w.button->text;
+										char* tmp = malloc(sizeof(char)*(7+strlen(map)+1));
+										sprintf(tmp,"data/%s", map);
+										m= loadMap(tmp);
+										free(tmp);
+										running = 0;
+									}
+								}
+							}
+						break;
+					default:
+						break;
+				}
+			}
+			
+			
+			switch(event.type) {
+				case SDL_KEYDOWN:
+			  		switch(event.key.keysym.sym){
+						case 'q' : 
+						case SDLK_ESCAPE : 
+							running = 0;
+							break;
+						default : 
+							break;
+					}
+					break;
+				  
+				default:
+					break;
+			}
+		}
+
+		Uint32 elapsed = SDL_GetTicks() - start;
+		if(elapsed < FRAMERATE_MILLISECONDS)
+		{
+			SDL_Delay(FRAMERATE_MILLISECONDS - elapsed);
+		}
+	}
+	return m;
+}
+
+void showHelpMenu()
+{
+	GUI_ClearEvents();
+
+	int menu = MENU_HELP;
+	int running = 1;
+	while(running) {
+		Uint32 start = SDL_GetTicks();
+
+		// dessin
+		glClear(GL_COLOR_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+	
+		GUI_Draw(menu);
+		SDL_GL_SwapBuffers();
+
+		SDL_Event event;
+		while(SDL_PollEvent(&event))
+		{
+			if(event.type == SDL_QUIT) {
+				running = 0;
+				break;
+			} 
+			GUI_ProceedEvents(&event);
+			GUI_Event gui;				
+			while(GUI_PollEvent(&gui)) {
+				switch(gui.type) {
+					case GUI_ET_BUTTON:
+							if(gui.button.action == GUI_BTEV_RELEASED) {
+								if(gui.button.id == BTN_LEAVE)  {
+									if(menu == MENU_HELP)
+										menu = MENU_HELP2;									
+									else	
+										running = 0;
 								} 
 							}
 						break;
@@ -350,12 +431,15 @@ void showHelpMenu()
 
 int play(Map* map)
 {
+	GUI_ClearEvents();
+
 	int placer_tour=0;
 	TYPE_TOWER placer_type = ROCKET;
 	int hover_type = -1;
 	List* towers = list_init();
 	List* monsters = list_init();
-	SDL_Color textColor = {255,255,255};
+	List* projectiles = list_init();
+
 	int cash = 100;
 	int pause = 1;
 	int wave = 0, state = 0, left = 0, right = 0, up = 0, down = 0;
@@ -376,8 +460,6 @@ int play(Map* map)
 	Text* field4txt = tmp->w.text;
 	tmp = GUI_GetWidget(TXT_FIELD5);
 	Text* field5txt = tmp->w.text;
-	tmp = GUI_GetWidget(BTN_SELL);
-	Button* sellbtn = tmp->w.button;
 
 	Tower* selectedTower = NULL;
 
@@ -387,7 +469,6 @@ int play(Map* map)
 	setText(wavetxt, buff);
 
 	Position cursor;
-	int tmpint = 0;
 	while(running)
 	{
 		Uint32 startTime = SDL_GetTicks();
@@ -409,14 +490,21 @@ int play(Map* map)
 			Tower* t = list_get(towers, i);
 			drawTower(t, map->camPos);
 		}
+		for(i = 0; i<list_size(projectiles); i++)
+		{
+			Projectile* p = list_get(projectiles, i);
+			drawProjectile(p, map->camPos);
+		}
 		
 		/* dessin de l'UI */
 		GUI_Draw(MENU_GAME);
 
 		if(placer_tour) {
 			Position size = getTowerSize(placer_type);
-			canPlaceTower(map, towers, cursor, size);
-			drawTower2(placer_type, cursor, 0.f, 1, map->camPos);
+			if(canPlaceTower(map, towers, cursor, size))
+				drawTower2(placer_type, cursor, 1, map->camPos, 1, 0);
+			else
+				drawTower2(DISABLED, cursor, 1, map->camPos, 1, 0);
 		}
 
 		SDL_GL_SwapBuffers();
@@ -434,8 +522,10 @@ int play(Map* map)
 				switch(gui.type) {
 					case GUI_ET_BUTTON:
 							if(gui.button.action == GUI_BTEV_RELEASED) {
-								if(gui.button.id == BTN_EXIT_GAME)
+								if(gui.button.id == BTN_EXIT_GAME) {
 									running = 0;
+									state = -1;								
+								}
 								else if(gui.button.id == BTN_ROCKET) {
 									placer_tour = 1; placer_type = ROCKET;
 								}
@@ -641,6 +731,7 @@ int play(Map* map)
 							break;
 						case SDL_BUTTON_RIGHT:
 							placer_tour = 0;
+							selectedTower = NULL;
 							break;
 						case SDL_BUTTON_WHEELUP:
 								map->camPos.z += 0.1f;
@@ -696,17 +787,37 @@ int play(Map* map)
 					lookForBestTarget(tow,monsters);
 
 				updateTower(tow);
+				Projectile* p = hasShot(tow);
+				if(p != NULL)
+					list_append(projectiles, p);
 				
 				t = t->next;
 			}
 
 			int i;
+			for(i=0;i<list_size(projectiles);i++)
+			{	
+				Projectile* p = list_get(projectiles, i);
+				updateProjectile(p);
+				if(p->hit)
+				{
+					deleteProjectile(p);
+					list_remove(projectiles, i--);
+				}
+			}
 			for(i=0;i<list_size(towers);i++)
 			{	
 				Tower* tow = list_get(towers, i);
 				if(tow->target != NULL && (isDead(tow->target) || outOfRange(tow->coord, tow->target->coord, tow->range)))
 					tow->target = NULL;
 			}
+			for(i=0;i<list_size(projectiles);i++)
+			{	
+				Projectile* p = list_get(projectiles, i);
+				if(p->target != NULL && isDead(p->target))
+					p->target = NULL;
+			}
+
 
 			for(i=0;i<list_size(monsters);i++)
 			{	
@@ -740,6 +851,7 @@ int play(Map* map)
 		}
 	}
 	
+	list_delete(projectiles);
 	list_delete(towers);
 	list_delete(monsters);
 	return state;
@@ -884,8 +996,70 @@ void removeTower(List* towers, Tower* tower)
 
 void showEndMenu(int victory)
 {
+	GUI_ClearEvents();
+	int menu;
 	if(victory)
-		printf("Victoire\n");
+		menu = MENU_VICTORY;
 	else
-		printf("Défaite!\n");
+		menu = MENU_DEFEAT;
+
+	int running = 1;
+	while(running) {
+		Uint32 start = SDL_GetTicks();
+
+		// dessin
+		glClear(GL_COLOR_BUFFER_BIT);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+	
+		GUI_Draw(menu);
+		SDL_GL_SwapBuffers();
+
+		SDL_Event event;
+		while(SDL_PollEvent(&event))
+		{
+			if(event.type == SDL_QUIT) {
+				running = 0;
+				break;
+			} 
+			GUI_ProceedEvents(&event);
+			GUI_Event gui;				
+			while(GUI_PollEvent(&gui)) {
+				switch(gui.type) {
+					case GUI_ET_BUTTON:
+							if(gui.button.action == GUI_BTEV_RELEASED) {
+								if(gui.button.id == BTN_LEAVE)  {
+									running = 0;
+								} 
+							}
+						break;
+					default:
+						break;
+				}
+			}
+			
+			
+			switch(event.type) {
+				case SDL_KEYDOWN:
+			  		switch(event.key.keysym.sym){
+						case 'q' : 
+						case SDLK_ESCAPE : 
+							running = 0;
+							break;
+						default : 
+							break;
+					}
+					break;
+				  
+				default:
+					break;
+			}
+		}
+
+		Uint32 elapsed = SDL_GetTicks() - start;
+		if(elapsed < FRAMERATE_MILLISECONDS)
+		{
+			SDL_Delay(FRAMERATE_MILLISECONDS - elapsed);
+		}
+	}
 }

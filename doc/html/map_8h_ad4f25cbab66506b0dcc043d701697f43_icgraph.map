@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node4" href="$map_8h.html#a9155b868d4da5c2938a02eafb36fe005" title="Dessine une carte de jeu." alt="" coords="136,68,211,97"/>
+<area shape="rect" id="node6" href="$jeu_8h.html#ac5513b11925beef96d7ceb6a34539c03" title="Boucle de jeu." alt="" coords="260,68,305,97"/>
+<area shape="rect" id="node8" href="$jeu_8h.html#a3e35ab34cc98e7429c1146ad64645716" title="Lance une partie directement avec la carte map." alt="" coords="355,29,501,59"/>
+<area shape="rect" id="node11" href="$jeu_8h.html#a3bd019c071fe96105524873879e16c06" title="Lance la boucle de menus." alt="" coords="388,107,468,136"/>
+</map>

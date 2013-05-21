@@ -1,24 +1,24 @@
 #include "tower.h"
 
-const float Rocket_Range = 200;
-const int Rocket_Dmg = 100;
-const int Rocket_Time= 500;
-const int Rocket_Cost= 80;
+const float Rocket_Range 	= 200;
+const int Rocket_Dmg 		= 100;
+const int Rocket_Time		= 500;
+const int Rocket_Cost		= 80;
 
-const float Laser_Range = 140;
-const int Laser_Dmg = 50;
-const int Laser_Time = 100;
-const int Laser_Cost = 50;
+const float Laser_Range 	= 150;
+const int Laser_Dmg 		= 30;
+const int Laser_Time 		= 150;
+const int Laser_Cost 		= 50;
 
 const float Machinegun_Range= 100;
-const int Machinegun_Dmg= 10;
-const int Machinegun_Time = 100;
-const int Machinegun_Cost = 25;
+const int Machinegun_Dmg	= 10;
+const int Machinegun_Time 	= 100;
+const int Machinegun_Cost 	= 25;
 
-const float Hybrid_Range = 200;
-const int Hybrid_Dmg = 20;
-const int Hybrid_Time = 200;
-const int Hybrid_Cost = 80;
+const float Hybrid_Range 	= 200;
+const int Hybrid_Dmg 		= 20;
+const int Hybrid_Time 		= 200;
+const int Hybrid_Cost 		= 80;
 
 Tower* createTower(Position coord, TYPE_TOWER type){
 	Tower* t = malloc(sizeof(Tower));
@@ -27,6 +27,8 @@ Tower* createTower(Position coord, TYPE_TOWER type){
 	t->size = 64;
 	t->selected = 0;
 	t->lastUpdate = SDL_GetTicks();
+	t->animTimer = SDL_GetTicks();
+
 	switch(type) {
 		case ROCKET:
 			t->range = Rocket_Range;
@@ -59,26 +61,26 @@ Tower* createTower(Position coord, TYPE_TOWER type){
 		default:
 			break;
 	}
-	
-	t->angle = 0.f;
+	t->offset = 1;
+	t->line = 0;
 	t->target = NULL;
 	return t;
 }
 
 void drawTower(Tower* t, Vector3 camPos)
 {
-	drawTower2(t->type, t->coord, t->angle, t->selected, camPos);
-	if(t->msecSinceLastShot < 100 && t->target != NULL)
+	drawTower2(t->type, t->coord, t->selected, camPos, t->offset, t->line);
+	/*if(t->msecSinceLastShot < 100 && t->target != NULL)
 	{
 		glColor3ub(255,0,0);
 		glBegin(GL_LINES);
 			glVertex2f(t->coord.x-camPos.x, t->coord.y-camPos.y);
 			glVertex2f(t->target->coord.x+5.f -camPos.x, t->target->coord.y+5.f-camPos.y);
 		glEnd();
-	}
+	}*/
 }
 
-void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Vector3 camPos)
+void drawTower2(TYPE_TOWER type, Position pos, int selected, Vector3 camPos, int offset, int line)
 {
 	if(pos.x-camPos.x  < 0 || pos.x-camPos.x > MAP_WIDTH || pos.y-camPos.y-50.f < 0 || pos.y-camPos.y-50.f > MAP_HEIGHT)
 		return;
@@ -91,9 +93,6 @@ void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Vector
 	
 	glPushMatrix();
 	glScalef(size.x, size.y, 1.f);
-	
-	glPushMatrix();
-	glRotatef(angle, 0,0,1.f);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, getTowerTexture(type));
@@ -101,24 +100,22 @@ void drawTower2(TYPE_TOWER type, Position pos, float angle, int selected, Vector
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.f, 0.f);
+		glTexCoord2f(offset/4.f, line/4.f);
 		glVertex2f(-0.5f, -0.5f);
 
-		glTexCoord2f(0.f,1/4.f);
+		glTexCoord2f(offset/4.f,(line+1)/4.f);
 		glVertex2f(-0.5f, 0.5f);
 
-		glTexCoord2f(1/4.f,1/4.f); 
+		glTexCoord2f((offset+1)/4.f,(line+1)/4.f); 
 		glVertex2f(0.5f, 0.5f);
 
-		glTexCoord2f(1/4.f, 0.f); 
+		glTexCoord2f((offset+1)/4.f, (line)/4.f); 
 		glVertex2f(0.5f, -0.5f);
 	glEnd();
 	
 
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
-
-	glPopMatrix();
 
 	/*if(selected) {
 		glBegin(GL_LINE_LOOP);
@@ -151,16 +148,69 @@ void updateTower(Tower* t)
 {
 	int now = SDL_GetTicks();
 	t->msecSinceLastShot += now - t->lastUpdate;
+	t->projectile = NULL;
 	if(t->msecSinceLastShot>t->reloadTime){
 		if(t->target != NULL){
-			shoot(t, t->target);
-			t->msecSinceLastShot = 0;
-			if(isDead(t->target) || outOfRange(t->coord, t->target->coord, t->range)) {
-				t->target = NULL;
+			t->line++;
+			float dx = t->target->coord.x-t->coord.x;
+			float dy = t->target->coord.y-t->coord.y;
+			if(fabs(dx) < fabs(dy))
+			{
+				if(dy < 0)
+					t->offset = 0;
+				else if(dy > 0)
+					t->offset = 1;
+				else {
+					if(dx > 0)
+						t->offset = 0;
+					else
+						t->offset = 1;
+				}
+			} else {
+				if(dx < 0)
+					t->offset = 2;
+				else if(dx > 0)
+					t->offset = 3;
+				else {
+					if(dy > 0)
+						t->offset = 2;
+					else
+						t->offset = 3;
+				}
 			}
+			Position size = {32.f, 32.f};
+			int line = 0;
+			switch(t->type)
+			{
+				case ROCKET:
+					line = 2;
+					break;
+				case MACHINEGUN:
+					line = 1;
+					break;
+				case HYBRID:
+					line = 0;
+					break;
+				case LASER:
+					line = 3;
+					break;
+				default:	
+					break;
+			}
+			t->projectile = createProjectile(t->coord, size, damagesShot(t, t->target), line, 5.f, t->target);
+			t->msecSinceLastShot = 0;
 		}
 	}
 
+	if(now-t->animTimer > 75)
+	{
+		if(t->line > 0) {
+			t->line++;
+			if(t->line > 3)
+				t->line = 0;
+		}
+		t->animTimer = now;
+	}
 	t->lastUpdate = now;
 
 }
@@ -177,7 +227,7 @@ void lookForBestTarget(Tower* t, List* monsters)
 	{
 		Monster* m = list_get(monsters, i);
 		float tmp = sqrt((m->coord.x - t->coord.x)*(m->coord.x - t->coord.x)+(m->coord.y - t->coord.y)*(m->coord.y - t->coord.y));
-		if(tmp <= t->range && (best == NULL || bestDist > tmp))
+		if(tmp <= t->range && (best == NULL || bestDist > tmp) && !m->invulnerable)
 		{
 			best = m;
 			bestDist = tmp;
@@ -188,19 +238,30 @@ void lookForBestTarget(Tower* t, List* monsters)
 	t->target = best;
 }
 
-void shoot(Tower* t, Monster* target){
+Projectile* hasShot(Tower* t)
+{
+	if(t == NULL || t->projectile == NULL)
+		return NULL;
+
+	Projectile* tmp = t->projectile;
+	t->projectile = NULL;
+	return tmp;
+}
+
+float damagesShot(Tower* t, Monster* target) {
 	if(t == NULL || target == NULL)
-		return;
-
+		return 0;
+	float dmgs = 0;
 	if(t->type == ROCKET)
-		target->life -= ((100-target->resist.resistRocket)*Rocket_Dmg)/100;
+		dmgs = target->resist.resistRocket*Rocket_Dmg;
 	else if(t->type == LASER)
-		target->life -= ((100-target->resist.resistRocket)*Laser_Dmg)/100;
+		dmgs = target->resist.resistLaser*Laser_Dmg;
 	else if(t->type == MACHINEGUN)
-		target->life -= ((100-target->resist.resistRocket)*Machinegun_Dmg)/100;
+		dmgs = target->resist.resistMachinegun*Machinegun_Dmg;
 	else if(t->type == HYBRID)
-		target->life -= ((100-target->resist.resistRocket)*Hybrid_Dmg)/100;
+		dmgs = target->resist.resistHybrid*Hybrid_Dmg;
 
+	return dmgs;
 }
 
 int outOfRange(Position p1, Position p2, float range){
@@ -270,8 +331,9 @@ GLuint getTowerTexture(TYPE_TOWER type)
 			return getTexture("images/game/machinegun.png");
 		case HYBRID:
 			return getTexture("images/game/hybrid.png");
+		case DISABLED:
 		default:
-			return 0;
+			return getTexture("images/game/disabled.png");
 	}
 }
 

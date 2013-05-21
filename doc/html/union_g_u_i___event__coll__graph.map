@@ -1,0 +1,4 @@
+<map id="G" name="G">
+<area shape="rect" id="node2" href="$struct_g_u_i___text_event.html" title="Evènement déclenché par un texte." alt="" coords="5,5,117,35"/>
+<area shape="rect" id="node4" href="$struct_g_u_i___button_event.html" title="Evènement déclenché par un bouton." alt="" coords="141,5,267,35"/>
+</map>

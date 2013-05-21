@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node4" href="$jeu_8h.html#ad531a9fca877560d9fb111a66e965b7b" title="Affiche le menu principal." alt="" coords="199,29,311,59"/>
+<area shape="rect" id="node10" href="$jeu_8h.html#a9f37fde344a841a4ace642433d69bfb2" title="Affiche le menu d&#39;aide." alt="" coords="199,107,311,136"/>
+<area shape="rect" id="node14" href="$jeu_8h.html#ac5513b11925beef96d7ceb6a34539c03" title="Boucle de jeu." alt="" coords="232,184,277,213"/>
+<area shape="rect" id="node21" href="$jeu_8h.html#a07839dce3c40244319de22a659319ca4" title="Affiche le menu de victoire/défaite." alt="" coords="201,261,308,291"/>
+<area shape="rect" id="node6" href="$jeu_8h.html#a3bd019c071fe96105524873879e16c06" title="Lance la boucle de menus." alt="" coords="393,145,473,175"/>
+<area shape="rect" id="node16" href="$jeu_8h.html#a3e35ab34cc98e7429c1146ad64645716" title="Lance une partie directement avec la carte map." alt="" coords="360,241,507,271"/>
+</map>

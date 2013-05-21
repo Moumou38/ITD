@@ -44,7 +44,7 @@ Button* createButton(unsigned int id, char* text, char* imagefile, SDL_Color col
 
 	if(imagefile != NULL)
 	{
-		SDL_Surface* image = IMG_Load(imagefile);
+		SDL_Surface* image = loadImage(imagefile);
 		b->tex[0] = loadTexture(image);
 
 		SDL_Surface* tmptext = filterImage(image, hovered);

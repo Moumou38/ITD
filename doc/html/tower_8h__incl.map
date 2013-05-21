@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" id="node11" href="$tools_8h.html" title="Structures de données et fonctions des outils nécessaires." alt="" coords="308,392,369,421"/>
+<area shape="rect" id="node21" href="$monster_8h.html" title="Structures de données et fonctions des monstres." alt="" coords="278,160,358,189"/>
+<area shape="rect" id="node27" href="$resource_8h.html" title="Structures de données et fonctions du gestionnaire de ressources." alt="" coords="688,237,770,267"/>
+<area shape="rect" id="node46" href="$projectile_8h.html" title="Structures de données et fonctions des projectiles." alt="" coords="354,83,440,112"/>
+<area shape="rect" id="node34" href="$image_8h.html" title="Structures de données et fonctions de l&#39;image ppm." alt="" coords="433,315,500,344"/>
+</map>
